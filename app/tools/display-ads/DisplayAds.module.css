@@ -1,0 +1,218 @@
+.displayAdsContainer {
+  margin: 0 auto;
+}
+
+.displayAdsHeader {
+  color: #6c3fe2;
+  font-weight: 700;
+  font-size: 32px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.displayAdsSubtitle {
+  color: #b3b3cb;
+  text-align: center;
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.displayAdsInputCard {
+  border: 2px solid rgba(226, 232, 240, 1);
+  border-radius: 8px;
+  background: #fff;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 16px #6c3fe20d;
+}
+
+.displayAdsInputLabel {
+  font-weight: 700;
+  color: #212242;
+  margin-bottom: 8px;
+  display: block;
+  font-size: 18px;
+  border-bottom: 2px dashed rgba(226, 232, 240, 1);
+  padding-bottom: 8px;
+}
+
+.displayAdsTextarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 15px;
+  border: 2px dashed rgba(226, 232, 240, 1);
+  border-radius: 6px;
+  resize: vertical;
+  padding: 12px;
+  margin-bottom: 24px;
+  background: #f9f9ff;
+}
+
+.displayAdsButtonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.displayAdsResetBtn {
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: 2px solid rgba(226, 232, 240, 1);
+  background: #f9f9ff;
+  color: #6c3fe2;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  outline: none;
+  margin-right: 4px;
+  transition: border 0.2s, background 0.2s;
+}
+.displayAdsResetBtn:hover,
+.displayAdsResetBtn:focus {
+  border: 2px solid rgba(226, 232, 240, 1);
+  background: #edeaff;
+}
+
+.displayAdsPreviewBtn {
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: none;
+  background: #6c3fe2;
+  color: #fff;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #6c3fe210;
+  outline: none;
+  transition: background 0.2s;
+}
+.displayAdsPreviewBtn:hover,
+.displayAdsPreviewBtn:focus {
+  background: #4a26b6;
+}
+
+.displayAdsPreviewArea {
+  margin-top: 24px;
+}
+
+.displayAdsPreviewTitle {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #6c3fe2;
+}
+
+.displayAdsPreviewContent {
+  border: 1px dashed rgba(226, 232, 240, 1);
+  background: #f9f9ff;
+  border-radius: 6px;
+  padding: 16px;
+  min-height: 80px;
+}
+
+.displayAdsFAQSection {
+  margin-top: 40px;
+}
+
+.displayAdsFAQHeader {
+  color: #6b6e81;
+  font-weight: 700;
+  font-size: 28px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.displayAdsFAQCard {
+  background: #f9f9ff;
+  border-radius: 18px;
+  padding: 36px;
+  margin: 0 auto;
+  box-shadow: 0 2px 16px #6c3fe20d;
+}
+
+.displayAdsFAQQuestion {
+  color: #6c3fe2;
+  font-weight: 700;
+  font-size: 22px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.displayAdsCaret {
+  font-size: 24px;
+  margin-right: 8px;
+  transform: rotate(180deg);
+  display: inline-block;
+}
+
+.displayAdsFAQList {
+  color: #6b6e81;
+  font-size: 16px;
+  margin-left: 30px;
+  line-height: 30px;
+}
+
+.dropzone {
+  border: 2px dashed #bfc7d1;
+  border-radius: 8px;
+  min-height: 180px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s;
+  background: #fff;
+  cursor: pointer;
+  margin-bottom: 30px;
+}
+
+.dropzoneActive {
+  border-color: #6c3fe2;
+  background: #f9f9ff;
+}
+
+.dropzoneInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.dropzoneIcon {
+  color: #a9b5c9;
+  font-size: 38px;
+  margin-bottom: 5px;
+}
+
+.dropzoneMainText {
+  color: #bfc7d1;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.dropzoneBrowseText {
+  color: #bfc7d1;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.dropzoneButton {
+  border: none;
+  background: #f7faff;
+  color: #8594ab;
+  font-size: 15px;
+  padding: 8px 22px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+  outline: none;
+  box-shadow: 0 1px 4px #aeb7c533;
+}
+
+.dropzoneButton:hover,
+.dropzoneButton:focus {
+  background: #eaefff;
+}
