@@ -15,7 +15,11 @@
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
-
+html {
+  @media (max-width: 600px) {
+    font-size: 12px;
+  }
+}
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
     Arial, sans-serif;
@@ -28,6 +32,18 @@ body {
   max-width: 1100px;
   margin: 0 auto;
   padding: 0 30px;
+  @media (max-width: 1440px) {
+    max-width: 1000px;
+  }
+  @media (max-width: 1340px) {
+    max-width: 900px;
+  }
+  @media (max-width: 1200px) {
+    max-width: 750px;
+  }
+  @media (max-width: 600px) {
+    padding: 0 10px;
+  }
 }
 
 .highlight {
@@ -49,6 +65,9 @@ body {
   font-size: 1.8rem;
   font-weight: 800;
   color: var(--primary);
+  @media (max-width: 600px) {
+    width: 100px;
+  }
 }
 
 .nav {
@@ -79,7 +98,7 @@ body {
 }
 
 .btn {
-  padding: 12px 50px;
+  padding: 0.5rem 3rem;
   border-radius: 5px;
   font-weight: 500;
   cursor: pointer;
@@ -118,6 +137,9 @@ body {
 }
 .main .container {
   margin: 0px;
+  @media (max-width: 920px) {
+    max-width: 100%;
+  }
 }
 /* Hero Styles */
 .hero {
@@ -128,6 +150,9 @@ body {
   max-width: 160px;
   height: 600px;
   text-align: center;
+  @media (max-width: 920px) {
+    display: none;
+  }
 }
 .sideAd img {
   width: 100%;
@@ -141,6 +166,14 @@ body {
   margin-bottom: 20px;
   display: inline-flex;
   justify-content: center;
+  object-fit: contain;
+  @media (max-width: 920px) {
+    max-width: 100%;
+  }
+}
+
+.topAd img {
+  width: 100%;
 }
 
 .hero-tagline {
@@ -209,6 +242,12 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
 }
 
 .feature-card-link {
@@ -217,7 +256,7 @@ body {
 }
 
 .feature-card {
-  padding: 25px;
+  padding: 1.5rem;
   border-radius: 5px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s, box-shadow 0.3s;
@@ -242,6 +281,9 @@ body {
   font-size: 0.9rem;
   min-height: 70px;
   text-decoration: none;
+  @media (max-width: 600px) {
+    min-height: auto;
+  }
 }
 
 .feature-cta {
@@ -358,8 +400,12 @@ body {
   box-shadow: 0 1px 8px rgba(16, 30, 54, 0.08);
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 20px;
+  @media (max-width: 920px) {
+    gap: 10px;
+  }
 }
 
 .toolsTabs-label {
@@ -385,6 +431,9 @@ body {
   transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
   cursor: pointer;
   outline: none;
+  @media (max-width: 920px) {
+    padding: 5px;
+  }
 }
 .toolsTabs-btn span {
   margin-right: 5px;

@@ -50,12 +50,12 @@ function DataBeautifyPanel({ tab }) {
                     rows={7}
                 />
                 <div className="dataBeautifyPanelActions">
-                    <button className="dataBeautifyMainBtn" type="button">Encode URL</button>
-                    <button className="dataBeautifyOutlineBtn" type="button">Decode URL</button>
-                    <button className="dataBeautifyIconBtn" type="button" title="Copy">
+                    <button className={styles.displayAdsPreviewBtn} type="button">Encode URL</button>
+                    <button className={styles.displayAdsPreviewBtn} type="button">Decode URL</button>
+                    <button className={styles.displayAdsResetBtn} type="button" title="Copy">
                         <span role="img" aria-label="Copy">📋</span>
                     </button>
-                    <button className="dataBeautifyIconBtn" type="button" title="Reset">
+                    <button className={styles.displayAdsResetBtn} type="button" title="Reset">
                         <span role="img" aria-label="Reset">🔄</span>
                     </button>
                 </div>
@@ -78,12 +78,12 @@ function DataBeautifyPanel({ tab }) {
                     rows={7}
                 />
                 <div className="dataBeautifyPanelActions">
-                    <button className="dataBeautifyMainBtn" type="button">Encode</button>
-                    <button className="dataBeautifyOutlineBtn" type="button">Decode</button>
-                    <button className="dataBeautifyIconBtn" type="button" title="Copy">
+                    <button className={styles.displayAdsPreviewBtn} type="button">Encode URL</button>
+                    <button className={styles.displayAdsPreviewBtn} type="button">Decode URL</button>
+                    <button className={styles.displayAdsResetBtn} type="button" title="Copy">
                         <span role="img" aria-label="Copy">📋</span>
                     </button>
-                    <button className="dataBeautifyIconBtn" type="button" title="Reset">
+                    <button className={styles.displayAdsResetBtn} type="button" title="Reset">
                         <span role="img" aria-label="Reset">🔄</span>
                     </button>
                 </div>
@@ -143,10 +143,10 @@ export default function DataBeautifyClient({ tab }) {
 
     return (
         <div className={styles.displayAdsContainer + " dataBeautifyContainer"}>
-            <h1 className={styles.displayAdsHeader + " dataBeautifyHeader"}>
+            <h1 className={styles.displayAdsHeader}>
                 Data Beautify Tools
             </h1>
-            <div className={styles.displayAdsSubtitle + " dataBeautifySubtitle"}>
+            <div className={styles.displayAdsSubtitle}>
                 Transform and manipulate ad data with powerful utilities
             </div>
             <div className="dataBeautifyTabsCard">
@@ -157,6 +157,6 @@ export default function DataBeautifyClient({ tab }) {
                 />
                 <DataBeautifyPanel tab={TABS[activeTab].route} />
             </div>
-        </div>
+        </div >
     );
 }
