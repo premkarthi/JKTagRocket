@@ -1,0 +1,121 @@
+.nativeAdsContainer {
+  max-width: 1050px;
+  margin: 0 auto;
+}
+
+.nativeAdsHeader {
+  color: #6c3fe2 !important;
+}
+
+.nativeAdsSubtitle {
+  color: #b3b3cb !important;
+}
+
+.nativeAdsInputCard {
+  border-radius: 12px;
+}
+
+.nativeAdsResetBtn {
+  color: #6c3fe2 !important;
+  border-color: #6c3fe2 !important;
+  background: #f9f9ff !important;
+}
+
+.nativeAdsResetBtn:hover,
+.nativeAdsResetBtn:focus {
+  background: #edeaff !important;
+}
+
+.nativeAdsSubmitBtn {
+  background: #6c3fe2 !important;
+  color: #fff !important;
+}
+
+.nativeAdsSubmitBtn:hover,
+.nativeAdsSubmitBtn:focus {
+  background: #4a26b6 !important;
+}
+
+.nativeAdsTabsWrapper {
+  background: #fff;
+  border-radius: 10px;
+  margin-top: 0;
+  box-shadow: 0 2px 16px #6c3fe209;
+  border: 2px solid rgba(226, 232, 240, 1);
+}
+
+.nativeAdsTabs {
+  display: flex;
+  border-bottom: 2px solid #f6f6fa;
+  padding: 0 20px;
+  gap: 8px;
+}
+
+.nativeAdsTab {
+  font-size: 16px;
+  color: #888;
+  background: none;
+  border: none;
+  outline: none;
+  padding: 18px 20px 12px 20px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.nativeAdsTabActive {
+  color: #6c3fe2;
+  border-bottom: 2px solid #6c3fe2;
+  font-weight: 700;
+}
+
+.nativeAdsTabPanel {
+  padding: 32px 24px 24px 24px;
+}
+.nativeAdsFieldRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 26px;
+}
+.nativeAdsFieldLabel {
+  min-width: 220px;
+  font-weight: 500;
+  color: #222;
+  padding-top: 6px;
+}
+.nativeAdsFieldInputWrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nativeAdsFieldInput {
+  width: 100%;
+  font-size: 15px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 7px;
+  padding: 10px;
+  background: #faf6f1;
+  color: #333;
+  resize: none;
+}
+.nativeAdsCopyBtn {
+  background: none;
+  border: none;
+  color: #6c3fe2;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 3px 8px 0 8px;
+  transition: color 0.15s;
+}
+.nativeAdsCopyBtn:hover,
+.nativeAdsCopyBtn:focus {
+  color: #4a26b6;
+}
+.nativeAdsTabPlaceholder {
+  color: #b3b3cb;
+  font-style: italic;
+  text-align: center;
+  padding: 40px 0;
+}

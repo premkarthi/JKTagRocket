@@ -381,7 +381,7 @@ body {
   font-size: 0.9rem;
   font-weight: 500;
   background: #fff;
-  color: #c7c9d9;
+  color: #121212;
   transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
   cursor: pointer;
   outline: none;

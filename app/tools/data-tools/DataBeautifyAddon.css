@@ -1,0 +1,162 @@
+.dataBeautifyContainer {
+  max-width: 1050px;
+  margin: 0 auto;
+}
+.dataBeautifyHeader {
+  color: #ecb84b !important;
+}
+.dataBeautifySubtitle {
+  color: #b3b3cb !important;
+}
+
+/* Outer card */
+.dataBeautifyTabsCard {
+  background: #fafaff;
+  border-radius: 16px;
+  box-shadow: 0 2px 16px #6c3fe20a;
+  margin-top: 10px;
+  padding: 20px 16px 30px 16px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1000px;
+}
+
+/* Tabs row */
+.dataBeautifyTabs {
+  display: flex;
+  gap: 5px;
+  border: none;
+  background: none;
+  margin-bottom: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+.dataBeautifyTab {
+  background: #f1f3fa;
+  border: none;
+  color: #212242;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: background 0.18s, color 0.18s;
+  min-width: 0;
+}
+.dataBeautifyTab:hover,
+.dataBeautifyTab:focus {
+  background: #edeaff;
+  color: #4a26b6;
+}
+.dataBeautifyTabActive {
+  background: #edeaff !important;
+  color: #6c3fe2 !important;
+  font-weight: 700;
+}
+.dataBeautifyTabIcon {
+  font-size: 10px;
+  margin-right: 4px;
+  display: flex;
+  align-items: center;
+}
+
+/* Panel styling */
+.dataBeautifyPanel {
+  background: #fff;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  padding: 24px 20px 18px 20px;
+  box-shadow: 0 2px 14px #6c3fe210;
+  margin-top: 8px;
+}
+.dataBeautifyPanelTitle {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #212242;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.dataBeautifyPanelTitleIcon {
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+}
+.dataBeautifyLabel {
+  font-weight: 600;
+  color: #212242;
+  margin-bottom: 10px;
+  display: block;
+  font-size: 17px;
+}
+.dataBeautifyTextarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 15px;
+  border: 2px dashed #e2e8f0;
+  border-radius: 7px;
+  resize: vertical;
+  padding: 12px;
+  margin-bottom: 20px;
+  background: #f9f9ff;
+  min-height: 110px;
+  transition: border 0.19s;
+}
+.dataBeautifyPanelActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 6px;
+}
+.dataBeautifyMainBtn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  background: #6c3fe2;
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #6c3fe210;
+  outline: none;
+  transition: background 0.2s;
+}
+.dataBeautifyMainBtn:hover,
+.dataBeautifyMainBtn:focus {
+  background: #4a26b6;
+}
+.dataBeautifyOutlineBtn {
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: 2px solid #6c3fe2;
+  background: #fff;
+  color: #6c3fe2;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  margin-right: 4px;
+  transition: border 0.2s, background 0.2s;
+}
+.dataBeautifyOutlineBtn:hover,
+.dataBeautifyOutlineBtn:focus {
+  background: #edeaff;
+}
+.dataBeautifyIconBtn {
+  background: none;
+  border: none;
+  color: #6c3fe2;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 0 7px;
+  transition: color 0.15s;
+  display: flex;
+  align-items: center;
+}
+.dataBeautifyIconBtn:hover,
+.dataBeautifyIconBtn:focus {
+  color: #4a26b6;
+}

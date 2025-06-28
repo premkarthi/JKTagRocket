@@ -46,12 +46,12 @@ export default function ToolsBar() {
 
     // Helper to remove trailing slash for comparison
     const normalize = (path) => path.replace(/\/$/, "");
-
+    console.log(pathname);
     return (
         <nav className="toolsTabs-nav">
             <Link href={'/'} className="toolsTabs-label">All Tools</Link>
             {tools.map((tool) => {
-                const isActive = normalize(pathname) === normalize(tool.path);
+                const isActive = normalize(pathname).includes(normalize(tool.path));
                 return (
                     <button
                         key={tool.label}
