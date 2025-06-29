@@ -1,6 +1,7 @@
 import ToolsBar from "../components/ToolsBar";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import Image from 'next/image';
 import '../styles/globals.css'
 
 
@@ -11,19 +12,19 @@ export default function DashboardLayout({ children }) {
                 <Header />
                 <div className='main'>
                     <div className='sideAd'>
-                        <img src='/images/ad1.png' alt='Side Ad' />
+                        <Image src='/images/ad1.png' alt='Side Ad' width={160} height={600} />
                     </div>
                     <div className="container">
                         <div style={{ textAlign: 'center' }}>
                             <div className="topAd">
-                                <img src='/images/ad2.png' alt="Top Ad" />
+                                <Image src='/images/ad2.png' alt='Side Ad' width={768} height={90} />
                             </div>
                         </div>
                         <ToolsBar />
                         {children}
                     </div>
                     <div className='sideAd'>
-                        <img src='/images/ad1.png' alt='Side Ad' />
+                        <Image src='/images/ad1.png' alt='Side Ad' width={160} height={600} />
                     </div>
                 </div>
                 <Footer />

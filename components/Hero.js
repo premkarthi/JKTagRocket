@@ -1,16 +1,16 @@
 import ToolsBar from "./ToolsBar";
+import Image from "next/image";
+
+
 
 export default function Hero() {
     return (
         <section className="hero">
-            <div className='topAd'>
-                <img src='/images/ad2.png' alt="Top Ad" />
-            </div>
             <div className="hero-content">
                 <div className="hero-main">
                     <p className="tag">🚀 Professional Ad Tag Utilities</p>
                     <div>
-                        <img className="logo-large" src='/images/logo.svg' />
+                        <Image src='/images/logo.svg' alt="Logo middle" width={150} height={40} />
                     </div>
                     <p className="hero-description">
                         Professional ad tag utilities for previews, validation, and data transformation.

@@ -184,7 +184,7 @@ export default function NativeAds() {
                     {/* Tab 2: Pixel's */}
                     {tab === 2 && (
                         <div className="nativeAdsTabPlaceholder">
-                            Pixel's tab content here.
+                            Pixels tab content here.
                         </div>
                     )}
                 </div>

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 export default function Footer() {
     const products = [
         "Privacy Policy",
@@ -7,7 +8,7 @@ export default function Footer() {
 
     return (
         <footer className="footer">
-            <img src='/images/logo.svg' alt="Footer Logo" />
+            <Image src='/images/logo.svg' alt="Footer Logo" width={150} height={40} />
             <div className="footer-notice">
                 <p>Professional ad tag utilities for modern developers</p>
             </div>

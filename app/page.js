@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import Hero from '../components/Hero';
 import Head from 'next/head'
 import Faq from '../components/Faq';
+import Image from 'next/image';
 
 export default function Home() {
     const title = 'How do I preview an HTML5 ad?'
@@ -15,23 +16,9 @@ export default function Home() {
                 <title>JK Tag Rocket</title>
                 <link rel="icon" href="/images/favicon.png" />
             </Head>
-            <Header />
-            <div className='main'>
-                <div className='sideAd'>
-                    <img src='/images/ad1.png' alt='Side Ad' />
-                </div>
-                <div className="container">
-                    <Hero />
-                    <FeatureGrid />
-                    <Faq title={title} list={list} />
-                </div>
-                <div className='sideAd'>
-                    <img src='/images/ad1.png' alt='Side Ad' />
-                </div>
-
-            </div>
-
-            <Footer />
+            <Hero />
+            <FeatureGrid />
+            <Faq title={title} list={list} />
         </>
 
     );

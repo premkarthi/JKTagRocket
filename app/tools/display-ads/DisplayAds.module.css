@@ -216,3 +216,81 @@
 .dropzoneButton:focus {
   background: #eaefff;
 }
+.displayAdsLoader {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalCard {
+  background: #fff;
+  border-radius: 8px;
+  width: 480px;
+  max-width: 95%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+  padding: 20px;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.modalCloseBtn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modalRow {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modalLabel {
+  font-weight: 600;
+  color: #444;
+}
+
+.modalValue {
+  text-align: right;
+  color: #222;
+  max-width: 70%;
+  word-break: break-all;
+}
+
+/* quick accents */
+.networkRowAccent {
+  border-left: 4px solid var(--accent);
+}
+.perfBadge {
+  background: #f3f4f6;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
