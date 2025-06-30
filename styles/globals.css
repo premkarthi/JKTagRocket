@@ -426,7 +426,7 @@ body {
   border: 1px solid #e5e7eb;
   font-size: 0.9rem;
   font-weight: 500;
-  background: #fff;
+  background:linear-gradient(100deg,#40ddff,#7612fa,#fa12e3);
   color: #121212;
   transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
   cursor: pointer;

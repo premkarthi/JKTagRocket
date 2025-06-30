@@ -217,7 +217,7 @@ export default function DisplayAds() {
             {/* header */}
             <h1 className={styles.displayAdsHeader}>Display Ads</h1>
             <p className={styles.displayAdsSubtitle}>
-                Paste ad tags, preview & inspect network calls
+                Simulate dispaly tags behavior in a controlled environment with full network trace ..
             </p>
 
             {/* input */}
@@ -347,12 +347,15 @@ export default function DisplayAds() {
                 })}
 
             <Faq
-                title="How do I preview an HTML5 ad?"
+                title="How do I preview an HTML / Script ad tags?"
                 list={[
-                    "Upload HTML5 zip",
-                    "View preview, network timeline & metrics",
-                    "Share with clients",
+                    
+                    "Preview an ad tags by uploading / input of the tag's HTML (script).",
+                    "Get a dynamic live previews of any ad size of tags.",
+                    "View the detail network timelines, load times, file sizes, and more to ensure ads are compliant. with Deep capture check box is ON.",
+                    "Share with clients with custom links and to get feedback.",
                 ]}
+                
             />
         </div>
     );

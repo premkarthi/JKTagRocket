@@ -9,7 +9,11 @@ export default function HTML5ValidatorPage() {
     const inputRef = useRef(null);
     const [isActive, setIsActive] = useState(false);
     const title = 'How do I preview an HTML5 ad?'
-    const list = ['Preview an HTML5 ad by uploading an HTML5 zip file', 'View a live ad preview, images of each frame, and a video of the ad', 'View network timelines, load times, file sizes, and more to ensure ads are compliant', 'Share with clients and get feedback']
+    const list = ['Preview an HTML5 ad by uploading an zip file.', 
+                  'The format of zip files  supported creative masters could be GWD, AnimateCC, and HTML5.',
+                  'View a live ad preview, images of each frame, and a video of the ad.', 
+                  'View network timelines, load times, file sizes, and more to ensure ads are compliant,with Deep capture check box is ON.' ]
+                  
 
     const handleDrop = (e) => {
         e.preventDefault();
@@ -38,7 +42,7 @@ export default function HTML5ValidatorPage() {
             <div style={{ marginBottom: 24 }}>
                 <h1 className={styles.displayAdsHeader}>HTML5 Validator</h1>
                 <div className={styles.displayAdsSubtitle}>
-                    This is the HTML5 Validator tool page.
+                   <b>Instant HTML5 Validation — Built for Developers..</b>
                 </div>
             </div>
 

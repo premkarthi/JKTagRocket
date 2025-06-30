@@ -32,12 +32,25 @@ export default function VideoValidator() {
                     <textarea
                         id="videoAdInput"
                         rows={7}
-                        placeholder="Paste your video ad HTML or video tag here..."
+                        placeholder="            Paste your Vast/VPaid video ad tag here..."
                         value={videoAdCode}
                         onChange={(e) => setVideoAdCode(e.target.value)}
                         className={styles.displayAdsTextarea}
                     />
                     <div className={styles.displayAdsButtonGroup}>
+                        <button
+                        className={styles.displayAdsResetBtn}
+                        // onClick={reset}
+                        >
+                            Reset
+                        </button>
+                        <button
+                            className={styles.displayAdsPreviewBtn}
+                            onClick={handlePreview}
+                            type="button"
+                        >
+                            XML Response
+                        </button>
                         <button
                             className={styles.displayAdsPreviewBtn}
                             onClick={handlePreview}
@@ -45,6 +58,8 @@ export default function VideoValidator() {
                         >
                             Generate Preview
                         </button>
+                        
+                        
                     </div>
                 </div>
                 {/* Video Preview Card */}
@@ -64,16 +79,18 @@ export default function VideoValidator() {
                     >
                         {preview
                             ? <div dangerouslySetInnerHTML={{ __html: preview }} />
-                            : "Enter video code to see preview"}
+                            : "Dynamic video preview load here..."}
                     </div>
                 </div>
             </div>
             <Faq
-                title="How do I preview a video ad?"
+                title="How do I preview of Vast/VPaid video tag ad?"
                 list={[
-                    "Paste your video ad tag or HTML in the left box.",
-                    "Click Generate Preview to see a live rendering.",
+                    "Paste your  Vast/VPaid video ad tag  in the left side box.",
+                    "Click Generate Preview to see a live rendering video .",
                     "Review compatibility and performance instantly.",
+                    "Ensure your video ads are compliant with industry standards.",
+                    "View the VAST content (XML) by clicking the 'VAST XML Response' button.",
                 ]}
             />
         </div>
