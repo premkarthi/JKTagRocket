@@ -28,6 +28,8 @@ function normalise(data) {
     const baseline = Number.isFinite(minAbs) ? minAbs : 0;
 
     return clean.map((d, idx) => {
+        console.log(d, idx);
+        
         const relStart = d.start > 1e12 ? d.start - baseline : d.start;
         let duration = d.duration;
         if (!duration || duration <= 0) {
@@ -46,6 +48,8 @@ function normalise(data) {
 }
 
 export default function NetworkTimelineChart({ timeline = [] }) {
+    console.log(timeline);
+    
     const [selectedType, setSelectedType] = useState(ALL_TYPE);
     const [tooltipContent, setTooltipContent] = useState(null);
 
@@ -58,8 +62,9 @@ export default function NetworkTimelineChart({ timeline = [] }) {
     }, [allData, selectedType]);
 
     const cats = filteredData.map((d) => {
-        const tail = d.url.split("/").pop() || d.url;
-        return tail.length > 70 ? tail.slice(0, 67) + "…" : tail;
+        // const tail = d.url.split("/").pop() || d.url;
+        // return tail.length > 70 ? tail.slice(0, 67) + "…" : tail;
+        return `${d.type + ' - ' + d.url}`
     });
 
     const option = useMemo(() => {
@@ -86,7 +91,7 @@ export default function NetworkTimelineChart({ timeline = [] }) {
                         .join("<br/>");
                 },
             },
-            grid: { left: 260, right: 20, top: 40, bottom: 40 },
+            grid: { left: 470, right: 20, top: 40, bottom: 40 },
             xAxis: {
                 type: "value",
                 min: 0,
@@ -100,15 +105,16 @@ export default function NetworkTimelineChart({ timeline = [] }) {
                 inverse: true,
                 data: cats,
                 axisLabel: {
-                    width: 250,
+                    width: 450,
                     overflow: "truncate",
                     formatter: (label, index) => {
-                        return `{link|${label}}`;
+                        return `{link|${label }}`;
                     },
                     rich: {
                         link: {
                             fontWeight: "bold",
                             cursor: "pointer",
+                            align: "left",
                         },
                     },
                 },
