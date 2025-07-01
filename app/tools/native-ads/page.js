@@ -19,6 +19,11 @@ export default function NativeAds() {
     const [headline, setHeadline] = useState("");
     const [description, setDescription] = useState("");
     const [brandName, setBrandName] = useState("");
+    const [impressionTracker, setImpressionTracker] = useState("");
+    const [secondaryclicktracker, secondaryClickTracker] = useState("");
+    const [primaryclicktracker, primaryClickTracker] = useState("");
+    const [brandlogo, brandLogo] = useState("");
+    const [imagevideopreview, imagevideoPreview] = useState("");
 
     const handleReset = () => {
         setNativeTag("");
@@ -26,6 +31,11 @@ export default function NativeAds() {
         setHeadline("");
         setDescription("");
         setBrandName("");
+        setImpressionTracker("");
+        secondaryClickTracker("");
+        primaryClickTracker("");
+        brandLogo("");
+        imagevideoPreview("");
     };
 
     const handleSubmit = (e) => {
@@ -171,6 +181,94 @@ export default function NativeAds() {
                                     >
                                         <span role="img" aria-label="Copy">📋</span>
                                     </button>
+                                </div>
+                            </div>
+                            <div className="nativeAdsFieldRow">
+                                <label className="nativeAdsFieldLabel">
+                                    Impression Tracker
+                                </label>
+                                <div className="nativeAdsFieldInputWrapper">
+                                    <input
+                                        type="text"
+                                        value={impressionTracker}   // Assuming you have an impressionTracker state
+                                        onchange={ e => setImpressionTracker(e.target.value)} // Assuming you have a setImpressionTracker function
+                                        className="nativeAdsFieldInput"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="nativeAdsCopyBtn"
+                                        onClick={() => copyToClipboard(setImpressionTracker)}
+                                    >
+                                        <span role="img" aria-label="Copy">📋</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="nativeAdsFieldRow">
+                                <label className="nativeAdsFieldLabel">
+                                    Secondary Click Tracker
+                                </label>
+                                <div className="nativeAdsFieldInputWrapper">
+                                    <input
+                                        type="text"
+                                        value={secondaryclicktracker}   // Assuming you have an impressionTracker state
+                                        onchange={ e => secondaryClickTracker(e.target.value)} // Assuming you have a setImpressionTracker function
+                                        className="nativeAdsFieldInput"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="nativeAdsCopyBtn"
+                                        onClick={() => copyToClipboard(secondaryClickTracker)}
+                                    >
+                                        <span role="img" aria-label="Copy">📋</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="nativeAdsFieldRow">
+                                <label className="nativeAdsFieldLabel">
+                                    Primary Click Tracker
+                                </label>
+                                <div className="nativeAdsFieldInputWrapper">
+                                    <input
+                                        type="text"
+                                        value={primaryclicktracker}   // Assuming you have an impressionTracker state
+                                        onchange={ e => primaryClickTracker(e.target.value)} // Assuming you have a setImpressionTracker function
+                                        className="nativeAdsFieldInput"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="nativeAdsCopyBtn"
+                                        onClick={() => copyToClipboard(primaryClickTracker)}
+                                    >
+                                        <span role="img" aria-label="Copy">📋</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="nativeAdsFieldRow">
+                                <label className="nativeAdsFieldLabel">
+                                    Brand Logo 
+                                </label>
+                                <div className="nativeAdsFieldInputWrapper">
+                                    <input
+                                        type="text"
+                                        value={brandlogo}   // Assuming you have an impressionTracker state
+                                        onchange={ e => brandLogo(e.target.value)} // Assuming you have a setImpressionTracker function
+                                        className="nativeAdsFieldInput"
+                                    />
+                                    
+                                </div>
+                            </div>
+                            <div className="nativeAdsFieldRow">
+                                <label className="nativeAdsFieldLabel">
+                                    Image / Video Preview
+                                </label>
+                                <div className="nativeAdsFieldInputWrapper">
+                                    <input
+                                        type="text"
+                                        value={imagevideopreview}   // Assuming you have an impressionTracker state
+                                        onchange={ e => imagevideoPreview(e.target.value)} // Assuming you have a setImpressionTracker function
+                                        className="nativeAdsFieldInput"
+                                    />
+                                    
                                 </div>
                             </div>
                         </div>
