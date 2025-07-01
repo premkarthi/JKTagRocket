@@ -29,7 +29,7 @@ function normalise(data) {
 
     return clean.map((d, idx) => {
         console.log(d, idx);
-        
+
         const relStart = d.start > 1e12 ? d.start - baseline : d.start;
         let duration = d.duration;
         if (!duration || duration <= 0) {
@@ -49,7 +49,7 @@ function normalise(data) {
 
 export default function NetworkTimelineChart({ timeline = [] }) {
     console.log(timeline);
-    
+
     const [selectedType, setSelectedType] = useState(ALL_TYPE);
     const [tooltipContent, setTooltipContent] = useState(null);
 
@@ -61,15 +61,13 @@ export default function NetworkTimelineChart({ timeline = [] }) {
             : allData.filter((d) => d.type === selectedType);
     }, [allData, selectedType]);
 
-    const cats = filteredData.map((d) => {
-        // const tail = d.url.split("/").pop() || d.url;
-        // return tail.length > 70 ? tail.slice(0, 67) + "…" : tail;
-        return `${d.type + ' - ' + d.url}`
-    });
+    const cats = useMemo(
+        () => filteredData.map((d) => `${d.type + ' - ' + d.url}`),
+        [filteredData]
+    );
 
     const option = useMemo(() => {
         const max = Math.max(...filteredData.map((d) => d.start + d.duration), 0);
-
         return {
             legend: {
                 data: legendData,
@@ -108,7 +106,7 @@ export default function NetworkTimelineChart({ timeline = [] }) {
                     width: 450,
                     overflow: "truncate",
                     formatter: (label, index) => {
-                        return `{link|${label }}`;
+                        return `{link|${label}}`;
                     },
                     rich: {
                         link: {
@@ -147,7 +145,7 @@ export default function NetworkTimelineChart({ timeline = [] }) {
                 },
             ],
         };
-    }, [filteredData, selectedType]);
+    }, [filteredData, selectedType, cats]);
 
     const onEvents = {
         legendselectchanged: (e) => {
