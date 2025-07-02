@@ -192,7 +192,7 @@ export default function NativeAds() {
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input
                                         type="text"
-                                        value={brandName}
+                                        value={reportName}
                                         onChange={e => setreportingName(e.target.value)}
                                         className="nativeAdsFieldInput"
                                     />
