@@ -19,6 +19,7 @@ export default function NativeAds() {
     const [headline, setHeadline] = useState("");
     const [description, setDescription] = useState("");
     const [brandName, setBrandName] = useState("");
+    const [reportName, setreportingName] = useState("");
     const [impressionTracker, setImpressionTracker] = useState("");
     const [secondaryclicktracker, secondaryClickTracker] = useState("");
     const [primaryclicktracker, primaryClickTracker] = useState("");
@@ -31,6 +32,7 @@ export default function NativeAds() {
         setHeadline("");
         setDescription("");
         setBrandName("");
+        setreportName("");
         setImpressionTracker("");
         secondaryClickTracker("");
         primaryClickTracker("");
@@ -62,7 +64,7 @@ export default function NativeAds() {
                 <textarea
                     id="nativeTag"
                     rows={6}
-                    placeholder="Paste your Native tag !!!"
+                    placeholder="Paste your Native tag here ...!!!"
                     value={nativeTag}
                     onChange={e => setNativeTag(e.target.value)}
                     className={styles.displayAdsTextarea}
@@ -178,6 +180,26 @@ export default function NativeAds() {
                                         type="button"
                                         className="nativeAdsCopyBtn"
                                         onClick={() => copyToClipboard(brandName)}
+                                    >
+                                        <span role="img" aria-label="Copy">📋</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="nativeAdsFieldRow">
+                                <label className="nativeAdsFieldLabel">
+                                    Reporting Name
+                                </label>
+                                <div className="nativeAdsFieldInputWrapper">
+                                    <input
+                                        type="text"
+                                        value={brandName}
+                                        onChange={e => setreportingName(e.target.value)}
+                                        className="nativeAdsFieldInput"
+                                    />
+                                    <button
+                                        type="button"
+                                        className="nativeAdsCopyBtn"
+                                        onClick={() => copyToClipboard(reportName)}
                                     >
                                         <span role="img" aria-label="Copy">📋</span>
                                     </button>
