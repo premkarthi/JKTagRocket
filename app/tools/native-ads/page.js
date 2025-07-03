@@ -346,7 +346,7 @@ export default function NativeAds() {
                 <textarea
                     id="nativeTag"
                     rows={6}
-                    placeholder="Paste your Native tag here ...!!!"
+                    placeholder=" Paste your Native tag here ... !!!"
                     value={nativeTag}
                     onChange={e => setNativeTag(e.target.value)}
                     className={styles.displayAdsTextarea}
@@ -432,7 +432,7 @@ export default function NativeAds() {
                                     </div>
                                 </div>
                             ))}
-                            <div className="nativeAdsFieldRow">
+                            {/* <div className="nativeAdsFieldRow">
                                 <label className="nativeAdsFieldLabel">Segment</label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input type="text" value={naIfEmpty(segment)} readOnly className="nativeAdsFieldInput" />
@@ -455,7 +455,7 @@ export default function NativeAds() {
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input type="text" value={naIfEmpty(reportedBy)} readOnly className="nativeAdsFieldInput" />
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     )}
                     {/* Tab 1: Trackers */}
