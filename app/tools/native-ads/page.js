@@ -435,30 +435,30 @@ export default function NativeAds() {
                                     </div>
                                 </div>
                             ))}
-                            <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Segment</label>
-                                <div className="nativeAdsFieldInputWrapper">
-                                    <input type="text" value={fieldValue(segment)} readOnly className="nativeAdsFieldInput" />
-                                </div>
-                            </div>
-                            <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Reporting Schema</label>
-                                <div className="nativeAdsFieldInputWrapper">
-                                    <input type="text" value={fieldValue(reportingSchema)} readOnly className="nativeAdsFieldInput" />
-                                </div>
-                            </div>
-                            <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">DB Attributes</label>
-                                <div className="nativeAdsFieldInputWrapper">
-                                    <input type="text" value={fieldValue(dbAttributes)} readOnly className="nativeAdsFieldInput" />
-                                </div>
-                            </div>
-                            <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Reported By</label>
-                                <div className="nativeAdsFieldInputWrapper">
-                                    <input type="text" value={fieldValue(reportedBy)} readOnly className="nativeAdsFieldInput" />
-                                </div>
-                            </div>
+                            // <div className="nativeAdsFieldRow">
+                            //     <label className="nativeAdsFieldLabel">Segment</label>
+                            //     <div className="nativeAdsFieldInputWrapper">
+                            //         <input type="text" value={fieldValue(segment)} readOnly className="nativeAdsFieldInput" />
+                            //     </div>
+                            // </div>
+                            // <div className="nativeAdsFieldRow">
+                            //     <label className="nativeAdsFieldLabel">Reporting Schema</label>
+                            //     <div className="nativeAdsFieldInputWrapper">
+                            //         <input type="text" value={fieldValue(reportingSchema)} readOnly className="nativeAdsFieldInput" />
+                            //     </div>
+                            // </div>
+                            // <div className="nativeAdsFieldRow">
+                            //     <label className="nativeAdsFieldLabel">DB Attributes</label>
+                            //     <div className="nativeAdsFieldInputWrapper">
+                            //         <input type="text" value={fieldValue(dbAttributes)} readOnly className="nativeAdsFieldInput" />
+                            //     </div>
+                            // </div>
+                            // <div className="nativeAdsFieldRow">
+                            //     <label className="nativeAdsFieldLabel">Reported By</label>
+                            //     <div className="nativeAdsFieldInputWrapper">
+                            //         <input type="text" value={fieldValue(reportedBy)} readOnly className="nativeAdsFieldInput" />
+                            //     </div>
+                            // </div>
                         </div>
                     )}
                     {/* Tab 1: Trackers */}
