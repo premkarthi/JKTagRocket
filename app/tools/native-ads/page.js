@@ -109,6 +109,8 @@ export default function NativeAds() {
 
     // Feedback
     const [error, setError] = useState("");
+    // isSubmitted is true after a successful fetch/parse
+    const [isSubmitted, setIsSubmitted] = useState(false);
 
     const handleReset = () => {
         setNativeTag("");
@@ -129,6 +131,7 @@ export default function NativeAds() {
         setEventTrackers([]);
         setPixelsTable([]);
         setError("");
+        setIsSubmitted(false);
     };
 
     // Core logic: mimic your $.ajax and fallback cycle, handling JSONP if needed
@@ -196,6 +199,7 @@ export default function NativeAds() {
         try {
             const nativeData = await fetchNativeDataWithFallback(url, dataType);
             buildNativeData(nativeData, url);
+            setIsSubmitted(true);
         } catch (err) {
             setError("Failed to load or parse native data.");
         }
@@ -328,8 +332,8 @@ export default function NativeAds() {
         }
     }
 
-    // Helper to show "NA" for input/textarea but not for table cells
-    const naIfEmpty = v => v?.trim() ? v : "NA";
+    // For input/textarea: keep empty by default, after submit show NA if empty
+    const fieldValue = (v) => isSubmitted && (!v || v.trim() === "") ? "NA" : v;
 
     return (
         <div className={styles.displayAdsContainer + " nativeAdsContainer"}>
@@ -366,7 +370,6 @@ export default function NativeAds() {
                     >
                         Submit
                     </button>
-
                 </div>
                 {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
             </div>
@@ -406,7 +409,7 @@ export default function NativeAds() {
                                     <div className="nativeAdsFieldInputWrapper">
                                         {multiline ? (
                                             <textarea
-                                                value={naIfEmpty(value)}
+                                                value={fieldValue(value)}
                                                 onChange={e => setter(e.target.value)}
                                                 className="nativeAdsFieldInput"
                                                 rows={2}
@@ -419,7 +422,7 @@ export default function NativeAds() {
                                         ) : (
                                             <input
                                                 type="text"
-                                                value={naIfEmpty(value)}
+                                                value={fieldValue(value)}
                                                 onChange={e => setter(e.target.value)}
                                                 className="nativeAdsFieldInput"
                                                 placeholder={label}
@@ -435,25 +438,25 @@ export default function NativeAds() {
                             <div className="nativeAdsFieldRow">
                                 <label className="nativeAdsFieldLabel">Segment</label>
                                 <div className="nativeAdsFieldInputWrapper">
-                                    <input type="text" value={naIfEmpty(segment)} readOnly className="nativeAdsFieldInput" />
+                                    <input type="text" value={fieldValue(segment)} readOnly className="nativeAdsFieldInput" />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
                                 <label className="nativeAdsFieldLabel">Reporting Schema</label>
                                 <div className="nativeAdsFieldInputWrapper">
-                                    <input type="text" value={naIfEmpty(reportingSchema)} readOnly className="nativeAdsFieldInput" />
+                                    <input type="text" value={fieldValue(reportingSchema)} readOnly className="nativeAdsFieldInput" />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
                                 <label className="nativeAdsFieldLabel">DB Attributes</label>
                                 <div className="nativeAdsFieldInputWrapper">
-                                    <input type="text" value={naIfEmpty(dbAttributes)} readOnly className="nativeAdsFieldInput" />
+                                    <input type="text" value={fieldValue(dbAttributes)} readOnly className="nativeAdsFieldInput" />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
                                 <label className="nativeAdsFieldLabel">Reported By</label>
                                 <div className="nativeAdsFieldInputWrapper">
-                                    <input type="text" value={naIfEmpty(reportedBy)} readOnly className="nativeAdsFieldInput" />
+                                    <input type="text" value={fieldValue(reportedBy)} readOnly className="nativeAdsFieldInput" />
                                 </div>
                             </div>
                         </div>
