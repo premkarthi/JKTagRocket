@@ -361,14 +361,21 @@ export default function NativeAds() {
                         type="button"
                         onClick={handleReset}
                     >
-                        Reset
+                       ❌ Reset
                     </button>
+                    <button
+                            className={styles.NativeAdsAdsPreviewBtn}
+                            // onClick={handlePreview}
+                            type="button"
+                        >
+                            JSON Response
+                        </button>
                     <button
                         className={styles.displayAdsPreviewBtn + " nativeAdsSubmitBtn"}
                         type="button"
                         onClick={handleSubmit}
                     >
-                        Submit
+                        👁️ Submit
                     </button>
                 </div>
                 {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
