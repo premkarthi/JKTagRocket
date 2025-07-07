@@ -5,7 +5,7 @@ const nextConfig = {
     images: {
         unoptimized: true
     },
-    allowedDevOrigins: ['jktagrocket.onrender.com']
+    allowedDevOrigins: []
 }
 
 module.exports = nextConfig
