@@ -361,14 +361,21 @@ export default function NativeAds() {
                         type="button"
                         onClick={handleReset}
                     >
-                        Reset
+                        ❌ Reset
+                    </button>
+                    <button
+                        className={styles.NativeAdsAdsPreviewBtn}
+                        // onClick={handlePreview}
+                        type="button"
+                    >
+                        JSON Response
                     </button>
                     <button
                         className={styles.displayAdsPreviewBtn + " nativeAdsSubmitBtn"}
                         type="button"
                         onClick={handleSubmit}
                     >
-                        Submit
+                        👁️ Submit
                     </button>
                 </div>
                 {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
@@ -435,7 +442,7 @@ export default function NativeAds() {
                                     </div>
                                 </div>
                             ))}
-                            // <div className="nativeAdsFieldRow">
+                            {/* // <div className="nativeAdsFieldRow">
                             //     <label className="nativeAdsFieldLabel">Segment</label>
                             //     <div className="nativeAdsFieldInputWrapper">
                             //         <input type="text" value={fieldValue(segment)} readOnly className="nativeAdsFieldInput" />
@@ -458,7 +465,7 @@ export default function NativeAds() {
                             //     <div className="nativeAdsFieldInputWrapper">
                             //         <input type="text" value={fieldValue(reportedBy)} readOnly className="nativeAdsFieldInput" />
                             //     </div>
-                            // </div>
+                            // </div> */}
                         </div>
                     )}
                     {/* Tab 1: Trackers */}

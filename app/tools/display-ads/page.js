@@ -225,7 +225,7 @@ export default function DisplayAds() {
                 <textarea
                     rows={6}
                     value={adCode}
-                    placeholder="<script> …"
+                    placeholder="Paste your Dispaly ad HTML / Java Script tags here .. !!!"
                     onChange={(e) => setAdCode(e.target.value)}
                     className={styles.displayAdsTextarea}
                 />
@@ -234,13 +234,13 @@ export default function DisplayAds() {
                         className={styles.displayAdsPreviewBtn}
                         onClick={preview}
                     >
-                        Preview
+                       👁️ Preview
                     </button>
                     <button
                         className={styles.displayAdsResetBtn}
                         onClick={reset}
                     >
-                        Reset
+                      ❌  Reset
                     </button>
                     <label
                         style={{

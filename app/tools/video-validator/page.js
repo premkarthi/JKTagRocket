@@ -32,7 +32,7 @@ export default function VideoValidator() {
                     <textarea
                         id="videoAdInput"
                         rows={7}
-                        placeholder="            Paste your Vast/VPaid video ad tag here..."
+                        placeholder="  Paste your Vast/VPaid video ad tag here... !!!"
                         value={videoAdCode}
                         onChange={(e) => setVideoAdCode(e.target.value)}
                         className={styles.displayAdsTextarea}
@@ -42,7 +42,7 @@ export default function VideoValidator() {
                         className={styles.displayAdsResetBtn}
                         // onClick={reset}
                         >
-                            Reset
+                           ❌ Reset
                         </button>
                         <button
                             className={styles.displayAdsPreviewBtn}
@@ -56,7 +56,7 @@ export default function VideoValidator() {
                             onClick={handlePreview}
                             type="button"
                         >
-                            Generate Preview
+                           👁️ Generate Preview
                         </button>
                         
                         
