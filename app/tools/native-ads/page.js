@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import styles from "../display-ads/DisplayAds.module.css";
 import "./NativeAdsAddon.css";
+import Image from 'next/image';
 
 // Dummy helpers and maps for demonstration
 const eventNamesMap = {};
@@ -423,9 +424,9 @@ export default function NativeAds() {
                                                 placeholder={label}
                                             />
                                         ) : label.toLowerCase().includes("logo") && value ? (
-                                            <img src={value} alt="Logo" style={{ maxHeight: 60 }} />
+                                            <Image src={value} alt="Logo" style={{ maxHeight: 60 }} />
                                         ) : label.toLowerCase().includes("preview") && value ? (
-                                            <img src={value} alt="Preview" style={{ maxHeight: 250 }} />
+                                            <Image src={value} alt="Preview" style={{ maxHeight: 250 }} />
                                         ) : (
                                             <input
                                                 type="text"
