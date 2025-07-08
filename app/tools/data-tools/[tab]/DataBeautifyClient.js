@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import styles from "../../display-ads/DisplayAds.module.css";
 import "../DataBeautifyAddon.css";
 
+
+
 const TABS = [
     { label: "URL Encode/Decode", icon: "🔗", route: "urlencode" },
     {
@@ -78,8 +80,8 @@ function DataBeautifyPanel({ tab }) {
                     rows={7}
                 />
                 <div className="dataBeautifyPanelActions">
-                    <button className={styles.displayAdsPreviewBtn} type="button">Encode URL</button>
-                    <button className={styles.displayAdsPreviewBtn} type="button">Decode URL</button>
+                    <button className={styles.displayAdsPreviewBtn} type="button">Base64-Encode</button>
+                    <button className={styles.displayAdsPreviewBtn} type="button">Base64-Decode</button>
                     <button className={styles.displayAdsResetBtn} type="button" title="Copy">
                         <span role="img" aria-label="Copy">📋</span>
                     </button>
@@ -90,6 +92,7 @@ function DataBeautifyPanel({ tab }) {
             </div>
         );
     }
+     
     if (tab === "compare") {
         return (
             <div className="dataBeautifyPanel">
