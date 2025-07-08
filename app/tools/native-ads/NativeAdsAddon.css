@@ -89,11 +89,20 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  border-radius: 7px;
+  background: #fff;
+  color: #6b2074;
+  resize: none;
+  border: 1.5px solid #6b2074;
+  border-radius: 7px;
+  width: 100%;
+  padding: 10px;
+  font-size: 15px;
 }
 .nativeAdsFieldInput {
   width: 100%;
   font-size: 15px;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid #6b2074;
   border-radius: 7px;
   padding: 10px;
   background: #fff;
@@ -114,7 +123,7 @@
   color: #4a26b6;
 }
 .nativeAdsTabPlaceholder {
-  color: #b3b3cb;
+  color: #dd2eba;
   font-style: italic;
   text-align: center;
   padding: 40px 0;

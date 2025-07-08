@@ -268,11 +268,26 @@ export default function NativeAds() {
                     let last_index = tag.search(/<\/MediaFile>/) + 12;
                     let content = tag.substring(first_index, last_index);
                     let parser = new window.DOMParser();
-                    let xmlDoc = parser.parseFromString(content, "text/xml");
-                    let videoUrl = xmlDoc.getElementsByTagName("MediaFile")[0]?.textContent?.trim();
+                    // let xmlDoc = parser.parseFromString(content, "text/xml");
+                    // let videoUrl = xmlDoc.getElementsByTagName("MediaFile")[0]?.textContent?.trim();
+                     const xmlDoc = parser.parseFromString(content, "text/xml");
+                        const mediaTag = xmlDoc.getElementsByTagName("MediaFile")[0];
+                        const videoUrl = mediaTag?.textContent?.trim();
                     if (videoUrl) {
-                        _videoPreview = `<video width="340" src="${videoUrl}" muted autoPlay controls></video>`;
+                        // _videoPreview = `<video width="340" src="${videoUrl}" muted autoPlay controls></video>`;
+                        const _videoPreview = `<video width="340" src="${videoUrl}" muted autoplay controls playsinline></video>`;
                         setImagevideoPreview(videoUrl);
+                        {imagevideoPreview && (
+                        <video
+                            width="340"
+                            src={imagevideoPreview}
+                            muted
+                            autoPlay
+                            controls
+                            playsInline
+                            style={{ marginTop: "1rem", borderRadius: "8px" }}
+                        />
+                        )}
                     }
                     let fullXmlDoc = parser.parseFromString(tag, "text/xml");
                     let videoEventsArr = [];
@@ -419,18 +434,19 @@ export default function NativeAds() {
                     {tab === 0 && (
                         <div>
                             <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Native SSP</label>
+                                <label className="nativeAdsFieldLabel">Native SSP : </label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input
                                         type="text"
                                         value={fieldValue(nativeSsp)}
                                         onChange={e => setNativeSsp(e.target.value)}
                                         className="nativeAdsFieldInput"
+                                        placeholder="Native SSP"
                                     />
                                     <TooltipCopyButton value={nativeSsp} />
                                 </div>
                             </div>
-                            <div className="nativeAdsFieldRow">
+                            {/* <div className="nativeAdsFieldRow">
                                 <label className="nativeAdsFieldLabel">Data Signals</label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <textarea
@@ -440,110 +456,119 @@ export default function NativeAds() {
                                         rows={2}
                                     />
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Headline ( Title )</label>
+                                <label className="nativeAdsFieldLabel">Headline ( Title ) :</label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input
                                         type="text"
                                         value={fieldValue(headline)}
                                         onChange={e => setHeadline(e.target.value)}
                                         className="nativeAdsFieldInput"
+                                        placeholder="Headline ( Title )"
                                     />
                                     <TooltipCopyButton value={headline} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Sub Headline / Description</label>
+                                <label className="nativeAdsFieldLabel">Sub Headline / Description :</label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <textarea
                                         value={fieldValue(description)}
                                         onChange={e => setDescription(e.target.value)}
                                         className="nativeAdsFieldInput"
                                         rows={2}
+                                        placeholder="Sub Headline / Description"
                                     />
                                     <TooltipCopyButton value={description} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Brand Name</label>
+                                <label className="nativeAdsFieldLabel">Brand Name : </label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input
                                         type="text"
                                         value={fieldValue(brandName)}
                                         onChange={e => setBrandName(e.target.value)}
                                         className="nativeAdsFieldInput"
+                                        placeholder="Brand Name"
                                     />
                                     <TooltipCopyButton value={brandName} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Reporting Name</label>
+                                <label className="nativeAdsFieldLabel">Reporting Name :</label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input
                                         type="text"
                                         value={fieldValue(reportingName)}
                                         onChange={e => setReportingName(e.target.value)}
                                         className="nativeAdsFieldInput"
+                                        placeholder="Reporting Name"
                                     />
                                     <TooltipCopyButton value={reportingName} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Impression Tracker</label>
+                                <label className="nativeAdsFieldLabel">Impression Tracker :</label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input
                                         type="text"
                                         value={fieldValue(impressionTracker)}
                                         onChange={e => setImpressionTracker(e.target.value)}
                                         className="nativeAdsFieldInput"
+                                        placeholder="Impression Tracker"
                                     />
                                     <TooltipCopyButton value={impressionTracker} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Secondary Click Tracker</label>
+                                <label className="nativeAdsFieldLabel">Secondary Click Tracker :</label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input
                                         type="text"
                                         value={fieldValue(secondaryClickTracker)}
                                         onChange={e => setSecondaryClickTracker(e.target.value)}
                                         className="nativeAdsFieldInput"
+                                        placeholder="Secondary Click Tracker"
                                     />
                                     <TooltipCopyButton value={secondaryClickTracker} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Primary Click Tracker</label>
+                                <label className="nativeAdsFieldLabel">Primary Click Tracker :</label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input
                                         type="text"
                                         value={fieldValue(primaryClickTracker)}
                                         onChange={e => setPrimaryClickTracker(e.target.value)}
                                         className="nativeAdsFieldInput"
+                                        placeholder="Primary Click Tracker"
                                     />
                                     <TooltipCopyButton value={primaryClickTracker} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start" }}>
-                                <label className="nativeAdsFieldLabel">Brand Logo</label>
-                                <div className="nativeAdsFieldInput">
+                                <label className="nativeAdsFieldLabel">Brand Logo :</label>
+                                <div className="nativeAdsFieldInput" placeholder="Brand Logo">
                                     {brandLogo && isImageUrl(brandLogo) ? (
                                         <img
                                             src={brandLogo}
                                             alt="Logo"
                                             style={{ maxHeight: 60, maxWidth: 180, borderRadius: 7, border: "1px solid #eee" }}
                                             onError={e => (e.target.style.display = 'none')}
+                                            placeholder="Brand Logo"
                                         />
                                     ) : (
                                         <div className="">{fieldValue(brandLogo)}</div>
+                                        
                                     )}
                                 </div>
                             </div>
 
                             {(isImageUrl(imagevideoPreview) || isVideoUrl(imagevideoPreview)) && (
                                 <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start", marginTop: 32 }}>
-                                    <label className="nativeAdsFieldLabel" >Image / Video Preview</label>
+                                    <label className="nativeAdsFieldLabel" >Image / Video Preview :</label>
                                     <div className="nativeAdsFieldInputWrapper" style={{ flexDirection: "column", alignItems: "flex-start" }}>
                                         {isImageUrl(imagevideoPreview) && (
                                             <img
@@ -551,6 +576,7 @@ export default function NativeAds() {
                                                 alt="Preview"
                                                 style={{ maxHeight: 250, maxWidth: 400, marginBottom: 6 }}
                                                 onError={e => (e.target.style.display = 'none')}
+                                                placeholder="Image / Video Preview"
                                             />
                                         )}
                                         {isVideoUrl(imagevideoPreview) && (
@@ -562,13 +588,13 @@ export default function NativeAds() {
                                         )}
                                         <div >
                                             <div style={{
-                                                fontSize: "0.9em",
+                                                fontSize: "1.5em",
                                                 marginBottom: 2,
-                                                color: "#222"
+                                                color: "#556677"
                                             }}>{fieldValue(headline)}</div>
                                             <div style={{
-                                                color: "#444",
-                                                fontSize: "0.78em"
+                                                color: "#e968f7",
+                                                fontSize: "1.1em"
                                             }}>{fieldValue(description)}</div>
                                         </div>
                                     </div>
