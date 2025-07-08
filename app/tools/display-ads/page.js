@@ -242,7 +242,7 @@ export default function DisplayAds() {
                     >
                       ❌  Reset
                     </button>
-                    <label
+                    {/* <label
                         style={{
                             display: "flex",
                             alignItems: "center",
@@ -255,6 +255,15 @@ export default function DisplayAds() {
                             onChange={(e) => setDeep(e.target.checked)}
                         />
                         Deep capture
+                    </label> */}
+                    <label className="toggle-switch">
+                    <input
+                        type="checkbox"
+                        checked={deepCapture}
+                        onChange={(e) => setDeep(e.target.checked)}
+                    />
+                    <span className="slider"></span>
+                    <span className="label-text">Deep capture</span>
                     </label>
                 </div>
                 {error && (
