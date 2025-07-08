@@ -37,8 +37,8 @@ function randomString(length = 8) {
 
 const TABS = [
     { label: "Native Ad Information" },
-    { label: "Trackers" },
-    { label: "Pixel's" },
+    { label: "Trackers / Pixel's" },
+    // { label: "Pixel's" },
 ];
 
 // TooltipButton component for clipboard with tooltip & copied
@@ -79,15 +79,20 @@ function TooltipCopyButton({ value }) {
                         position: "absolute",
                         left: "50%",
                         top: "-34px",
-                        transform: "translateX(-50%)",
-                        background: "#444",
+                        background: "7543e0",
                         color: "#fff",
                         borderRadius: "5px",
-                        padding: "2px 9px",
-                        fontSize: "13px",
+                        padding: "6px 12px",
+                        fontSize: "15px",
                         whiteSpace: "nowrap",
                         zIndex: 10,
-                        pointerEvents: "none"
+                        pointerEvents: "none",
+                        transition: "opacity 0.25s ease",
+                        zIndex: 10000,
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
+                        fontFamily: "sans-serif",
+                        opacity: 0,
+                       
                     }}
                 >
                     {tooltipText}
@@ -368,6 +373,38 @@ export default function NativeAds() {
             setPixelsTable(pixels);
         }
     }
+    // Open URL in new tab with validation
+    // This function is used to open the click tracker or click URL in a new tab
+    // It checks if the element exists, retrieves the URL from its innerText,
+    // and opens it in a new tab if it's a valid URL.
+    // It also handles special cases for click trackers and click URLs.
+    // If the URL contains "redirectURL", it extracts the part after it.
+    // If the URL starts with "http", it opens it directly.
+    // If it contains "www" or ".", it prepends "https://" before opening.
+    // If the URL is empty or invalid, it does nothing.
+                function openUrlInNewTab(id) {
+                console.log('called');
+                const element = document.getElementById(id);
+                if (!element) return;
+
+                let url = element.innerText.trim();
+                
+                if (id === "click_tracker" || id === "click-url-content") {
+                    if (url.includes("redirectURL")) {
+                        const index = url.indexOf("redirectURL");
+                        url = url.substring(index + "redirectURL".length + 1);
+                    }
+                }
+
+                if (url && typeof url === "string" && url !== "undefined") {
+                    if (url.startsWith("http")) {
+                        window.open(url, "_blank");
+                    } else if (url.includes("www") || url.includes(".")) {
+                        window.open("https://" + url, "_blank");
+                    }
+                }
+            }
+
 
     // Shows NA for empty input/textarea on submit, else empty
     const fieldValue = (v) => isSubmitted && (!v || v.trim() === "") ? "NA" : v;
@@ -520,6 +557,9 @@ export default function NativeAds() {
                                         placeholder="Impression Tracker"
                                     />
                                     <TooltipCopyButton value={impressionTracker} />
+                                    <span>
+                                    <img onclick="openUrlInNewTab('impressionTracker')" class="open-new-tab-icon" src="/images/open-new-tab.jpeg" data-title="Click to open url in new tab"/>
+                                    </span>
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -533,9 +573,13 @@ export default function NativeAds() {
                                         placeholder="Secondary Click Tracker"
                                     />
                                     <TooltipCopyButton value={secondaryClickTracker} />
+                                    <span>
+                                    <img onclick="openUrlInNewTab('secondaryClickTracker')" class="open-new-tab-icon" src="/images/open-new-tab.jpeg" data-title="Click to open url in new tab"/>
+                                    </span>
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
+                                
                                 <label className="nativeAdsFieldLabel">Primary Click Tracker :</label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input
@@ -546,7 +590,11 @@ export default function NativeAds() {
                                         placeholder="Primary Click Tracker"
                                     />
                                     <TooltipCopyButton value={primaryClickTracker} />
+                                    <span>
+                                    <img onclick="openUrlInNewTab('primaryClickTracker')" class="open-new-tab-icon" src="/images/open-new-tab.jpeg" data-title="Click to open url in new tab"/>
+                                    </span>
                                 </div>
+                                
                             </div>
                             <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start" }}>
                                 <label className="nativeAdsFieldLabel">Brand Logo :</label>
@@ -610,9 +658,8 @@ export default function NativeAds() {
                             <thead>
                                 <tr>
                                     <th>S.No</th>
-                                    <th>Type</th>
                                     <th>Pixel URL</th>
-                                    <th>Creative Name</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -624,16 +671,15 @@ export default function NativeAds() {
                                     eventTrackers.map(({ sno, type, url, creative }) => (
                                         <tr key={sno}>
                                             <td>{sno || ""}</td>
-                                            <td>{type || ""}</td>
                                             <td style={{ wordBreak: "break-all" }}>{url || ""}</td>
-                                            <td>{creative || ""}</td>
+                                            {/* <td>{creative || ""}</td> */}
                                         </tr>
                                     ))
                                 )}
                             </tbody>
                         </table>
                     )}
-                    {tab === 2 && (
+                    {/* {tab === 2 && (
                         <table className="nativeAdsTable">
                             <thead>
                                 <tr>
@@ -660,7 +706,7 @@ export default function NativeAds() {
                                 )}
                             </tbody>
                         </table>
-                    )}
+                    )} */}
                 </div>
             </div>
         </div>
