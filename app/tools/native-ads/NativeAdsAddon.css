@@ -128,3 +128,24 @@
   text-align: center;
   padding: 40px 0;
 }
+.open-new-tab-icon {
+  height: 21px;
+  padding-left: 5px;
+  cursor: pointer;
+  float: left;
+}
+.custom-tooltip {
+	position: absolute;
+	background: #7543e0;
+	color: #fff;
+	padding: 6px 12px;
+	border-radius: 4px;
+	font-size: 12px;
+	pointer-events: none;
+	white-space: nowrap;
+	opacity: 0;
+	transition: opacity 0.25s ease;
+	z-index: 10000;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	font-family: sans-serif;
+}
