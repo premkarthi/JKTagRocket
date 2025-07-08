@@ -4,7 +4,8 @@ const nextConfig = {
     trailingSlash: true, // optional, for static site compatibility
     images: {
         unoptimized: true
-    }
+    },
+    allowedDevOrigins: []
 }
 
 module.exports = nextConfig
