@@ -80,8 +80,8 @@ function DataBeautifyPanel({ tab }) {
                     rows={7}
                 />
                 <div className="dataBeautifyPanelActions">
-                    <button className={styles.displayAdsPreviewBtn} type="button">Base64-Encode</button>
-                    <button className={styles.displayAdsPreviewBtn} type="button">Base64-Decode</button>
+                    <button className={styles.displayAdsPreviewBtn} type="button">Encode URL</button>
+                    <button className={styles.displayAdsPreviewBtn} type="button">Decode URL</button>
                     <button className={styles.displayAdsResetBtn} type="button" title="Copy">
                         <span role="img" aria-label="Copy">📋</span>
                     </button>
@@ -92,7 +92,45 @@ function DataBeautifyPanel({ tab }) {
             </div>
         );
     }
-     
+     function Base64Panel() {
+        const [input, setInput] = useState("");
+        const [error, setError] = useState("");
+
+        const handleBase64 = (command) => {
+            setError("");
+            if (!input.trim()) {
+            setError("Input cannot be blank.");
+            return;
+            }
+
+            try {
+            if (command === "encode") {
+                setInput(btoa(input));
+            } else if (command === "decode") {
+                setInput(atob(input));
+            }
+            } catch (e) {
+            setError(`Base64 ${command} failed: ${e.message}`);
+            }
+        };
+
+        return (
+            <div>
+            <textarea
+                rows={6}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Enter text here..."
+            />
+            <br />
+            <button onClick={() => handleBase64("encode")}>Encode</button>
+            <button onClick={() => handleBase64("decode")}>Decode</button>
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            </div>
+        );
+        }
+
+
     if (tab === "compare") {
         return (
             <div className="dataBeautifyPanel">
