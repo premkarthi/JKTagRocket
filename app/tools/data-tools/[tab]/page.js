@@ -1,4 +1,5 @@
 import DataBeautifyClient from "./DataBeautifyClient";
+import styles from "../../display-ads/DisplayAds.module.css";
 
 export async function generateStaticParams() {
     return [

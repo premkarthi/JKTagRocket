@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import styles from "../display-ads/DisplayAds.module.css";
 import "./NativeAdsAddon.css";
+import Image from "next/image";
 
 // Dummy helpers and maps for demonstration
 const eventNamesMap = {};
@@ -38,30 +39,44 @@ function randomString(length = 8) {
 const TABS = [
     { label: "Native Ad Information" },
     { label: "Trackers / Pixel's" },
-    // { label: "Pixel's" },
 ];
 
 // TooltipButton component for clipboard with tooltip & copied
 function TooltipCopyButton({ value }) {
     const [showTooltip, setShowTooltip] = useState(false);
     const [copied, setCopied] = useState(false);
+    const timeoutRef = useRef();
+
+    // Show tooltip on hover, hide after 1.3s if copied
+    const handleMouseEnter = () => {
+        setShowTooltip(true);
+    };
+    const handleMouseLeave = () => {
+        setShowTooltip(false);
+        setCopied(false);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
 
     const handleCopy = () => {
-        if (value) {
+        if (value && value !== "NA") {
             navigator.clipboard.writeText(value);
             setCopied(true);
-            setTimeout(() => setCopied(false), 1200);
+            // Hide tooltip after 1.3s
+            timeoutRef.current = setTimeout(() => {
+                setCopied(false);
+                setShowTooltip(false);
+            }, 1300);
         }
     };
 
-    const tooltipText = copied ? "Copied!" : "Copy";
+    const tooltipText = copied ? "Copied!" : "Copy to Clipboard";
 
     return (
         <span
             className="nativeAdsCopyBtnWrapper"
             style={{ position: "relative", display: "inline-block" }}
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => { setShowTooltip(false); setCopied(false); }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         >
             <button
                 type="button"
@@ -79,20 +94,17 @@ function TooltipCopyButton({ value }) {
                         position: "absolute",
                         left: "50%",
                         top: "-34px",
-                        background: "7543e0",
+                        background: "#7543e0",
                         color: "#fff",
                         borderRadius: "5px",
                         padding: "6px 12px",
                         fontSize: "15px",
                         whiteSpace: "nowrap",
-                        zIndex: 10,
-                        pointerEvents: "none",
-                        transition: "opacity 0.25s ease",
                         zIndex: 10000,
                         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
                         fontFamily: "sans-serif",
-                        opacity: 0,
-                       
+                        opacity: 1,
+                        transition: "opacity 0.25s ease",
                     }}
                 >
                     {tooltipText}
@@ -131,6 +143,7 @@ export default function NativeAds() {
     // isSubmitted is true after a successful fetch/parse
     const [isSubmitted, setIsSubmitted] = useState(false);
 
+    // Handle reset
     const handleReset = () => {
         setNativeTag("");
         setNativeSsp("");
@@ -273,26 +286,11 @@ export default function NativeAds() {
                     let last_index = tag.search(/<\/MediaFile>/) + 12;
                     let content = tag.substring(first_index, last_index);
                     let parser = new window.DOMParser();
-                    // let xmlDoc = parser.parseFromString(content, "text/xml");
-                    // let videoUrl = xmlDoc.getElementsByTagName("MediaFile")[0]?.textContent?.trim();
-                     const xmlDoc = parser.parseFromString(content, "text/xml");
-                        const mediaTag = xmlDoc.getElementsByTagName("MediaFile")[0];
-                        const videoUrl = mediaTag?.textContent?.trim();
+                    const xmlDoc = parser.parseFromString(content, "text/xml");
+                    const mediaTag = xmlDoc.getElementsByTagName("MediaFile")[0];
+                    const videoUrl = mediaTag?.textContent?.trim();
                     if (videoUrl) {
-                        // _videoPreview = `<video width="340" src="${videoUrl}" muted autoPlay controls></video>`;
-                        const _videoPreview = `<video width="340" src="${videoUrl}" muted autoplay controls playsinline></video>`;
                         setImagevideoPreview(videoUrl);
-                        {imagevideoPreview && (
-                        <video
-                            width="340"
-                            src={imagevideoPreview}
-                            muted
-                            autoPlay
-                            controls
-                            playsInline
-                            style={{ marginTop: "1rem", borderRadius: "8px" }}
-                        />
-                        )}
                     }
                     let fullXmlDoc = parser.parseFromString(tag, "text/xml");
                     let videoEventsArr = [];
@@ -373,38 +371,6 @@ export default function NativeAds() {
             setPixelsTable(pixels);
         }
     }
-    // Open URL in new tab with validation
-    // This function is used to open the click tracker or click URL in a new tab
-    // It checks if the element exists, retrieves the URL from its innerText,
-    // and opens it in a new tab if it's a valid URL.
-    // It also handles special cases for click trackers and click URLs.
-    // If the URL contains "redirectURL", it extracts the part after it.
-    // If the URL starts with "http", it opens it directly.
-    // If it contains "www" or ".", it prepends "https://" before opening.
-    // If the URL is empty or invalid, it does nothing.
-                function openUrlInNewTab(id) {
-                console.log('called');
-                const element = document.getElementById(id);
-                if (!element) return;
-
-                let url = element.innerText.trim();
-                
-                if (id === "click_tracker" || id === "click-url-content") {
-                    if (url.includes("redirectURL")) {
-                        const index = url.indexOf("redirectURL");
-                        url = url.substring(index + "redirectURL".length + 1);
-                    }
-                }
-
-                if (url && typeof url === "string" && url !== "undefined") {
-                    if (url.startsWith("http")) {
-                        window.open(url, "_blank");
-                    } else if (url.includes("www") || url.includes(".")) {
-                        window.open("https://" + url, "_blank");
-                    }
-                }
-            }
-
 
     // Shows NA for empty input/textarea on submit, else empty
     const fieldValue = (v) => isSubmitted && (!v || v.trim() === "") ? "NA" : v;
@@ -413,6 +379,22 @@ export default function NativeAds() {
         typeof url === "string" && /\.(jpe?g|png|gif|svg|webp)$/i.test(url);
     const isVideoUrl = (url) =>
         typeof url === "string" && /\.(mp4|webm|ogg)$/i.test(url);
+
+    // Open URL in new tab with validation (handles edge cases)
+    function openUrlInNewTab(url) {
+        if (!url || typeof url !== "string" || url === "NA" || url === "undefined") return;
+        let openUrl = url.trim();
+        if (!openUrl) return;
+        if (openUrl.includes("redirectURL")) {
+            const idx = openUrl.indexOf("redirectURL");
+            openUrl = openUrl.substring(idx + "redirectURL".length + 1);
+        }
+        if (openUrl.startsWith("http")) {
+            window.open(openUrl, "_blank");
+        } else if (openUrl.includes("www") || openUrl.includes(".")) {
+            window.open("https://" + openUrl, "_blank");
+        }
+    }
 
     return (
         <div className={styles.displayAdsContainer + " nativeAdsContainer"}>
@@ -480,20 +462,9 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Native SSP"
                                     />
-                                    <TooltipCopyButton value={nativeSsp} />
+                                    <TooltipCopyButton value={fieldValue(nativeSsp)} />
                                 </div>
                             </div>
-                            {/* <div className="nativeAdsFieldRow">
-                                <label className="nativeAdsFieldLabel">Data Signals</label>
-                                <div className="nativeAdsFieldInputWrapper">
-                                    <textarea
-                                        value={fieldValue(dataSignals.join("\n"))}
-                                        readOnly
-                                        className="nativeAdsFieldInput"
-                                        rows={2}
-                                    />
-                                </div>
-                            </div> */}
                             <div className="nativeAdsFieldRow">
                                 <label className="nativeAdsFieldLabel">Headline ( Title ) :</label>
                                 <div className="nativeAdsFieldInputWrapper">
@@ -504,7 +475,7 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Headline ( Title )"
                                     />
-                                    <TooltipCopyButton value={headline} />
+                                    <TooltipCopyButton value={fieldValue(headline)} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -517,7 +488,7 @@ export default function NativeAds() {
                                         rows={2}
                                         placeholder="Sub Headline / Description"
                                     />
-                                    <TooltipCopyButton value={description} />
+                                    <TooltipCopyButton value={fieldValue(description)} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -530,7 +501,7 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Brand Name"
                                     />
-                                    <TooltipCopyButton value={brandName} />
+                                    <TooltipCopyButton value={fieldValue(brandName)} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -543,7 +514,7 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Reporting Name"
                                     />
-                                    <TooltipCopyButton value={reportingName} />
+                                    <TooltipCopyButton value={fieldValue(reportingName)} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -556,9 +527,13 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Impression Tracker"
                                     />
-                                    <TooltipCopyButton value={impressionTracker} />
-                                    <span>
-                                    <img onclick="openUrlInNewTab('impressionTracker')" class="open-new-tab-icon" src="/images/open-new-tab.jpeg" data-title="Click to open url in new tab"/>
+                                    <TooltipCopyButton value={fieldValue(impressionTracker)} />
+                                    <span
+                                        style={{ cursor: "pointer", marginLeft: 5 }}
+                                        onClick={() => openUrlInNewTab(impressionTracker)}
+                                        title="Open in new tab"
+                                    >
+                                        <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
                                     </span>
                                 </div>
                             </div>
@@ -572,14 +547,17 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Secondary Click Tracker"
                                     />
-                                    <TooltipCopyButton value={secondaryClickTracker} />
-                                    <span>
-                                    <img onclick="openUrlInNewTab('secondaryClickTracker')" class="open-new-tab-icon" src="/images/open-new-tab.jpeg" data-title="Click to open url in new tab"/>
+                                    <TooltipCopyButton value={fieldValue(secondaryClickTracker)} />
+                                    <span
+                                        style={{ cursor: "pointer", marginLeft: 5 }}
+                                        onClick={() => openUrlInNewTab(secondaryClickTracker)}
+                                        title="Open in new tab"
+                                    >
+                                        <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
                                     </span>
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
-                                
                                 <label className="nativeAdsFieldLabel">Primary Click Tracker :</label>
                                 <div className="nativeAdsFieldInputWrapper">
                                     <input
@@ -589,27 +567,28 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Primary Click Tracker"
                                     />
-                                    <TooltipCopyButton value={primaryClickTracker} />
-                                    <span>
-                                    <img onclick="openUrlInNewTab('primaryClickTracker')" class="open-new-tab-icon" src="/images/open-new-tab.jpeg" data-title="Click to open url in new tab"/>
+                                    <TooltipCopyButton value={fieldValue(primaryClickTracker)} />
+                                    <span
+                                        style={{ cursor: "pointer", marginLeft: 5 }}
+                                        onClick={() => openUrlInNewTab(primaryClickTracker)}
+                                        title="Open in new tab"
+                                    >
+                                        <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
                                     </span>
                                 </div>
-                                
                             </div>
                             <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start" }}>
                                 <label className="nativeAdsFieldLabel">Brand Logo :</label>
-                                <div className="nativeAdsFieldInput" placeholder="Brand Logo">
+                                <div className="nativeAdsFieldInput" style={{ display: "flex", alignItems: "center", minHeight: 60 }}>
                                     {brandLogo && isImageUrl(brandLogo) ? (
                                         <img
                                             src={brandLogo}
                                             alt="Logo"
                                             style={{ maxHeight: 60, maxWidth: 180, borderRadius: 7, border: "1px solid #eee" }}
                                             onError={e => (e.target.style.display = 'none')}
-                                            placeholder="Brand Logo"
                                         />
                                     ) : (
                                         <div className="">{fieldValue(brandLogo)}</div>
-                                        
                                     )}
                                 </div>
                             </div>
@@ -624,7 +603,6 @@ export default function NativeAds() {
                                                 alt="Preview"
                                                 style={{ maxHeight: 250, maxWidth: 400, marginBottom: 6 }}
                                                 onError={e => (e.target.style.display = 'none')}
-                                                placeholder="Image / Video Preview"
                                             />
                                         )}
                                         {isVideoUrl(imagevideoPreview) && (
@@ -665,48 +643,30 @@ export default function NativeAds() {
                             <tbody>
                                 {eventTrackers.length === 0 ? (
                                     <tr>
-                                        <td colSpan={4} style={{ textAlign: "center" }}>No Data</td>
+                                        <td colSpan={3} style={{ textAlign: "center" }}>No Data</td>
                                     </tr>
                                 ) : (
-                                    eventTrackers.map(({ sno, type, url, creative }) => (
+                                    eventTrackers.map(({ sno, url }) => (
                                         <tr key={sno}>
                                             <td>{sno || ""}</td>
                                             <td style={{ wordBreak: "break-all" }}>{url || ""}</td>
-                                            {/* <td>{creative || ""}</td> */}
+                                            <td>
+                                                {url && url !== "NA" && (
+                                                    <span
+                                                        style={{ cursor: "pointer" }}
+                                                        onClick={() => openUrlInNewTab(url)}
+                                                        title="Open in new tab"
+                                                    >
+                                                        <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
+                                                    </span>
+                                                )}
+                                            </td>
                                         </tr>
                                     ))
                                 )}
                             </tbody>
                         </table>
                     )}
-                    {/* {tab === 2 && (
-                        <table className="nativeAdsTable">
-                            <thead>
-                                <tr>
-                                    <th>S.No</th>
-                                    <th>Type</th>
-                                    <th>Pixel URL</th>
-                                    <th>Creative Name</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {pixelsTable.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={4} style={{ textAlign: "center" }}>No Data</td>
-                                    </tr>
-                                ) : (
-                                    pixelsTable.map(({ sno, type, url, creative }) => (
-                                        <tr key={sno}>
-                                            <td>{sno || ""}</td>
-                                            <td>{type || ""}</td>
-                                            <td style={{ wordBreak: "break-all" }}>{url || ""}</td>
-                                            <td>{creative || ""}</td>
-                                        </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    )} */}
                 </div>
             </div>
         </div>
