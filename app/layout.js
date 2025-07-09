@@ -1,4 +1,3 @@
-import ToolsBar from "../components/ToolsBar";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import Image from 'next/image';
@@ -20,7 +19,6 @@ export default function DashboardLayout({ children }) {
                                 <Image src='/images/ad2.png' alt='Side Ad' width={768} height={90} />
                             </div>
                         </div>
-                        <ToolsBar />
                         {children}
                     </div>
                     <div className='sideAd'>

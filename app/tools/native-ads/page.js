@@ -47,9 +47,9 @@ function TooltipCopyButton({ value }) {
     const [copied, setCopied] = useState(false);
     const timeoutRef = useRef();
 
-    // Show tooltip on hover, hide after 1.3s if copied
     const handleMouseEnter = () => {
         setShowTooltip(true);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
     const handleMouseLeave = () => {
         setShowTooltip(false);
@@ -61,11 +61,11 @@ function TooltipCopyButton({ value }) {
         if (value && value !== "NA") {
             navigator.clipboard.writeText(value);
             setCopied(true);
-            // Hide tooltip after 1.3s
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
             timeoutRef.current = setTimeout(() => {
                 setCopied(false);
                 setShowTooltip(false);
-            }, 1300);
+            }, 1200);
         }
     };
 
@@ -104,10 +104,75 @@ function TooltipCopyButton({ value }) {
                         boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
                         fontFamily: "sans-serif",
                         opacity: 1,
-                        transition: "opacity 0.25s ease",
+                        transition: "opacity 0.2s ease",
                     }}
                 >
                     {tooltipText}
+                </span>
+            )}
+        </span>
+    );
+}
+
+// TooltipButton for open in new tab with tooltip
+function TooltipOpenNewTabButton({ url }) {
+    const [showTooltip, setShowTooltip] = useState(false);
+    const timeoutRef = useRef();
+
+    const handleClick = () => {
+        if (!url || url === "NA" || url === "undefined") return;
+        let openUrl = url.trim();
+        if (!openUrl) return;
+        if (openUrl.includes("redirectURL")) {
+            const idx = openUrl.indexOf("redirectURL");
+            openUrl = openUrl.substring(idx + "redirectURL".length + 1);
+        }
+        if (openUrl.startsWith("http")) {
+            window.open(openUrl, "_blank");
+        } else if (openUrl.includes("www") || openUrl.includes(".")) {
+            window.open("https://" + openUrl, "_blank");
+        }
+    };
+
+    const handleMouseEnter = () => {
+        setShowTooltip(true);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+    const handleMouseLeave = () => {
+        setShowTooltip(false);
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+
+    return (
+        <span
+            style={{ cursor: url && url !== "NA" ? "pointer" : "not-allowed", marginLeft: 5, position: "relative", display: "inline-block" }}
+            onClick={handleClick}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            tabIndex={-1}
+        >
+            <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt="Click to open url in new tab" width={20} height={20} style={{ objectFit: 'contain' }} />
+            {showTooltip && (
+                <span
+                    className="nativeAdsCopyTooltip"
+                    style={{
+                        position: "absolute",
+                        left: "50%",
+                        top: "-34px",
+                        background: "#7543e0",
+                        color: "#fff",
+                        borderRadius: "5px",
+                        padding: "6px 12px",
+                        fontSize: "15px",
+                        whiteSpace: "nowrap",
+                        zIndex: 10000,
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
+                        fontFamily: "sans-serif",
+                        opacity: 1,
+                        transition: "opacity 0.2s ease",
+                    }}
+                >
+                    Open in new tab
                 </span>
             )}
         </span>
@@ -143,7 +208,6 @@ export default function NativeAds() {
     // isSubmitted is true after a successful fetch/parse
     const [isSubmitted, setIsSubmitted] = useState(false);
 
-    // Handle reset
     const handleReset = () => {
         setNativeTag("");
         setNativeSsp("");
@@ -380,22 +444,6 @@ export default function NativeAds() {
     const isVideoUrl = (url) =>
         typeof url === "string" && /\.(mp4|webm|ogg)$/i.test(url);
 
-    // Open URL in new tab with validation (handles edge cases)
-    function openUrlInNewTab(url) {
-        if (!url || typeof url !== "string" || url === "NA" || url === "undefined") return;
-        let openUrl = url.trim();
-        if (!openUrl) return;
-        if (openUrl.includes("redirectURL")) {
-            const idx = openUrl.indexOf("redirectURL");
-            openUrl = openUrl.substring(idx + "redirectURL".length + 1);
-        }
-        if (openUrl.startsWith("http")) {
-            window.open(openUrl, "_blank");
-        } else if (openUrl.includes("www") || openUrl.includes(".")) {
-            window.open("https://" + openUrl, "_blank");
-        }
-    }
-
     return (
         <div className={styles.displayAdsContainer + " nativeAdsContainer"}>
             <h1 className={styles.displayAdsHeader + " nativeAdsHeader"}>
@@ -528,13 +576,7 @@ export default function NativeAds() {
                                         placeholder="Impression Tracker"
                                     />
                                     <TooltipCopyButton value={fieldValue(impressionTracker)} />
-                                    <span
-                                        style={{ cursor: "pointer", marginLeft: 5 }}
-                                        onClick={() => openUrlInNewTab(impressionTracker)}
-                                        title="Open in new tab"
-                                    >
-                                        <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
-                                    </span>
+                                    <TooltipOpenNewTabButton url={impressionTracker} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -548,13 +590,7 @@ export default function NativeAds() {
                                         placeholder="Secondary Click Tracker"
                                     />
                                     <TooltipCopyButton value={fieldValue(secondaryClickTracker)} />
-                                    <span
-                                        style={{ cursor: "pointer", marginLeft: 5 }}
-                                        onClick={() => openUrlInNewTab(secondaryClickTracker)}
-                                        title="Open in new tab"
-                                    >
-                                        <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
-                                    </span>
+                                    <TooltipOpenNewTabButton url={secondaryClickTracker} />
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -568,114 +604,92 @@ export default function NativeAds() {
                                         placeholder="Primary Click Tracker"
                                     />
                                     <TooltipCopyButton value={fieldValue(primaryClickTracker)} />
-                                    <span
-                                        style={{ cursor: "pointer", marginLeft: 5 }}
-                                        onClick={() => openUrlInNewTab(primaryClickTracker)}
-                                        title="Open in new tab"
-                                    >
-                                        <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
-                                    </span>
+                                    <TooltipOpenNewTabButton url={primaryClickTracker} />
                                 </div>
                             </div>
-                            {/* <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start" }}>
-                                <label className="nativeAdsFieldLabel">Brand Logo :</label>
-                                <div className="nativeAdsFieldInput" style={{ display: "flex", alignItems: "center", minHeight: 60 }}>
-                                    {brandLogo && isImageUrl(brandLogo) ? (
-                                        <img
-                                            src={brandLogo}
-                                            alt="Logo"
-                                            style={{ maxHeight: 60, maxWidth: 180, borderRadius: 7, border: "1px solid #eee" }}
-                                            onError={e => (e.target.style.display = 'none')}
-                                            
-                                        />
-                                    ) : (
-                                        <div className="">{fieldValue(brandLogo)}</div>
-                                    )}
-                                </div>
-                            </div> */}
+                            {/* Brand Logo: Label & input, copy, open new tab */}
                             <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start" }}>
                                 <label className="nativeAdsFieldLabel">Brand Logo :</label>
                                 <div className="nativeAdsFieldInputWrapper" style={{ display: "flex", flexDirection: "column", gap: "10px", minHeight: 80 }}>
-                                    <input
-                                        type="text"
-                                        value={brandLogo}
-                                        onChange={(e) => setBrandLogo(e.target.value)}
-                                        className="nativeAdsFieldInput"
-                                        placeholder="Brand Logo"
-                                    />
+                                    <div style={{ display: "flex", alignItems: "center", gap: 10, width: '100%' }}>
+                                        <input
+                                            type="text"
+                                            value={fieldValue(brandLogo)}
+                                            onChange={(e) => setBrandLogo(e.target.value)}
+                                            className="nativeAdsFieldInput"
+                                            placeholder="Brand Logo"
+                                            style={{ minWidth: 200 }}
+                                        />
+                                        <TooltipCopyButton value={fieldValue(brandLogo)} />
+                                        <TooltipOpenNewTabButton url={brandLogo} />
+                                    </div>
                                     {brandLogo && isImageUrl(brandLogo) && (
-                                        <>
-                                            <img
-                                                src={brandLogo}
-                                                alt="Logo Preview"
-                                                style={{
-                                                    maxHeight: 60,
-                                                    maxWidth: 180,
-                                                    borderRadius: 7,
-                                                    border: "1px solid #eee"
-                                                }}
-                                                onError={(e) => {
-                                                    e.target.style.display = "none";
-                                                }}
-                                            />
-                                            <TooltipCopyButton value={fieldValue(brandLogo)} />
-                                            <span
-                                                style={{ cursor: "pointer", marginLeft: 5 }}
-                                                onClick={() => openUrlInNewTab(brandLogo)}
-                                                title="Open in new tab"
-                                            >
-                                                <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
-                                            </span>
-                                            
-                                        </>
+                                        <img
+                                            src={brandLogo}
+                                            alt="Logo Preview"
+                                            style={{
+                                                maxHeight: 60,
+                                                maxWidth: 180,
+                                                borderRadius: 7,
+                                                border: "1px solid #eee"
+                                            }}
+                                            onError={(e) => {
+                                                e.target.style.display = "none";
+                                            }}
+                                        />
                                     )}
                                 </div>
                             </div>
-                            {(isImageUrl(imagevideoPreview) || isVideoUrl(imagevideoPreview)) && (
-                                <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start", marginTop: 32 }}>
-                                    <label className="nativeAdsFieldLabel" >Image / Video Preview :</label>
-                                    <div className="nativeAdsFieldInputWrapper" style={{ flexDirection: "column", alignItems: "flex-start" }}>
-                                        {isImageUrl(imagevideoPreview) && (
-                                            <>
+                            {/* Image/Video Preview: Input, Copy, Open Tab all use same value, tools in a row */}
+                            <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start", marginTop: 32 }}>
+                                <label className="nativeAdsFieldLabel">Image / Video Preview :</label>
+                                <div className="nativeAdsFieldInputWrapper" style={{ flexDirection: "column", alignItems: "flex-start" }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 10, width: '100%' }}>
+                                        <input
+                                            type="text"
+                                            value={fieldValue(imagevideoPreview)}
+                                            onChange={e => setImagevideoPreview(e.target.value)}
+                                            className="nativeAdsFieldInput"
+                                            placeholder="Image / Video Preview"
+                                            style={{ minWidth: 200 }}
+                                        />
+                                        <TooltipCopyButton value={fieldValue(imagevideoPreview)} />
+                                        <TooltipOpenNewTabButton url={imagevideoPreview} />
+                                    </div>
+                                    {(isImageUrl(imagevideoPreview) || isVideoUrl(imagevideoPreview)) ? (
+                                        <>
+                                            {isImageUrl(imagevideoPreview) && (
                                                 <img
                                                     src={imagevideoPreview}
                                                     alt="Preview"
                                                     style={{ maxHeight: 250, maxWidth: 400, marginBottom: 6 }}
                                                     onError={e => (e.target.style.display = 'none')}
                                                 />
-                                                <TooltipCopyButton value={fieldValue(imagevideoPreview)} />
-                                                <span
-                                                    style={{ cursor: "pointer", marginLeft: 5 }}
-                                                    onClick={() => openUrlInNewTab(imagevideoPreview)}
-                                                    title="Open in new tab"
-                                                >
-                                                    <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
-                                                </span>
-                                            </>
-                                        )}
-
-                                        {isVideoUrl(imagevideoPreview) && (
-                                            <video
-                                                src={imagevideoPreview}
-                                                controls
-                                                style={{ maxHeight: 300, maxWidth: 250, marginBottom: 6 }}
-                                            />
-                                        )}
-                                        <div >
-                                            <div style={{
-                                                fontSize: "1.5em",
-                                                marginBottom: 2,
-                                                color: "#556677"
-                                            }}>{fieldValue(headline)}</div>
-                                            <div style={{
-                                                color: "#e968f7",
-                                                fontSize: "1.1em"
-                                            }}>{fieldValue(description)}</div>
-                                        </div>
+                                            )}
+                                            {isVideoUrl(imagevideoPreview) && (
+                                                <video
+                                                    src={imagevideoPreview}
+                                                    controls
+                                                    style={{ maxHeight: 300, maxWidth: 250, marginBottom: 6 }}
+                                                />
+                                            )}
+                                        </>
+                                    ) : (
+                                        isSubmitted && <div className="">{fieldValue(imagevideoPreview)}</div>
+                                    )}
+                                    <div>
+                                        <div style={{
+                                            fontSize: "1.5em",
+                                            marginBottom: 2,
+                                            color: "#556677"
+                                        }}>{fieldValue(headline)}</div>
+                                        <div style={{
+                                            color: "#e968f7",
+                                            fontSize: "1.1em"
+                                        }}>{fieldValue(description)}</div>
                                     </div>
                                 </div>
-                            )}
-
+                            </div>
                         </div>
                     )}
                     {tab === 1 && (() => {
@@ -719,20 +733,7 @@ export default function NativeAds() {
                                                     <td style={{ ...tdStyle, wordBreak: "break-all", color: "#334155" }}>{url || "NA"}</td>
                                                     <td style={tdStyle}>
                                                         {url && url !== "NA" && (
-                                                            <span
-                                                                style={{ cursor: "pointer" }}
-                                                                onClick={() => openUrlInNewTab(url)}
-                                                                title="Open in new tab"
-                                                            >
-                                                                <Image
-                                                                    className="open-new-tab-icon"
-                                                                    src="/images/open-new-tab.jpeg"
-                                                                    alt="Click to open URL in new tab"
-                                                                    width={20}
-                                                                    height={20}
-                                                                    style={{ objectFit: "contain", marginLeft: 4, alignContent: "center" }}
-                                                                />
-                                                            </span>
+                                                            <TooltipOpenNewTabButton url={url} />
                                                         )}
                                                     </td>
                                                 </tr>
@@ -743,7 +744,6 @@ export default function NativeAds() {
                             </div>
                         );
                     })()}
-
                 </div>
             </div>
         </div>
