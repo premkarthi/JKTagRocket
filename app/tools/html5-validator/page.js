@@ -64,17 +64,17 @@ export default function HTML5ValidatorPage() {
                     <div className={styles.dropzoneInner}>
                         <FiUpload className={styles.dropzoneIcon} />
                         <div className={styles.dropzoneMainText}>
-                            Drag &amp; drop your Zip file here
+                            Drag &amp; Drop your Zip files here
                         </div>
                         <div className={styles.dropzoneBrowseText}>
-                            or click to browse
+                            Or
                         </div>
                         <button
                             className={styles.dropzoneButton}
                             type="button"
                             tabIndex={-1}
                         >
-                            Select File
+                            Browse and Upload 
                         </button>
                         <input
                             type="file"
