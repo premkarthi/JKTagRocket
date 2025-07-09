@@ -149,3 +149,17 @@
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	font-family: sans-serif;
 }
+.nativeAdsTable {
+  width: 100%;
+  border-collapse: collapse; /* Ensures borders are shared */
+  border: 1px solid #6b2074; 
+  align-content: center;    /* Outer table border */
+}
+
+.nativeAdsTable th,
+.nativeAdsTable td {
+  border: 2px solid #6b2074;     /* Cell borders */
+  padding: 10px;
+  text-align: left;
+}
+

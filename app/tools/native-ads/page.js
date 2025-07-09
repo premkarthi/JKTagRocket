@@ -201,7 +201,7 @@ export default function NativeAds() {
                 tries++;
             }
         }
-        throw lastError || new Error("Failed to fetch native data");
+        throw lastError || new Error("Failed to load native ad data. Please check the URL.");
     }
 
     const handleSubmit = async (e) => {
@@ -577,7 +577,7 @@ export default function NativeAds() {
                                     </span>
                                 </div>
                             </div>
-                            <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start" }}>
+                            {/* <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start" }}>
                                 <label className="nativeAdsFieldLabel">Brand Logo :</label>
                                 <div className="nativeAdsFieldInput" style={{ display: "flex", alignItems: "center", minHeight: 60 }}>
                                     {brandLogo && isImageUrl(brandLogo) ? (
@@ -586,30 +586,79 @@ export default function NativeAds() {
                                             alt="Logo"
                                             style={{ maxHeight: 60, maxWidth: 180, borderRadius: 7, border: "1px solid #eee" }}
                                             onError={e => (e.target.style.display = 'none')}
+                                            
                                         />
                                     ) : (
                                         <div className="">{fieldValue(brandLogo)}</div>
                                     )}
                                 </div>
+                            </div> */}
+                            <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start" }}>
+                                <label className="nativeAdsFieldLabel">Brand Logo :</label>
+                                <div className="nativeAdsFieldInputWrapper" style={{ display: "flex", flexDirection: "column", gap: "10px", minHeight: 80 }}>
+                                    <input
+                                        type="text"
+                                        value={brandLogo}
+                                        onChange={(e) => setBrandLogo(e.target.value)}
+                                        className="nativeAdsFieldInput"
+                                        placeholder="Brand Logo"
+                                    />
+                                    {brandLogo && isImageUrl(brandLogo) && (
+                                        <>
+                                            <img
+                                                src={brandLogo}
+                                                alt="Logo Preview"
+                                                style={{
+                                                    maxHeight: 60,
+                                                    maxWidth: 180,
+                                                    borderRadius: 7,
+                                                    border: "1px solid #eee"
+                                                }}
+                                                onError={(e) => {
+                                                    e.target.style.display = "none";
+                                                }}
+                                            />
+                                            <TooltipCopyButton value={fieldValue(brandLogo)} />
+                                            <span
+                                                style={{ cursor: "pointer", marginLeft: 5 }}
+                                                onClick={() => openUrlInNewTab(brandLogo)}
+                                                title="Open in new tab"
+                                            >
+                                                <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
+                                            </span>
+                                            
+                                        </>
+                                    )}
+                                </div>
                             </div>
-
                             {(isImageUrl(imagevideoPreview) || isVideoUrl(imagevideoPreview)) && (
                                 <div className="nativeAdsFieldRow" style={{ alignItems: "flex-start", marginTop: 32 }}>
                                     <label className="nativeAdsFieldLabel" >Image / Video Preview :</label>
                                     <div className="nativeAdsFieldInputWrapper" style={{ flexDirection: "column", alignItems: "flex-start" }}>
                                         {isImageUrl(imagevideoPreview) && (
-                                            <img
-                                                src={imagevideoPreview}
-                                                alt="Preview"
-                                                style={{ maxHeight: 250, maxWidth: 400, marginBottom: 6 }}
-                                                onError={e => (e.target.style.display = 'none')}
-                                            />
+                                            <>
+                                                <img
+                                                    src={imagevideoPreview}
+                                                    alt="Preview"
+                                                    style={{ maxHeight: 250, maxWidth: 400, marginBottom: 6 }}
+                                                    onError={e => (e.target.style.display = 'none')}
+                                                />
+                                                <TooltipCopyButton value={fieldValue(imagevideoPreview)} />
+                                                <span
+                                                    style={{ cursor: "pointer", marginLeft: 5 }}
+                                                    onClick={() => openUrlInNewTab(imagevideoPreview)}
+                                                    title="Open in new tab"
+                                                >
+                                                    <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
+                                                </span>
+                                            </>
                                         )}
+
                                         {isVideoUrl(imagevideoPreview) && (
                                             <video
                                                 src={imagevideoPreview}
                                                 controls
-                                                style={{ maxHeight: 250, maxWidth: 400, marginBottom: 6 }}
+                                                style={{ maxHeight: 300, maxWidth: 250, marginBottom: 6 }}
                                             />
                                         )}
                                         <div >
@@ -629,44 +678,72 @@ export default function NativeAds() {
 
                         </div>
                     )}
+                    {tab === 1 && (() => {
+                        const thStyle = {
+                            padding: "12px",
+                            textAlign: "left",
+                            fontWeight: "600",
+                            backgroundColor: "#f3f4f6",
+                            borderBottom: "1px solid #ccc",
+                            color: "#111827",
+                        };
 
-                    {/* Tab 1: Trackers */}
-                    {tab === 1 && (
-                        <table className="nativeAdsTable">
-                            <thead>
-                                <tr>
-                                    <th>S.No</th>
-                                    <th>Pixel URL</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {eventTrackers.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={3} style={{ textAlign: "center" }}>No Data</td>
-                                    </tr>
-                                ) : (
-                                    eventTrackers.map(({ sno, url }) => (
-                                        <tr key={sno}>
-                                            <td>{sno || ""}</td>
-                                            <td style={{ wordBreak: "break-all" }}>{url || ""}</td>
-                                            <td>
-                                                {url && url !== "NA" && (
-                                                    <span
-                                                        style={{ cursor: "pointer" }}
-                                                        onClick={() => openUrlInNewTab(url)}
-                                                        title="Open in new tab"
-                                                    >
-                                                        <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt='Click to open url in new tab' width={20} height={20} style={{ objectFit: 'contain' }} />
-                                                    </span>
-                                                )}
-                                            </td>
+                        const tdStyle = {
+                            padding: "10px 12px",
+                            verticalAlign: "top",
+                            fontSize: "14px",
+                            color: "#1e293b",
+                        };
+
+                        return (
+                            <div style={{ overflowX: "auto" }}>
+                                <table className="nativeAdsTable" style={{ width: "100%", borderCollapse: "collapse" }}>
+                                    <thead style={{ backgroundColor: "#f5f5f5" }}>
+                                        <tr>
+                                            <th style={thStyle}>S.No</th>
+                                            <th style={thStyle}>Trackers / Pixel URL's</th>
+                                            <th style={thStyle}>Action</th>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
-                    )}
+                                    </thead>
+                                    <tbody>
+                                        {eventTrackers.length === 0 ? (
+                                            <tr>
+                                                <td colSpan={3} style={{ textAlign: "center", padding: "12px" }}>
+                                                    No Data
+                                                </td>
+                                            </tr>
+                                        ) : (
+                                            eventTrackers.map(({ sno, url }) => (
+                                                <tr key={sno} style={{ borderBottom: "1px solid #eaeaea" }}>
+                                                    <td style={tdStyle}>{sno || ""}</td>
+                                                    <td style={{ ...tdStyle, wordBreak: "break-all", color: "#334155" }}>{url || "NA"}</td>
+                                                    <td style={tdStyle}>
+                                                        {url && url !== "NA" && (
+                                                            <span
+                                                                style={{ cursor: "pointer" }}
+                                                                onClick={() => openUrlInNewTab(url)}
+                                                                title="Open in new tab"
+                                                            >
+                                                                <Image
+                                                                    className="open-new-tab-icon"
+                                                                    src="/images/open-new-tab.jpeg"
+                                                                    alt="Click to open URL in new tab"
+                                                                    width={20}
+                                                                    height={20}
+                                                                    style={{ objectFit: "contain", marginLeft: 4, alignContent: "center" }}
+                                                                />
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        );
+                    })()}
+
                 </div>
             </div>
         </div>
