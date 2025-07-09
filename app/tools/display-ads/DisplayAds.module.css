@@ -155,7 +155,7 @@
 }
 
 .dropzone {
-  border: 2px dashed #bfc7d1;
+  border: 2px dashed #0c0c0c;
   border-radius: 8px;
   min-height: 180px;
   width: 100%;
@@ -182,28 +182,28 @@
 }
 
 .dropzoneIcon {
-  color: #a9b5c9;
+  color: #909;
   font-size: 38px;
   margin-bottom: 5px;
 }
 
 .dropzoneMainText {
-  color: #bfc7d1;
+  color: #0e0f0f;
   font-size: 16px;
   margin-bottom: 2px;
 }
 
 .dropzoneBrowseText {
-  color: #bfc7d1;
-  font-size: 13px;
+  color: #333;
+  font-size: 15px;
   margin-bottom: 12px;
 }
 
 .dropzoneButton {
   border: none;
-  background: #f7faff;
-  color: #8594ab;
-  font-size: 15px;
+  background: #C0C;
+  color: #FFF;
+  font-size: 19px;
   padding: 8px 22px;
   border-radius: 8px;
   font-weight: 500;
@@ -215,7 +215,7 @@
 
 .dropzoneButton:hover,
 .dropzoneButton:focus {
-  background: #eaefff;
+  background: #909;
 }
 .displayAdsLoader {
   animation: spin 1s linear infinite;
