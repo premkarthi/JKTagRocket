@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import styles from "../display-ads/DisplayAds.module.css";
 import "./NativeAdsAddon.css";
 import Image from "next/image";
+import "../../../styles/globals.css"; // This should include the .user-message styles
 
 // Dummy helpers and maps for demonstration
 const eventNamesMap = {};
@@ -40,6 +41,27 @@ const TABS = [
     { label: "Native Ad Information" },
     { label: "Trackers / Pixel's" },
 ];
+function useAutoDismissMessage(initialMessage = null, timeout = 3500) {
+    const [message, setMessage] = useState(initialMessage);
+
+    useEffect(() => {
+        if (message) {
+            const timer = setTimeout(() => setMessage(null), timeout);
+            return () => clearTimeout(timer);
+        }
+    }, [message, timeout]);
+
+    return [message, setMessage];
+}
+function getIcon(type) {
+    switch (type) {
+        case "success": return "✔️";
+        case "error": return "❌";
+        case "warning": return "⚠️";
+        case "info": default: return "ℹ️";
+    }
+}
+
 
 // TooltipButton component for clipboard with tooltip & copied
 function TooltipCopyButton({ value }) {
@@ -179,10 +201,15 @@ function TooltipOpenNewTabButton({ url }) {
     );
 }
 
+// export default function NativeAds() {
+//     const [nativeTag, setNativeTag] = useState("");
+//     const [tab, setTab] = useState(0);
 export default function NativeAds() {
     const [nativeTag, setNativeTag] = useState("");
+    // const [message, setMessage] = useAutoDismissMessage();
+    const [loading, setLoading] = useState(true);
     const [tab, setTab] = useState(0);
-
+    // Removed invalid destructuring and redeclaration here.
     // Info fields
     const [nativeSsp, setNativeSsp] = useState("");
     const [headline, setHeadline] = useState("");
@@ -196,7 +223,7 @@ export default function NativeAds() {
     const [imagevideoPreview, setImagevideoPreview] = useState("");
     const [videoPreview, setVideoPreview] = useState(""); // For VAST video
     const [videoEvents, setVideoEvents] = useState([]); // For VAST video tracker table
-
+    
     // Data signals
     const [dataSignals, setDataSignals] = useState([]);
     // Trackers/Pixels
@@ -204,30 +231,32 @@ export default function NativeAds() {
     const [pixelsTable, setPixelsTable] = useState([]);
 
     // Feedback
-    const [error, setError] = useState("");
+    const [message, setMessage] = useState(null);
     // isSubmitted is true after a successful fetch/parse
     const [isSubmitted, setIsSubmitted] = useState(false);
 
-    const handleReset = () => {
-        setNativeTag("");
-        setNativeSsp("");
-        setHeadline("");
-        setDescription("");
-        setBrandName("");
-        setReportingName("");
-        setImpressionTracker("");
-        setSecondaryClickTracker("");
-        setPrimaryClickTracker("");
-        setBrandLogo("");
-        setImagevideoPreview("");
-        setEventTrackers([]);
-        setPixelsTable([]);
-        setError("");
-        setIsSubmitted(false);
-        setVideoPreview("");
-        setVideoEvents([]);
-        setDataSignals([]);
-    };
+        const handleReset = () => {
+            setNativeTag("");
+            setNativeSsp("");
+            setHeadline("");
+            setDescription("");
+            setBrandName("");
+            setReportingName("");
+            setImpressionTracker("");
+            setSecondaryClickTracker("");
+            setPrimaryClickTracker("");
+            setBrandLogo("");
+            setImagevideoPreview("");
+            setEventTrackers([]);
+            setPixelsTable([]);
+            setMessage(null); // clear message
+            setIsSubmitted(false);
+            setVideoPreview("");
+            setVideoEvents([]);
+            setDataSignals([]);
+            setMessage({ type: "info", text: "Input cleared successfully." });
+        };
+
 
     async function fetchNativeDataWithFallback(url) {
         let dataType = url.includes("jsonp") ? "jsonp" : "json";
@@ -270,9 +299,10 @@ export default function NativeAds() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError("");
+        setMessage(null);
+
         if (!nativeTag.trim()) {
-            setError("No tag available");
+            setMessage({ type: "warning", text: "⚠️ Please enter a valid Native tag URL before submitting." });
             return;
         }
 
@@ -281,18 +311,20 @@ export default function NativeAds() {
             .replaceAll(new RegExp('&amp;r=(.*?)\\&amp;', 'gi'), '&amp;r=' + randomString() + '&amp;')
             .replaceAll(new RegExp('&cMacro=(.*?)\\&', 'gi'), '&cMacro=&')
             .replaceAll(new RegExp('&amp;cMacro=(.*?)\\&amp;', 'gi'), '&amp;cMacro=&amp;');
-        let dataType = "json";
-        if (url.indexOf("jsonp") > -1) {
-            dataType = "json";
-        }
+
         try {
-            const nativeData = await fetchNativeDataWithFallback(url, dataType);
-            buildNativeData(nativeData, url);
-            setIsSubmitted(true);
+            setLoading(true);
+            const nativeData = await fetchNativeDataWithFallback(url);
+            // Optional: buildNativeData(nativeData, url);
+            setMessage({ type: "success", text: "✅ Native tag processed successfully!" });
         } catch (err) {
-            setError("Failed to load or parse native data.");
+            setMessage({ type: "error", text: "❌ Failed to fetch or parse the native tag." });
+        } finally {
+            setLoading(false);
         }
     };
+    // Function to build native ad data from the response
+
 
     function buildNativeData(res, url) {
         let data = {};
@@ -443,53 +475,72 @@ export default function NativeAds() {
         typeof url === "string" && /\.(jpe?g|png|gif|svg|webp)$/i.test(url);
     const isVideoUrl = (url) =>
         typeof url === "string" && /\.(mp4|webm|ogg)$/i.test(url);
+    const getIcon = (type) => {
+            switch (type) {
+                case "success":
+                    return "✔";
+                case "error":
+                    return "✖";
+                case "warning":
+                    return "⚠️";
+                case "info":
+                default:
+                    return "ℹ";
+            }
+        };
 
-    return (
+return (
         <div className={styles.displayAdsContainer + " nativeAdsContainer"}>
-            <h1 className={styles.displayAdsHeader + " nativeAdsHeader"}>
-                Native Ads Creator
-            </h1>
-            <div className={styles.displayAdsSubtitle + " nativeAdsSubtitle"}>
-                Create and preview native ad formats with custom content
-            </div>
+            <h1 className={styles.displayAdsHeader + " nativeAdsHeader"}>Native Ads Creator</h1>
+            <div className={styles.displayAdsSubtitle + " nativeAdsSubtitle"}>Create and preview native ad formats with custom content</div>
             <div className={styles.displayAdsInputCard + " nativeAdsInputCard"}>
-                <label htmlFor="nativeTag" className={styles.displayAdsInputLabel}>
-                    Paste your link
-                </label>
+                <label htmlFor="nativeTag" className={styles.displayAdsInputLabel}>Paste your link</label>
                 <textarea
                     id="nativeTag"
                     rows={6}
-                    placeholder=" Paste your Native tag here ... !!!"
+                    placeholder="Paste your Native tag here ... !!!"
                     value={nativeTag}
                     onChange={e => setNativeTag(e.target.value)}
                     className={styles.displayAdsTextarea}
                 />
-                <div className={styles.displayAdsButtonGroup}>
-                    <button
-                        className={styles.displayAdsResetBtn + " nativeAdsResetBtn"}
-                        type="button"
-                        onClick={handleReset}
-                    >
-                        Reset
-                    </button>
-                    <button
-                        className={styles.displayAdsPreviewBtn + " nativeAdsSubmitBtn"}
-                        type="button"
-                        onClick={handleSubmit}
-                    >
-                        Submit
-                    </button>
+                {message && (
+                        <div className={`user-message ${message.type}`} style={{ whiteSpace: "pre-wrap", marginTop: 16 }}>
+                            <div className="user-message-icon">{/* icon shown via CSS */}</div>
+                            <div className="user-message-content">
+                                <span>{message.text}</span>
+                                <a
+                                    href="#"
+                                    className="user-message-action"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setMessage(null);
+                                    }}
+                                >
+                                    Dismiss
+                                </a>
+                            </div>
+                        </div>
+                    )}
+                {loading && (
+                    <div className="user-message info" style={{ marginTop: 16 }}>
+                        <div className="user-message-icon">⏳</div>
+                        <div className="user-message-content">
+                            <span>Processing tag, please wait...</span>
+                        </div>
+                    </div>
+                )}
+                <div className={styles.displayAdsButtonGroup} style={{ marginTop: 16 }}>
+                    <button className={styles.displayAdsResetBtn + " nativeAdsResetBtn"} type="button" onClick={handleReset}>Reset</button>
+                    <button className={styles.displayAdsPreviewBtn + " nativeAdsSubmitBtn"} type="button" onClick={handleSubmit}>Submit</button>
                 </div>
-                {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
             </div>
+
             <div className="nativeAdsTabsWrapper">
                 <div className="nativeAdsTabs">
                     {TABS.map((t, idx) => (
                         <button
                             key={t.label}
-                            className={
-                                tab === idx ? "nativeAdsTab nativeAdsTabActive" : "nativeAdsTab"
-                            }
+                            className={tab === idx ? "nativeAdsTab nativeAdsTabActive" : "nativeAdsTab"}
                             onClick={() => setTab(idx)}
                             type="button"
                         >
@@ -497,6 +548,22 @@ export default function NativeAds() {
                         </button>
                     ))}
                 </div>
+                <div className="nativeAdsTabPanel">
+                    {tab === 0 && (
+                        <div style={{ padding: "1rem", color: "#334155" }}>
+                            <p>This is where the Native Ad Information would go.</p>
+                        </div>
+                    )}
+                    {tab === 1 && (
+                        <div style={{ padding: "1rem", color: "#334155" }}>
+                            <p>This is where Trackers / Pixel's table would go.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+}
                 <div className="nativeAdsTabPanel">
                     {tab === 0 && (
                         <div>
@@ -747,5 +814,7 @@ export default function NativeAds() {
                 </div>
             </div>
         </div>
+    </>
     );
+
 }

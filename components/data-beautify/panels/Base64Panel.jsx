@@ -1,35 +1,58 @@
+"use client";
 import React, { useState } from "react";
-import styles from "../../../app/tools/display-ads/DisplayAds.module.css";
-
+import styles from "../../../app/tools/display-ads/DisplayAds.module.css"; // adjust if needed
+import "../../../styles/globals.css"; // contains your .user-message styles
 
 export default function Base64Panel() {
     const [input, setInput] = useState("");
-    const [error, setError] = useState("");
+    const [message, setMessage] = useState(null); // { type: "info" | "error", text: "" }
     const [result, setResult] = useState("");
 
     const encode = () => {
-        setError("");
+        setMessage(null);
         try {
             setResult(btoa(input));
+            setMessage({ type: "info", text: "✅ Successfully encoded!" });
         } catch (e) {
-            setError("Encoding failed.");
+            setMessage({ type: "error", text: "Encoding failed." });
         }
     };
+
     const decode = () => {
-        setError("");
+        setMessage(null);
         try {
             setResult(atob(input));
+            setMessage({ type: "info", text: "✅ Successfully decoded!" });
         } catch (e) {
-            setError("Decoding failed.");
+            setMessage({ type: "error", text: "Decoding failed. Invalid Base64 string." });
         }
     };
+
     const copy = () => {
-        if (result) navigator.clipboard.writeText(result);
+        if (result) {
+            navigator.clipboard.writeText(result);
+            setMessage({ type: "success", text: "📋 Copied to clipboard!" });
+        }
     };
+
     const reset = () => {
         setInput("");
         setResult("");
-        setError("");
+        setMessage(null);
+    };
+
+    const getIcon = (type) => {
+        switch (type) {
+            case "success":
+                return "✔";
+            case "error":
+                return "✖";
+            case "warning":
+                return "❗";
+            case "info":
+            default:
+                return "ℹ";
+        }
     };
 
     return (
@@ -40,28 +63,75 @@ export default function Base64Panel() {
                 </span>
                 Base64 Encode &amp; Decode
             </div>
+
             <label className="dataBeautifyLabel">Enter Text</label>
             <textarea
                 className="dataBeautifyTextarea"
                 placeholder="Paste your text here..."
                 rows={7}
                 value={input}
-                onChange={e => setInput(e.target.value)}
+                onChange={(e) => setInput(e.target.value)}
             />
+
+            <label className="dataBeautifyLabel">Output results will show here...</label>
             {result && (
-                <div className="dataBeautifyPanelResult" style={{ marginTop: 10, color: "#2e2e2e", background: "#f6f6ff", padding: 10, borderRadius: 8 }}>
-                    {result}
+                <textarea
+                    className="dataBeautifyPanelResult"
+                    placeholder="Output results will show here..."
+                    rows={7}
+                    value={result}
+                    readOnly
+                />
+            )}
+
+            {message && (
+                <div
+                    className={`user-message ${message.type}`}
+                    style={{ whiteSpace: "pre-wrap", marginTop: 16 }}
+                >
+                    <div className="user-message-icon">{getIcon(message.type)}</div>
+                    <div className="user-message-content">
+                        <span>{message.text}</span>
+                        <a href="#" className="user-message-action" onClick={(e) => {
+                            e.preventDefault();
+                            setMessage(null);
+                        }}>
+                            Dismiss
+                        </a>
+                    </div>
                 </div>
             )}
-            {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
+
             <div className="dataBeautifyPanelActions">
-                <button className={styles.displayAdsPreviewBtn} type="button" onClick={encode}>Encode</button>
-                <button className={styles.displayAdsPreviewBtn} type="button" onClick={decode}>Decode</button>
-                <button className={styles.displayAdsResetBtn} type="button" title="Copy" onClick={copy}>
-                    <span role="img" aria-label="Copy">📋</span>
+                <button
+                    className={styles.displayAdsPreviewBtn}
+                    type="button"
+                    onClick={encode}
+                >
+                    ⚙️ Encode
                 </button>
-                <button className={styles.displayAdsResetBtn} type="button" title="Reset" onClick={reset}>
-                    <span role="img" aria-label="Reset">🔄</span>
+                <button
+                    className={styles.displayAdsPreviewBtn}
+                    type="button"
+                    onClick={decode}
+                >
+                    ⚙️ Decode
+                </button>
+                <button
+                    className={styles.displayAdsResetBtn}
+                    type="button"
+                    title="Copy"
+                    onClick={copy}
+                >
+                    📋 Copy
+                </button>
+                <button
+                    className={styles.displayAdsResetBtn}
+                    type="button"
+                    title="Reset"
+                    onClick={reset}
+                >
+                    🔄 Reset
                 </button>
             </div>
         </div>
