@@ -509,4 +509,111 @@ nativeAdsCopyTooltip {
   z-index: 10000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
+  /* User message styles  */
+        .user-message {
+          display: flex;
+          align-items: center;
+          padding: 16px;
+          margin-bottom: 16px;
+          border: 1px solid;
+          border-radius: 2px;
+          font-family: sans-serif;
+          font-weight: bold;
+          position: relative;
+        }
+
+        .user-message-icon {
+          width: 40px;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+          color: white;
+          font-weight: bold;
+          position: relative;
+          flex-shrink: 0;
+        }
+
+        .user-message-icon::after {
+          content: "";
+          position: absolute;
+          right: -8px;
+          top: 50%;
+          transform: translateY(-50%);
+          border-top: 8px solid transparent;
+          border-bottom: 8px solid transparent;
+          border-left: 8px solid currentColor;
+        }
+
+        /* Message text block */
+        .user-message-content {
+          flex: 1;
+          padding-left: 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        /* Action link (e.g. retry) */
+        .user-message-action {
+          font-weight: normal;
+          font-size: 0.9em;
+          text-decoration: none;
+        }
+
+        /* 🔶 Warning */
+        .user-message.warning {
+          background-color: #fff7e6;
+          border-color: #ff9900;
+        }
+
+        .user-message.warning .user-message-icon {
+          background-color: #ff9900;
+          color: white;
+        }
+
+        /* ❌ Error */
+        .user-message.error {
+          background-color: #ffe1e1;
+          border-color: #f44336;
+        }
+
+        .user-message.error .user-message-icon {
+          background-color: #f44336;
+          color: white;
+        }
+
+        /* ✅ Success */
+        .user-message.success {
+          background-color: #d9f6d9;
+          border-color: #4CAF50;
+        }
+
+        .user-message.success .user-message-icon {
+          background-color: #4CAF50;
+          color: white;
+        }
+
+        /* ⚠️ Alert */
+        .user-message.alert {
+          background-color: #fffed7;
+          border-color: #ffcc00;
+        }
+
+        .user-message.alert .user-message-icon {
+          background-color: #ffcc00;
+          color: black;
+        }
+
+        /* ℹ️ Info */
+        .user-message.info {
+          background-color: #cceeff;
+          border-color: #2196F3;
+        }
+
+        .user-message.info .user-message-icon {
+          background-color: #2196F3;
+          color: white;
+        }
 
