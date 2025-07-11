@@ -5,6 +5,8 @@ import styles from "../display-ads/DisplayAds.module.css";
 import "./NativeAdsAddon.css";
 import Image from "next/image";
 import { useEffect } from "react";
+import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
+
 
 // Dummy helpers and maps for demonstration
 const eventNamesMap = {};
@@ -300,7 +302,7 @@ export default function NativeAds() {
             tries++;
         }
         }
-        throw lastError || new Error("Failed to load native ad data. Please check the URL.");
+        throw lastError || new Error(" Failed to load native ad data. Please check the URL.");
     }
 
             const handleSubmit = async (e) => {
@@ -308,7 +310,7 @@ export default function NativeAds() {
             setMessage(null);
 
             if (!nativeTag.trim()) {
-            setMessage({ type: "warning", text: "⚠️ Please enter a valid Native tag URL before submitting." });
+            setMessage({ type: "warning", text: " Please enter a valid Native tag URL before submitting.." });
             return;
             }
 
@@ -325,32 +327,13 @@ export default function NativeAds() {
                 const nativeData = await fetchNativeDataWithFallback(url);
                 buildNativeData(nativeData, url);
                 // You would call buildNativeData(nativeData, url) here
-                setMessage({ type: "success", text: "✅ Native tag processed successfully!" });
+                setMessage({ type: "success", text: " Native tag processed successfully!" });
                 } catch (err) {
-                setMessage({ type: "error", text: "❌ Failed to fetch or parse the native tag." });
+                setMessage({ type: "error", text: " Failed to fetch or parse the native tag." });
                 } finally {
                 setLoading(false);
             }
         };
-        // {message && (
-        //         <div className={`user-message ${message.type}`} style={{ whiteSpace: "pre-wrap", marginTop: 16 }}>
-        //             <div className="user-message-icon">{getIcon(message.type)}</div>
-        //             <div className="user-message-content">
-        //             <span>{message.text}</span>
-        //             <a
-        //                 href="#"
-        //                 className="user-message-action"
-        //                 onClick={(e) => {
-        //                 e.preventDefault();
-        //                 setMessage(null);
-        //                 }}
-        //             >
-        //                 Dismiss
-        //             </a>
-        //             </div>
-        //         </div>
-        //         )}
-    // Function to build native ad data from the response
 
     function buildNativeData(res, url) {
         let data = {};
