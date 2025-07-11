@@ -243,97 +243,97 @@ export default function NativeAds() {
         }, 150); // Give DOM a tiny bit of time to settle
     };
     function getIcon(type) {
-    switch (type) {
-        case "success": return "✔️";
-        case "error": return "❌";
-        case "warning": return "⚠️";
-        case "info": default: return "ℹ️";
-    }
+        switch (type) {
+            case "success": return "✔️";
+            case "error": return "❌";
+            case "warning": return "⚠️";
+            case "info": default: return "ℹ️";
+        }
     }
     // Custom hook to auto-dismiss messages after a timeout
-    
+
     function useAutoDismissMessage(initialMessage = null, timeout = 3500) {
         const [message, setMessage] = useState(initialMessage);
-    
+
         useEffect(() => {
             if (message) {
                 const timer = setTimeout(() => setMessage(null), timeout);
                 return () => clearTimeout(timer);
             }
         }, [message, timeout]);
-    
+
         return [message, setMessage];
     }
     // Function to generate a random string for URL parameters
     function randomString(length = 8) {
-    return Math.random().toString(36).substring(2, 2 + length);
-}
+        return Math.random().toString(36).substring(2, 2 + length);
+    }
 
     async function fetchNativeDataWithFallback(url) {
-    let dataType = url.includes("jsonp") ? "jsonp" : "json";
-    let tries = 0;
-    let lastError = null;
+        let dataType = url.includes("jsonp") ? "jsonp" : "json";
+        let tries = 0;
+        let lastError = null;
 
         while (tries < 2) {
-        try {
-            const response = await fetch(url);
-            const text = await response.text();
-            if (dataType === "jsonp" || /^[a-zA-Z_][\w\d_]*\(/.test(text.trim())) {
-            const match = text.trim().match(/^[a-zA-Z_][\w\d_]*\(\s*([\s\S]*)\s*\);?$/);
-            if (match && match[1]) {
-                return JSON.parse(match[1]);
-            } else {
-                throw new Error("Failed to parse JSONP response");
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+                if (dataType === "jsonp" || /^[a-zA-Z_][\w\d_]*\(/.test(text.trim())) {
+                    const match = text.trim().match(/^[a-zA-Z_][\w\d_]*\(\s*([\s\S]*)\s*\);?$/);
+                    if (match && match[1]) {
+                        return JSON.parse(match[1]);
+                    } else {
+                        throw new Error("Failed to parse JSONP response");
+                    }
+                } else {
+                    return JSON.parse(text);
+                }
+            } catch (err) {
+                lastError = err;
+                if (dataType === "jsonp") {
+                    dataType = "json";
+                    url = url.replace("jsonp", "json");
+                } else if (dataType === "json") {
+                    dataType = "jsonp";
+                    url = url.replace("json", "jsonp");
+                } else {
+                    break;
+                }
+                tries++;
             }
-            } else {
-            return JSON.parse(text);
-            }
-        } catch (err) {
-            lastError = err;
-            if (dataType === "jsonp") {
-            dataType = "json";
-            url = url.replace("jsonp", "json");
-            } else if (dataType === "json") {
-            dataType = "jsonp";
-            url = url.replace("json", "jsonp");
-            } else {
-            break;
-            }
-            tries++;
-        }
         }
         throw lastError || new Error(" Failed to load native ad data. Please check the URL.");
     }
 
-            const handleSubmit = async (e) => {
-            e.preventDefault();
-            setMessage(null);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setMessage(null);
 
-            if (!nativeTag.trim()) {
+        if (!nativeTag.trim()) {
             setMessage({ type: "warning", text: " Please enter a valid Native tag URL before submitting.." });
             return;
-            }
+        }
 
-            let url = nativeTag.trim();
-            url = url.replaceAll(new RegExp('&r=(.*?)\\&', 'gi'), '&r=' + randomString() + '&')
-             .replaceAll(new RegExp('&amp;r=(.*?)\\&amp;', 'gi'), '&amp;r=' + randomString() + '&amp;')
-             .replaceAll(new RegExp('&cMacro=(.*?)\\&', 'gi'), '&cMacro=&')
-             .replaceAll(new RegExp('&amp;cMacro=(.*?)\\&amp;', 'gi'), '&amp;cMacro=&amp;');
+        let url = nativeTag.trim();
+        url = url.replaceAll(new RegExp('&r=(.*?)\\&', 'gi'), '&r=' + randomString() + '&')
+            .replaceAll(new RegExp('&amp;r=(.*?)\\&amp;', 'gi'), '&amp;r=' + randomString() + '&amp;')
+            .replaceAll(new RegExp('&cMacro=(.*?)\\&', 'gi'), '&cMacro=&')
+            .replaceAll(new RegExp('&amp;cMacro=(.*?)\\&amp;', 'gi'), '&amp;cMacro=&amp;');
 
-            let dataType = url.includes("jsonp") ? "jsonp" : "json";
+        let dataType = url.includes("jsonp") ? "jsonp" : "json";
 
-            try {
-                setLoading(true);
-                const nativeData = await fetchNativeDataWithFallback(url);
-                buildNativeData(nativeData, url);
-                // You would call buildNativeData(nativeData, url) here
-                setMessage({ type: "success", text: " Native tag processed successfully!" });
-                } catch (err) {
-                setMessage({ type: "error", text: " Failed to fetch or parse the native tag." });
-                } finally {
-                setLoading(false);
-            }
-        };
+        try {
+            setLoading(true);
+            const nativeData = await fetchNativeDataWithFallback(url);
+            buildNativeData(nativeData, url);
+            // You would call buildNativeData(nativeData, url) here
+            setMessage({ type: "success", text: " Native tag processed successfully!" });
+        } catch (err) {
+            setMessage({ type: "error", text: " Failed to fetch or parse the native tag." });
+        } finally {
+            setLoading(false);
+        }
+    };
 
     function buildNativeData(res, url) {
         let data = {};
@@ -499,36 +499,36 @@ export default function NativeAds() {
                     value={nativeTag}
                     onChange={e => setNativeTag(e.target.value)}
                     className={styles.displayAdsTextarea}
-               />
+                />
 
-                        {(message || loading) && (
-                            <>
-                                {message && (
-                                    <div className={`user-message ${message.type}`} style={{ whiteSpace: "pre-wrap", marginTop: 16 }}>
-                                        <div className="user-message-icon">{getIcon(message.type)}</div>
-                                        <div className="user-message-content">
-                                            <span>{message.text}</span>
-                                            <a href="#" className="user-message-action" onClick={(e) => { e.preventDefault(); setMessage(null); }}>Dismiss</a>
-                                        </div>
-                                    </div>
-                                )}
-                                {loading && (
-                                    <div className="user-message info" style={{ marginTop: 16 }}>
-                                        <div className="user-message-icon">⏳</div>
-                                        <div className="user-message-content">
-                                            <span>Processing tag, please wait...</span>
-                                        </div>
-                                    </div>
-                                )}
-                            </>
+                {(message || loading) && (
+                    <>
+                        {message && (
+                            <div className={`user-message ${message.type}`} style={{ whiteSpace: "pre-wrap", marginTop: 16 }}>
+                                <div className="user-message-icon">{getIcon(message.type)}</div>
+                                <div className="user-message-content">
+                                    <span>{message.text}</span>
+                                    <a href="#" className="user-message-action" onClick={(e) => { e.preventDefault(); setMessage(null); }}>Dismiss</a>
+                                </div>
+                            </div>
                         )}
+                        {loading && (
+                            <div className="user-message info" style={{ marginTop: 16 }}>
+                                <div className="user-message-icon">⏳</div>
+                                <div className="user-message-content">
+                                    <span>Processing tag, please wait...</span>
+                                </div>
+                            </div>
+                        )}
+                    </>
+                )}
 
-                    <div className={styles.displayAdsButtonGroup} style={{ marginTop: 16 }}>
+                <div className={styles.displayAdsButtonGroup} style={{ marginTop: 16 }}>
                     <button className={styles.displayAdsResetBtn + " nativeAdsResetBtn"} type="button" onClick={handleReset}> 🔄 Reset</button>
                     <button className={styles.displayAdsPreviewBtn + " nativeAdsSubmitBtn"} type="button" onClick={handleSubmit}> 🚀 Submit Tag</button>
-                    </div>
                 </div>
-            
+            </div>
+
 
             <div className="nativeAdsTabsWrapper">
                 <div className="nativeAdsTabs">
@@ -670,7 +670,7 @@ export default function NativeAds() {
                                         <TooltipOpenNewTabButton url={brandLogo} />
                                     </div>
                                     {brandLogo && isImageUrl(brandLogo) && (
-                                        <img
+                                        <Image
                                             src={brandLogo}
                                             alt="Logo Preview"
                                             style={{
@@ -679,6 +679,8 @@ export default function NativeAds() {
                                                 borderRadius: 7,
                                                 border: "1px solid #eee"
                                             }}
+                                            height={60}
+                                            width={180}
                                             onError={(e) => {
                                                 e.target.style.display = "none";
                                             }}
@@ -705,11 +707,13 @@ export default function NativeAds() {
                                     {(isImageUrl(imagevideoPreview) || isVideoUrl(imagevideoPreview)) ? (
                                         <>
                                             {isImageUrl(imagevideoPreview) && (
-                                                <img
+                                                <Image
                                                     src={imagevideoPreview}
                                                     alt="Preview"
                                                     style={{ maxHeight: 700, maxWidth: 500, marginBottom: 9 }}
                                                     onError={e => (e.target.style.display = 'none')}
+                                                    height={700}
+                                                    width={500}
                                                 />
                                             )}
                                             {isVideoUrl(imagevideoPreview) && (
@@ -761,7 +765,7 @@ export default function NativeAds() {
                                     <thead style={{ backgroundColor: "#f5f5f5" }}>
                                         <tr>
                                             <th style={thStyle}>S.No</th>
-                                            <th style={thStyle}>Trackers / Pixel URL's</th>
+                                            <th style={thStyle}>Trackers / Pixel URLs</th>
                                             <th style={thStyle}>Action</th>
                                         </tr>
                                     </thead>
