@@ -8,7 +8,7 @@
 }
 
 .nativeAdsSubtitle {
-  color: #b3b3cb !important;
+  color: #1d1d1d !important;
 }
 
 .nativeAdsInputCard {
@@ -57,16 +57,21 @@
   background: none;
   border: none;
   outline: none;
-  padding: 18px 20px 12px 20px;
+  /* padding: 18px 20px 12px 20px; */
   border-bottom: 2px solid transparent;
   cursor: pointer;
   font-weight: 600;
-  transition: color 0.2s;
+  /* transition: color 0.2s; */
+  padding: 10px 18px;
+  transition: color 0.3s ease;
 }
 .nativeAdsTabActive {
-  color: #6c3fe2;
+  /* color: #6c3fe2;
   border-bottom: 2px solid #6c3fe2;
-  font-weight: 700;
+  font-weight: 700; */
+  border-bottom: 3px solid #6b21a8;
+  font-weight: 600;
+  color: #6b21a8;
 }
 
 .nativeAdsTabPanel {

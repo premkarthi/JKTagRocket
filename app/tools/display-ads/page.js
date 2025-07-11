@@ -63,7 +63,7 @@ export default function DisplayAds() {
     const [filters, setFilters] = useState([]);
     const [modal, setModal] = useState({ idx: null, call: null });
     const frames = useRef([]);
-    const [deepCapture, setDeep] = useState(true);
+    const [deepCapture, setDeep] = useState(false);
 
     /* -------- reset -------- */
     const reset = () => {
@@ -215,61 +215,60 @@ export default function DisplayAds() {
     return (
         <div className={styles.displayAdsContainer}>
             {/* header */}
-            <h1 className={styles.displayAdsHeader}>Display Ads</h1>
+            <h1 className={styles.displayAdsHeader}>Display Ad Tag Preview & Network Analyzer</h1>
             <p className={styles.displayAdsSubtitle}>
-                Simulate dispaly tags behavior in a controlled environment with full network trace ..
+                Test and preview display ad tags in a secure sandbox with deep capture support ..
             </p>
 
             {/* input */}
             <div className={styles.displayAdsInputCard}>
                 <textarea
-                    rows={6}
+                    rows={7}
                     value={adCode}
-                    placeholder="Paste your Dispaly ad HTML / Java Script tags here .. !!!"
+                    placeholder="Paste your HTML/JavaScript display ad tag here to preview and inspect network calls..."
                     onChange={(e) => setAdCode(e.target.value)}
                     className={styles.displayAdsTextarea}
                 />
-                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                    <button
-                        className={styles.displayAdsPreviewBtn}
-                        onClick={preview}
-                    >
-                       👁️ Preview
-                    </button>
-                    <button
-                        className={styles.displayAdsResetBtn}
-                        onClick={reset}
-                    >
-                      ❌  Reset
-                    </button>
-                    {/* <label
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 4,
-                        }}
-                    >
+
+                <div
+                    style={{
+                        display: "flex",
+                        gap: 12,
+                        marginTop: 8,
+                        justifyContent: "flex-end", // ✅ Align to right
+                        alignItems: "center",
+                    }}
+                >   {/* Toggle on far left */}
+                    <label className="toggle-switch">
                         <input
                             type="checkbox"
                             checked={deepCapture}
                             onChange={(e) => setDeep(e.target.checked)}
                         />
-                        Deep capture
-                    </label> */}
-                    <label className="toggle-switch">
-                    <input
-                        type="checkbox"
-                        checked={deepCapture}
-                        onChange={(e) => setDeep(e.target.checked)}
-                    />
-                    <span className="slider"></span>
-                    <span className="label-text">Deep capture</span>
+                        <span className="slider"></span>
+                        <span className="label-text">Deep capture</span>
                     </label>
+                    {/* Reset in middle */}
+                    <button
+                        className={styles.displayAdsResetBtn}
+                        onClick={reset}
+                    >
+                        🔄 Reset
+                    </button>
+                    {/* Submit on far right */}
+                    <button
+                        className={styles.displayAdsPreviewBtn}
+                        onClick={preview}
+                    >
+                        🚀 Submit Tag
+                    </button>
                 </div>
+
                 {error && (
                     <div style={{ color: "red", marginTop: 6 }}>{error}</div>
                 )}
             </div>
+
 
             {/* previews */}
             {show &&
