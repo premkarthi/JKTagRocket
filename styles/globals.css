@@ -617,3 +617,29 @@ nativeAdsCopyTooltip {
           color: white;
         }
 
+.main {
+  display: flex;
+  position: relative;
+}
+
+.sideAd {
+  position: sticky;
+  top: 100px; /* Adjust if needed */
+  height: fit-content;
+  z-index: 10;
+}
+
+.container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  max-width: 100%;
+}
+
+.bottomAd {
+  position: sticky;
+  bottom: 0;
+  background: white;
+  padding: 10px;
+  z-index: 15;
+}

@@ -12,7 +12,7 @@ export default function Header() {
     return (
         <header className="header">
             <div className="container">
-                <Image src="/images/logo.svg" alt="Header Logo" width={150} height={30} />
+                <Image src="/images/logo.svg" alt="Header Logo" width={150} height={33} />
                 <nav className="nav">
                     <Link href="/" className={isActive("/") ? "active" : ""}>Home</Link>
                     <Link href="/about" className={isActive("/about/") ? "active" : ""}>About</Link>

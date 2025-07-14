@@ -1,8 +1,6 @@
 import ToolsBar from "./ToolsBar";
 import Image from "next/image";
 
-
-
 export default function Hero() {
     return (
         <section className="hero">
@@ -18,8 +16,18 @@ export default function Hero() {
                     </p>
 
                     <div className="hero-buttons">
-                        <button className="btn btn-primary">Get Started</button>
-                        <button className="btn btn-outline">Learn More</button>
+                        <a
+                            href="https://jktagrocket.com/tools/display-ads/"
+                            className="btn btn-primary"
+                        >
+                            Get Started
+                        </a>
+                        <a
+                            href="#learn-more"
+                            className="btn btn-outline"
+                        >
+                            Learn More
+                        </a>
                     </div>
                 </div>
             </div>

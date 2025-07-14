@@ -529,7 +529,7 @@ export default function NativeAds() {
                     </div>
                 </div>
             
-
+{/* // Tabs for Native Ad Payload Details and Event Trackers// */}
             <div className="nativeAdsTabsWrapper">
                 <div className="nativeAdsTabs">
                     {TABS.map((t, idx) => (
