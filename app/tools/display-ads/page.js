@@ -75,7 +75,14 @@ function buildTimeline(resources) {
     duration: (r.responseEnd || 0) - (r.startTime || 0),
   }));
 }
-
+// function getIcon(type) {
+//         switch (type) {
+//             case "success": return "✔️";
+//             case "error": return "❌";
+//             case "warning": return "⚠️";
+//             case "info": default: return "ℹ️";
+//         }
+//     }
 async function captureServerSide(html) {
   const res = await fetch("/api/capture", {
     method: "POST",
@@ -151,6 +158,8 @@ export default function DisplayAds() {
     setAdCode("");
     setAdBlocks([]);
     setShow(false);
+    setError("");
+    setFilters([]);
     setTab("preview");
     setIframeH([]);
     setPreviewLoaded([]);
@@ -159,7 +168,7 @@ export default function DisplayAds() {
     setAdSizes([]);
     setIframeSrcDocs([]);
     frames.current = [];
-    setModal({ idx: null, call: null });
+    // setModal({ idx: null, call: null });
     setMessage({ type: "info", text: "Reset successful — All inputs and previews have been cleared.." });
   };
 
@@ -220,6 +229,24 @@ export default function DisplayAds() {
           placeholder=" 🔗 Paste your HTML/JavaScript display ad tag here to preview and inspect network calls..."
           style={{ width: "100%", padding: 8 }}
         />
+        {message && (
+        <div className={`user-message ${message.type}`} style={{ marginTop: 16 }}>
+            <div className="user-message-icon">{getIcon(message.type)}</div>
+            <div className="user-message-content">
+            <span>{message.text}</span>
+            <a
+                href="#"
+                className="user-message-action"
+                onClick={(e) => {
+                e.preventDefault();
+                setMessage(null);
+                }}
+            >
+                Dismiss
+            </a>
+            </div>
+        </div>
+        )}
 
         <div
                     style={{
