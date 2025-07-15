@@ -1,3 +1,4 @@
+// DisplayAds.js — Final Patch with Structured UI
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
@@ -6,17 +7,51 @@ import Faq from "../../../components/Faq";
 import NetworkTimelineChart from "./NetworkTimelineChart";
 import PerformanceSummaryBlock from "./PerformanceSummaryBlock";
 import { RESOURCE_TYPE_FILTERS, getResourceType } from "./utils";
+// import ad-iframe-network-data from "./computePerformanceSummary";
 import computePerformanceSummary from "./computePerformanceSummary";
 import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
 import "../../../styles/globals.css";
 
+const TRACKER_DOMAINS = {
+  "doubleclick.net": "Google Ads",
+  "googletagmanager.com": "Google Tag Manager",
+  "facebook.net": "Meta Pixel",
+  "adsrvr.org": "The Trade Desk",
+  "criteo.com": "Criteo",
+  "cloudflare.com": "Cloudflare CDN",
+  "adnxs.com": "AppNexus",
+  "moatads.com": "Moat Analytics",
+  "taboola.com": "Taboola",
+  "outbrain.com": "Outbrain",
+  "pixel.adsafeprotected.com": "IAS",
+  "doubleverify.com": "Double Verify"
+};
 
+function extractDomain(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "invalid";
+  }
+}
+
+function getServiceName(url) {
+  const domain = extractDomain(url);
+  for (const key in TRACKER_DOMAINS) {
+    if (domain.includes(key)) return TRACKER_DOMAINS[key];
+  }
+  return "Unknown";
+}
+
+function isThirdParty(url) {
+  const domain = extractDomain(url);
+  return Object.keys(TRACKER_DOMAINS).some((d) => domain.includes(d));
+}
 
 function splitAdBlocks(input) {
   const blockRegex = /<script[\s\S]*?<\/script>|<ins[\s\S]*?<\/ins>|<div[\s\S]*?<\/div>/gi;
   let blocks = input.match(blockRegex) || [];
-  input
-    .replace(blockRegex, "")
+  input.replace(blockRegex, "")
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean)
@@ -31,8 +66,8 @@ function validateAdBlock(b) {
     : "Invalid tag detected might be malformed or unsupported... Please check if you're using a <script>, <ins>, <div>, or a valid URL..";
 }
 
-function buildTimeline(res) {
-  return res.map((r) => ({
+function buildTimeline(resources) {
+  return resources.map((r) => ({
     url: r.name,
     type: getResourceType(r),
     start: r.startTime || 0,
@@ -40,253 +75,285 @@ function buildTimeline(res) {
     duration: (r.responseEnd || 0) - (r.startTime || 0),
   }));
 }
-
+// function getIcon(type) {
+//         switch (type) {
+//             case "success": return "✔️";
+//             case "error": return "❌";
+//             case "warning": return "⚠️";
+//             case "info": default: return "ℹ️";
+//         }
+//     }
 async function captureServerSide(html) {
   const res = await fetch("/api/capture", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ html }),
+    body: JSON.stringify({ html })
   });
-  if (!res.ok) throw new Error("capture failed");
+  if (!res.ok) throw new Error("Capture failed");
   return res.json();
 }
 
 export default function DisplayAds() {
   const [adCode, setAdCode] = useState("");
   const [adBlocks, setAdBlocks] = useState([]);
-  const [error, setError] = useState("");
   const [show, setShow] = useState(false);
   const [iframeH, setIframeH] = useState([]);
+  const [error, setError] = useState("");
   const [previewLoaded, setPreviewLoaded] = useState([]);
   const [networkLoaded, setNetworkLoaded] = useState([]);
   const [netData, setNetData] = useState([]);
   const [filters, setFilters] = useState([]);
-  const [modal, setModal] = useState({ idx: null, call: null });
-  const frames = useRef([]);
-  const [deepCapture, setDeep] = useState(false);
+  const [deepCapture, setDeep] = useState(true);
   const [message, setMessage] = useAutoDismissMessage();
-
-  const reset = () => {
-    setAdCode("");
-    setAdBlocks([]);
-    setShow(false);
-    setError("");
-    setIframeH([]);
-    setPreviewLoaded([]);
-    setNetworkLoaded([]);
-    setNetData([]);
-    setFilters([]);
-    setModal({ idx: null, call: null });
-    frames.current = [];
-    setMessage({ type: "info", text: " Reset successful — All inputs and previews have been cleared.." });
-  };
+  const [tab, setTab] = useState("preview");
+  const [adSizes, setAdSizes] = useState([]);
+  const [iframeSrcDocs, setIframeSrcDocs] = useState([]);
+  const frames = useRef([]);
 
   const preview = () => {
-    if (!adCode.trim()) {
-      return setMessage({ type: "warning", text: " Please enter a valid dispaly tag's before submitting.." });
-    }
-    const blocks = splitAdBlocks(adCode.trim());
+    if (!adCode.trim()) return setMessage({ type: "warning", text: "Please enter a valid dispaly tag's before submitting.." });
+    const blocks = splitAdBlocks(adCode);
     for (const b of blocks) {
       const e = validateAdBlock(b);
       if (e) return setMessage({ type: "error", text: e });
     }
     setAdBlocks(blocks);
     setShow(true);
-    setError("");
-    setIframeH(Array(blocks.length).fill(320));
+    setTab("preview");
+    setNetData(blocks.map(() => ({ resources: [], summary: null, timings: {}, timeline: [] })));
     setPreviewLoaded(Array(blocks.length).fill(false));
     setNetworkLoaded(Array(blocks.length).fill(!deepCapture));
-    setNetData(
-      blocks.map(() => ({
-        resources: [],
-        timings: {},
-        summary: null,
-        timeline: []
-      }))
-    );
-    setFilters(
-      blocks.map(() =>
-        RESOURCE_TYPE_FILTERS.reduce((acc, f) => {
-          acc[f.label] = true;
-          return acc;
-        }, {})
-      )
-    );
+    setIframeH(Array(blocks.length).fill(320));
+    setAdSizes(Array(blocks.length).fill({ width: 0, height: 0 }));
+    setIframeSrcDocs([]);
+    setFilters(blocks.map(() => RESOURCE_TYPE_FILTERS.reduce((a, f) => { a[f.label] = true; return a; }, {})));
+
     if (deepCapture) {
       blocks.forEach(async (b, i) => {
-        const html = `<!doctype html><html><body>${/^(https?:)?\/\//i.test(b.trim()) ? `<script src="${b.trim()}"></script>` : b}</body></html>`;
+        const tag = /^(https?:)?\/\//i.test(b.trim())
+          ? `<script src="${b.trim()}"></script>`
+          : b;
+        const html = `<!doctype html><html><body>${tag}</body></html>`;
         try {
           const { calls, perf } = await captureServerSide(html);
-          setNetData((p) => {
-            const n = [...p];
-            n[i] = {
+          setNetData((prev) => {
+            const next = [...prev];
+            next[i] = {
               resources: calls,
               timings: perf,
               summary: computePerformanceSummary(calls, perf),
-              timeline: buildTimeline(calls),
+              timeline: buildTimeline(calls)
             };
-            return n;
+            return next;
           });
         } finally {
-          setNetworkLoaded((p) => {
-            const n = [...p];
-            n[i] = true;
-            return n;
-          });
+          setNetworkLoaded((prev) => { const updated = [...prev]; updated[i] = true; return updated; });
         }
       });
     }
     setMessage({ type: "success", text: " Dispaly ad's Previews are loaded successfully" });
   };
 
+  const reset = () => {
+    setAdCode("");
+    setAdBlocks([]);
+    setShow(false);
+    setError("");
+    setFilters([]);
+    setTab("preview");
+    setIframeH([]);
+    setPreviewLoaded([]);
+    setNetworkLoaded([]);
+    setNetData([]);
+    setAdSizes([]);
+    setIframeSrcDocs([]);
+    frames.current = [];
+    // setModal({ idx: null, call: null });
+    setMessage({ type: "info", text: "Reset successful — All inputs and previews have been cleared.." });
+  };
+
   useEffect(() => {
-    const h = (e) => {
-      const { type, iframeIdx } = e.data || {};
+    const handler = (e) => {
+      const { type, iframeIdx, width, height } = e.data || {};
+      if (typeof iframeIdx !== "number") return;
       if (type === "ad-iframe-image-size") {
-        setIframeH((p) => {
-          const n = [...p];
-          n[iframeIdx] = Math.max(200, e.data.height + 32);
-          return n;
-        });
-        setPreviewLoaded((p) => {
-          const n = [...p];
-          n[iframeIdx] = true;
-          return n;
-        });
+        setAdSizes((prev) => { const updated = [...prev]; updated[iframeIdx] = { width, height }; return updated; });
+        setIframeH((prev) => { const updated = [...prev]; updated[iframeIdx] = height + 32; return updated; });
+        setPreviewLoaded((prev) => { const updated = [...prev]; updated[iframeIdx] = true; return updated; });
       }
       if (type === "ad-iframe-network-data") {
-        setNetData((p) => {
-          const n = [...p];
-          n[iframeIdx] = {
-            resources: e.data.resources,
-            timings: e.data.timings,
-            summary: computePerformanceSummary(
-              e.data.resources,
-              e.data.timings
-            ),
-            timeline: buildTimeline(e.data.resources),
+        setNetData((prev) => {
+          const updated = [...prev];
+          updated[iframeIdx] = {
+            ...updated[iframeIdx],
+            resources: e.data.resources || [],
+            timings: e.data.timings || {},
+            summary: computePerformanceSummary(e.data.resources, e.data.timings),
+            timeline: buildTimeline(e.data.resources || [])
           };
-          return n;
+          return updated;
         });
-        setNetworkLoaded((p) => {
-          const n = [...p];
-          n[iframeIdx] = true;
-          return n;
-        });
+        setNetworkLoaded((prev) => { const updated = [...prev]; updated[iframeIdx] = true; return updated; });
       }
     };
-    window.addEventListener("message", h);
-    return () => window.removeEventListener("message", h);
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
   }, []);
 
   useEffect(() => {
     if (!show) return;
-    adBlocks.forEach((blk, i) => {
-      if (!frames.current[i]) return;
-      const tag = /^(https?:)?\/\//i.test(blk.trim())
-        ? `<script src='${blk.trim()}'></script>`
-        : blk;
-      const collect = !deepCapture
-        ? `<script>(function(){function send(){var r=performance.getEntriesByType('resource');
-      var nav=performance.timing,t={domContentLoaded:nav.domContentLoadedEventEnd-nav.navigationStart,
-      loadTime:nav.loadEventEnd-nav.navigationStart,firstPaint:(performance.getEntriesByType('paint').find(p=>p.name==='first-contentful-paint')||{}).startTime||0};
-      parent.postMessage({type:'ad-iframe-network-data',iframeIdx:${i},resources:Array.from(r),timings:t},'*');}
-      window.addEventListener('load',()=>setTimeout(send,1000));})();</script>`
+    const docs = adBlocks.map((blk, i) => {
+      const tag = /^(https?:)?\/\//i.test(blk.trim()) ? `<script src='${blk.trim()}'></script>` : blk;
+      const collectScript = !deepCapture
+        ? `<script>(function(){function send(){var r=performance.getEntriesByType('resource');var nav=performance.timing,t={domContentLoaded:nav.domContentLoadedEventEnd-nav.navigationStart,loadTime:nav.loadEventEnd-nav.navigationStart,firstPaint:(performance.getEntriesByType('paint').find(p=>p.name==='first-contentful-paint')||{}).startTime||0};parent.postMessage({type:'ad-iframe-network-data',iframeIdx:${i},resources:Array.from(r),timings:t},'*');}window.addEventListener('load',()=>setTimeout(send,1000));})();</script>`
         : "";
-      const size = `<script>window.addEventListener('load',()=>parent.postMessage({type:'ad-iframe-image-size',iframeIdx:${i},height:document.body.scrollHeight},'*'));</script>`;
-      frames.current[i].srcdoc = `<!doctype html><html><body>${tag}${size}${collect}</body></html>`;
+      const sizeScript = `<script>window.addEventListener('load', () => {setTimeout(() => {const all = document.body.children;let w = 0, h = 0;for (let j = 0; j < all.length; j++) {const r = all[j].getBoundingClientRect();w = Math.max(w, r.width);h = Math.max(h, r.height);}parent.postMessage({ type: 'ad-iframe-image-size', iframeIdx: ${i}, width: Math.round(w), height: Math.round(h) }, '*');}, 500);});</script>`;
+      return `<!doctype html><html><body>${tag}${sizeScript}${collectScript}</body></html>`;
     });
+    setIframeSrcDocs(docs);
   }, [adBlocks, show, deepCapture]);
 
   return (
     <div className={styles.displayAdsContainer}>
-      <h1 className={styles.displayAdsHeader}>Display Ad Tag Preview & Network Analyzer</h1>
-      <p className={styles.displayAdsSubtitle}>
-        Test and preview display ad tags in a secure sandbox with deep capture support ..
-      </p>
-
-      <div className={styles.displayAdsInputCard}>
+      <div style={{ border: "2px solid #ccc", borderRadius: 6, padding: 16, marginBottom: 24 }}>
+        {/* header */}
+            <h1 className={styles.displayAdsHeader}>Display Ad Tag Preview & Network Analyzer</h1>
+            <p className={styles.displayAdsSubtitle}>
+                Test and preview display ad tags in a secure sandbox with <b>Deep Capture </b> support ..
+            </p>
         <textarea
-          rows={7}
           value={adCode}
-          placeholder=" 🔗 Paste your HTML/JavaScript display ad tag here to preview and inspect network calls..."
-          onChange={(e) => setAdCode(e.target.value)}
+          rows={9}
           className={styles.displayAdsTextarea}
+          onChange={(e) => setAdCode(e.target.value)}
+          placeholder=" 🔗 Paste your HTML/JavaScript display ad tag here to preview and inspect network calls..."
+          style={{ width: "100%", padding: 8 }}
         />
-
         {message && (
-          <div className={`user-message ${message.type}`} style={{ whiteSpace: "pre-wrap", marginTop: 16 }}>
+        <div className={`user-message ${message.type}`} style={{ marginTop: 16 }}>
             <div className="user-message-icon">{getIcon(message.type)}</div>
             <div className="user-message-content">
-              <span>{message.text}</span>
-              <a href="#" className="user-message-action" onClick={(e) => { e.preventDefault(); setMessage(null); }}>Dismiss</a>
+            <span>{message.text}</span>
+            <a
+                href="#"
+                className="user-message-action"
+                onClick={(e) => {
+                e.preventDefault();
+                setMessage(null);
+                }}
+            >
+                Dismiss
+            </a>
             </div>
-          </div>
+        </div>
         )}
 
-        <div style={{ display: "flex", gap: 12, marginTop: 8, justifyContent: "flex-end", alignItems: "center" }}>
-          <label className="toggle-switch">
-            <input
-              type="checkbox"
-              checked={deepCapture}
-              onChange={(e) => setDeep(e.target.checked)}
-            />
-            <span className="slider"></span>
-            <span className="label-text">Deep capture</span>
-          </label>
-          <button className={styles.displayAdsResetBtn} onClick={reset}>🔄 Reset</button>
-          <button className={styles.displayAdsPreviewBtn} onClick={preview}>🚀 Submit Tag</button>
-        </div>
+        <div
+                    style={{
+                        display: "flex",
+                        gap: 12,
+                        marginTop: 8,
+                        justifyContent: "flex-end", // ✅ Align to right
+                        alignItems: "center",
+                    }}
+                >   {/* Toggle on far left */}
+                    <label className="toggle-switch">
+                        <input
+                            type="checkbox"
+                            checked={deepCapture}
+                            onChange={(e) => setDeep(e.target.checked)}
+                        />
+                        <span className="slider"></span>
+                        <span className="label-text">Deep capture</span>
+                    </label>
+                    {/* Reset in middle */}
+                    <button
+                        className={styles.displayAdsResetBtn}
+                        onClick={reset}
+                    >
+                        🔄 Reset
+                    </button>
+                    {/* Submit on far right */}
+                    <button
+                        className={styles.displayAdsPreviewBtn}
+                        onClick={preview}
+                    >
+                        🚀 Submit Tag
+                    </button>
+                </div>
       </div>
 
-      {show && adBlocks.map((b, i) => {
-        const net = netData[i] || {};
-        const flt = filters[i] || {};
-        const calls = net.resources?.filter((r) => flt[getResourceType(r)]) || [];
-        const filteredSummary = net.summary ? computePerformanceSummary(calls, net.timings || {}) : null;
-
-        return (
-          <section key={i} className={styles.displayAdsPreviewArea}>
-            <div style={{ position: "relative" }}>
-              {!previewLoaded[i] && (
-                <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.6)", display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 8, zIndex: 2 }}>
-                  ⏳
-                </div>
-              )}
-              <iframe
-                ref={(el) => (frames.current[i] = el)}
-                sandbox="allow-scripts allow-same-origin"
-                style={{ width: "100%", height: iframeH[i] || 320, border: "1px solid #e5e7eb", borderRadius: 8 }}
-                title={`ad-preview-${i}`}
-              />
+      {show && (
+        <div style={{ border: "2px solid #ccc", borderRadius: 6, padding: 16 }}>
+          <div className={styles.tabButtons}>
+                <button onClick={() => setTab("preview")} className={tab === "preview" ? styles.activeTab : ""}>🖥️ Ad Preview</button>
+                <button onClick={() => setTab("trackers")} className={tab === "trackers" ? styles.activeTab : ""}>🎯 Trackers</button>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8 }}>
-              <h3 style={{ margin: 0 }}>Network</h3>
-              {!networkLoaded[i] && <span style={{ fontSize: 12 }}>collecting…</span>}
-            </div>
+            {tab === "preview" && adBlocks.map((b, i) => {
+                const net = netData[i] || {};
+                const size = adSizes[i] || {};
+                return (
+                <section key={`preview-${i}`} className={styles.displayAdsPreviewArea}>
+                    <p>Ad Size: {size.width || "?"}×{size.height || "?"}</p>
+                    <iframe
+                    key={`preview-${tab}-${i}`}
+                    ref={(el) => (frames.current[i] = el)}
+                    srcDoc={iframeSrcDocs[i] || ""}
+                    sandbox="allow-scripts allow-same-origin"
+                    style={{ width: "100%", height: iframeH[i] || 320, border: "1px solid #ccc" }}
+                    title={`ad-preview-${i}`}
+                    />
+                    <details style={{ marginTop: 10 }}>
+                    <summary>📡 Network & Performance Details</summary>
+                    <div style={{ marginTop: 10 }}>
+                        <NetworkTimelineChart timeline={net.timeline || []} />
+                        <PerformanceSummaryBlock summary={net.summary} />
+                    </div>
+                    </details>
+                </section>
+                );
+            })}
 
-            <NetworkTimelineChart
-              timeline={calls.map((r) => ({
-                url: r.name,
-                type: getResourceType(r),
-                start: r.startTime || 0,
-                end: r.responseEnd || 0,
-                duration: (r.responseEnd || 0) - (r.startTime || 0),
-              }))}
-            />
-            <PerformanceSummaryBlock summary={filteredSummary} />
-          </section>
-        );
-      })}
+          {tab === "trackers" && adBlocks.map((b, i) => {
+            const calls = netData[i]?.resources || [];
+            const trackers = calls.filter((r) => isThirdParty(r.name));
+            const size = adSizes[i] || {};
+            if (!trackers.length) return <p key={i}>⚠️ No trackers for ad {i + 1}</p>;
+            return (
+              <div key={`trackers-${i}`} style={{ marginTop: 16 }}>
+                <h3>🎯 {trackers.length} trackers for ad {size.width || "?"}×{size.height || "?"}</h3>
+                <table className={styles.trackerTable}>
+                  <thead>
+                    <tr><th>#</th><th>Domain</th><th>Type</th><th>Service</th><th>Action</th></tr>
+                  </thead>
+                  <tbody>
+                    {trackers.map((r, idx) => {
+                      const domain = extractDomain(r.name);
+                      return (
+                        <tr key={idx}>
+                          <td>{idx + 1}</td>
+                          <td>{domain}</td>
+                          <td>{getResourceType(r)}</td>
+                          <td>{getServiceName(r.name)}</td>
+                          <td><a href={r.name} target="_blank" rel="noopener noreferrer">🔍 View</a></td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <Faq
         title="How do I preview an HTML / Script ad tags?"
         list={[
-          "Preview an ad tags by uploading / input of the tag's HTML (script).",
-          "Get a dynamic live previews of any ad size of tags.",
-          "View network timelines, load times, and more with Deep capture ON.",
-          "Share with clients to get feedback.",
+          "Paste your display ad tag HTML or JS to preview.",
+          "Get real-time load timeline, trackers, and dimensions.",
+          "Enable 'Deep Capture' to collect server-side assets."
         ]}
       />
     </div>

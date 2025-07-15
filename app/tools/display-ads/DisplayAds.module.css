@@ -207,7 +207,7 @@
 .dropzoneIcon {
   color: #909;
   font-size: 38px;
-  margin-bottom: 51px;
+  margin-bottom: 29px;
 }
 
 .dropzoneMainText {
@@ -432,3 +432,160 @@ label span:hover .info-tooltip {
           background-color: #2196F3;
           color: white;
         }
+ .activeTab {
+  background: #6d28d9;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+.inactiveTab {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.tabContainer {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.tabButtons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tabButtons button {
+  flex: 1;
+  padding: 10px 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  background-color: #f3f4f6;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  min-width: 140px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.tabButtons button:hover {
+  background-color: #e5e7eb;
+}
+
+.tabButtons button.activeTab {
+  background-color: #6366f1;
+  color: #fff;
+  font-weight: 600;
+}
+
+.trackerTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.trackerTable th, .trackerTable td {
+  border: 1px solid #d1d5db;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.trackerTable th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+.trackerTable td {
+  color: #1f2937;
+  word-break: break-word;
+}
+.trackerTable tr:nth-child(even) {
+  background-color: #f3f4f6;
+}
+.trackerTable a {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: underline;
+}
+.trackerTable a:hover {
+  color: #1d4ed8;
+}
+.trackerTable .trackerName {
+  font-weight: 600;
+  color: #4b5563;
+}
+.trackerTable .trackerValue {
+  color: #1f2937;
+  word-break: break-all;
+}
+.trackerTable .trackerValue a {
+  color: #2563eb;
+  text-decoration: none;
+}
+.trackerTable .trackerValue a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+.trackerTable .trackerValue span {
+  color: #6b7280;
+  font-style: italic;
+}
+.trackerTable .trackerValue .trackerLink {
+  color: #2563eb;
+  text-decoration: none;
+}
+.trackerTable .trackerValue .trackerLink:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+.displayAdsHeader {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.displayAdsTextarea {
+  width: 100%;
+  font-size: 14px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.displayAdsResetBtn,
+.displayAdsPreviewBtn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.displayAdsResetBtn {
+  background: #eee;
+  color: #333;
+}
+
+.displayAdsPreviewBtn {
+  background: #2563eb;
+  color: white;
+}
+
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.displayAdsTextarea {
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+

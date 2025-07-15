@@ -7,8 +7,8 @@ import Faq from '../components/Faq';
 import Image from 'next/image';
 
 export default function Home() {
-    const title = 'How do I preview an HTML5 ad?'
-    const list = ['Preview an HTML5 ad by uploading an HTML5 zip file', 'View a live ad preview, images of each frame, and a video of the ad', 'View network timelines, load times, file sizes, and more to ensure ads are compliant', 'Share with clients and get feedback']
+    // const title = 'How do I preview an HTML5 ad?'
+    // const list = ['Preview an HTML5 ad by uploading an HTML5 zip file', 'View a live ad preview, images of each frame, and a video of the ad', 'View network timelines, load times, file sizes, and more to ensure ads are compliant', 'Share with clients and get feedback']
 
     return (
         <>
@@ -20,7 +20,7 @@ export default function Home() {
             </Head>
             <Hero />
             <FeatureGrid />
-            <Faq title={title} list={list} />
+            {/* <Faq title={title} list={list} /> */}
         </>
 
     );
