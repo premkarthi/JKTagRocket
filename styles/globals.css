@@ -697,3 +697,104 @@ nativeAdsCopyTooltip {
   margin-top: 12px;
 }
 
+/* Contact page CSS style changes  */
+/* Contact Page Layout */
+.contact-form-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  background-color: #fff;
+  font-family: system-ui, sans-serif;
+}
+
+.contact-form-container h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-align: center;
+  color: #111;
+}
+
+.contact-form-container p {
+  text-align: center;
+  color: #6b7280;
+  margin-bottom: 2rem;
+  font-size: 1.125rem;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.contact-grid-full {
+  grid-column: span 2;
+}
+
+.contact-form-input,
+.contact-form-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #f9fafb;
+}
+
+.contact-form-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.contact-form-button {
+  grid-column: span 2;
+  width: 100%;
+  padding: 14px;
+  background-color: #6b21a8;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.contact-form-button:hover {
+  background-color: #581c87;
+}
+.form-error {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+.form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+input, textarea {
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-error {
+  color: red;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+.submit-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
