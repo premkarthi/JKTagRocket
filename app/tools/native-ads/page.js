@@ -710,7 +710,7 @@ export default function NativeAds() {
                                                 <Image
                                                     src={imagevideoPreview}
                                                     alt="Preview"
-                                                    style={{ maxHeight: 700, maxWidth: 500, marginBottom: 9 }}
+                                                    style={{ maxHeight: 300, maxWidth: 500, marginBottom: 9 }}
                                                     onError={e => (e.target.style.display = 'none')}
                                                     height={700}
                                                     width={500}

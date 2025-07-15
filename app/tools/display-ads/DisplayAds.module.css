@@ -207,7 +207,7 @@
 .dropzoneIcon {
   color: #909;
   font-size: 38px;
-  margin-bottom: 51px;
+  margin-bottom: 29px;
 }
 
 .dropzoneMainText {
@@ -588,3 +588,4 @@ label span:hover .info-tooltip {
   border-radius: 6px;
   font-size: 15px;
 }
+
