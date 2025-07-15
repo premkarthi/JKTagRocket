@@ -4,7 +4,7 @@ import Link from 'next/link';
 export default function Footer() {
   const products = [
     { label: "Privacy Policy", href: "/privacy-policy" },
-    { label: "Terms of Service", href: "/terms" },
+    { label: "Terms of Service", href: "/terms-of-service" },
     { label: "Contact", href: "/contact" },
   ];
 
