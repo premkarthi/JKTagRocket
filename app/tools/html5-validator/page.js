@@ -165,7 +165,7 @@ export default function HTML5ValidatorPage() {
             <button className={styles.dropzoneButton} type="button">Browse & Upload</button>
             <input type="file" accept=".zip" style={{ display: "none" }} ref={inputRef} onChange={handleFileChange} />
             {uploadedFileName && (
-              <div style={{ marginTop: 11, fontSize: 15, color: '#909' }}>📁 <strong>{uploadedFileName}</strong></div>
+              <div style={{ marginTop: 11, fontSize: 15, color: '#909' }}>File Name : 📁 <strong>{uploadedFileName}</strong></div>
             )}
           </div>
         </div>
@@ -196,15 +196,12 @@ export default function HTML5ValidatorPage() {
             🔄 RESET
           </button>
         </div>
-            <dix><h3 style={{ textAlign: "center", marginBottom: 5 }}>
-              Live Preview :
-              {/* <span style={{ fontSize: 15, fontWeight: "normal" }}>(Ad Size: {adSize.width}×{adSize.height})</span> */}
-            </h3></dix>
+
         {iframeUrl && (
           <div style={{ marginTop: 24, padding: 16, border: "2px solid #ccc", borderRadius: 8 }}>
-            {/* <h3 style={{ textAlign: "center", marginBottom: 12 }}>
+            <h3 style={{ textAlign: "center", marginBottom: 12 }}>
               Live Preview <span style={{ fontSize: 15, fontWeight: "normal" }}>(Ad Size: {adSize.width}×{adSize.height})</span>
-            </h3> */}
+            </h3>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <iframe
                 src={iframeUrl}
