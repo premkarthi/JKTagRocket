@@ -329,7 +329,7 @@ export default function NativeAds() {
             // You would call buildNativeData(nativeData, url) here
             setMessage({ type: "success", text: " Native tag processed successfully!" });
         } catch (err) {
-            setMessage({ type: "error", text: " Failed to fetch or parse the native tag." });
+            setMessage({ type: "error", text: " Failed to fetch or parse the native tag, Please check the URLonce .." });
         } finally {
             setLoading(false);
         }
@@ -710,7 +710,7 @@ export default function NativeAds() {
                                                 <Image
                                                     src={imagevideoPreview}
                                                     alt="Preview"
-                                                    style={{ maxHeight: 700, maxWidth: 500, marginBottom: 9 }}
+                                                    style={{ maxHeight: 300, maxWidth: 500, marginBottom: 9 }}
                                                     onError={e => (e.target.style.display = 'none')}
                                                     height={700}
                                                     width={500}
