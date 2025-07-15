@@ -798,3 +798,27 @@ input, textarea {
   border-radius: 6px;
   cursor: pointer;
 }
+
+/* terms-of-services CSS style changes  */
+.legal-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 16px;
+  line-height: 1.6;
+}
+
+.legal-container h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.legal-updated {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.legal-container h2 {
+  font-size: 1.3rem;
+  margin-top: 2rem;
+}
