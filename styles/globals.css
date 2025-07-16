@@ -822,3 +822,66 @@ input, textarea {
   font-size: 1.3rem;
   margin-top: 2rem;
 }
+.terms-wrapper {
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  padding: 16px;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.terms-toc {
+  min-width: 200px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 120px;
+  align-self: flex-start;
+}
+
+.terms-content {
+  flex: 1;
+}
+
+/* Mobile toggle for TOC */
+@media (max-width: 768px) {
+  .terms-wrapper {
+    flex-direction: column;
+  }
+
+  .terms-toc {
+    position: static;
+    margin-bottom: 16px;
+  }
+
+  .terms-toggle-button {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 12px;
+  }
+}
+html {
+  scroll-behavior: smooth;
+}
+.toc-link {
+  color: #0070f3;
+  text-decoration: none;
+}
+.toc-link:hover {
+  color: #0051a3;
+}
+.toc-link.active-toc {
+  font-weight: bold;
+  color: #000;
+  text-decoration: underline;
+}
+.active-toc {
+  color: black;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
