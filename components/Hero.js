@@ -1,6 +1,5 @@
 "use client";
 
-import ToolsBar from "./ToolsBar";
 import Image from "next/image";
 import { motion } from "framer-motion";
 
@@ -17,15 +16,13 @@ export default function Hero() {
       className="hero"
       style={{
         position: "relative",
-        padding: "60px 16px 40px",
+        padding: "48px 16px 24px", // less vertical space
         background:
           "linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url('/images/hero-bg.jpg') center/cover no-repeat",
         color: "#fff",
         textAlign: "center",
-        overflow: "hidden",
       }}
     >
-      {/* Animated Content */}
       <motion.div
         className="hero-content"
         initial={{ opacity: 0, y: 40 }}
@@ -43,50 +40,47 @@ export default function Hero() {
         <p
           className="tag"
           style={{
-            fontSize: "1.1rem",
+            fontSize: "1.05rem",
             color: "#eee",
-            marginBottom: "16px",
+            marginBottom: "12px",
           }}
         >
           🚀 Professional Ad Tag Utilities
         </p>
 
-        <div style={{ marginBottom: "20px" }}>
+        <div style={{ marginBottom: "16px" }}>
           <Image
             src="/images/logo.svg"
             alt="Logo middle"
             width={150}
             height={40}
             priority
-            style={{ maxWidth: "100%", height: "auto" }}
           />
         </div>
 
         <p
-          className="hero-description"
           style={{
             fontSize: "1.1rem",
             color: "#f1f1f1",
-            marginBottom: "28px",
-            lineHeight: "1.65",
+            marginBottom: "24px",
+            lineHeight: "1.6",
           }}
         >
-          Professional ad tag utilities for previews, validation, and data
-          transformation. Built for speed, precision, and developer productivity.
+          Professional ad tag utilities for previews, validation, and data transformation.
+          Built for speed, precision, and developer productivity.
         </p>
 
         <div
-          className="hero-buttons"
           style={{
             display: "flex",
-            gap: "16px",
+            gap: "14px",
             flexWrap: "wrap",
             justifyContent: "center",
+            marginBottom: "20px",
           }}
         >
           <a
             href="https://jktagrocket.com/tools/display-ads/"
-            className="btn btn-primary"
             style={{
               padding: "10px 22px",
               backgroundColor: "#0070f3",
@@ -98,16 +92,17 @@ export default function Hero() {
           >
             Get Started
           </a>
+
           <a
-            href="#learn-more"
-            className="btn btn-outline"
+            href="/learn-more"
             style={{
               padding: "10px 22px",
-              border: "1px solid #fff",
+              border: "2px solid #fff",
               color: "#fff",
               borderRadius: "6px",
-              textDecoration: "none",
+              background: "transparent",
               fontWeight: 500,
+              textDecoration: "none",
             }}
           >
             Learn More
@@ -115,39 +110,47 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* Scroll Down Indicator */}
+      {/* 🔻 Animated Scroll Arrows */}
       <motion.div
         onClick={handleScroll}
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          delay: 1.2,
-          repeat: Infinity,
-          repeatType: "reverse",
-          duration: 1,
-        }}
         style={{
           position: "absolute",
-          bottom: 16,
+          top: "calc(100% - 40px)", // places it near the bottom
           left: "50%",
           transform: "translateX(-50%)",
           cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "2px",
+          zIndex: 10,
         }}
         title="Scroll down"
       >
-        {/* Custom scroll icon - animated SVG arrow */}
-        <svg
-          width="32"
-          height="32"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#ffffff"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
+        {[0, 1, 2].map((i) => (
+          <motion.svg
+            key={i}
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#ff1493"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            initial={{ opacity: 0, y: -2 }}
+            animate={{ opacity: 1, y: 2 }}
+            transition={{
+              delay: i * 0.15,
+              duration: 1,
+              repeat: Infinity,
+              repeatType: "reverse",
+              ease: "easeInOut",
+            }}
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </motion.svg>
+        ))}
       </motion.div>
     </section>
   );
