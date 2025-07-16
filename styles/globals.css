@@ -188,7 +188,7 @@ body {
 }
 .tag {
   color: #681db3;
-  background: #eff6ff;
+  background: #909;
   border: 0.67px solid #d9c9ff;
   display: inline-block;
   padding: 5px 15px;
@@ -885,3 +885,34 @@ html {
   text-decoration: underline;
 }
 
+.fade-in-section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+.fade-in-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* globals.css */
+header img {
+  vertical-align: middle;
+}
+
+.nav a {
+  font-size: 15px;
+  padding: 4px 8px;
+}
+html {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+body {
+  background-color: #fff;
+  color: #000;
+}
+html.dark body {
+  background-color: #111;
+  color: #eee;
+}

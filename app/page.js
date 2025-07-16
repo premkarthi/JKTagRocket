@@ -14,8 +14,7 @@ export default function Home() {
         <>
             <Head>
                 <title>JK Tag Rocket</title>
-                {/* <link rel="icon" href="/images/browsertab_icon.png" /> */}
-                <link rel="icon" href="/favicon.ico" sizes="77x77" />
+                <link rel="icon" href="/favicon.ico" />
 
             </Head>
             <Hero />

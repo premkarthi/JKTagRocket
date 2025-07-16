@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
+import { motion } from "framer-motion";
 import "../../styles/globals.css";
 
 const sections = [
@@ -16,18 +16,46 @@ const sections = [
 
 const content = {
   introduction: `Welcome to <b>JKTAGROCKET</b> 🚀. These Terms of Service ("Terms") govern your access to and use of our website and tools. By using our services, you agree to these Terms in full. If you do not agree, please do not use our platform.`,
+
   usage: `You may use our platform only in accordance with these Terms and all applicable laws. You may not misuse or interfere with our services or attempt unauthorized access. All tools provided are intended for professional ad tag validation and analysis only.`,
+
   accounts: `You may be required to provide accurate information to access certain features. You are responsible for maintaining the security of your credentials and for all activity under your account.`,
+
   privacy:
     `Your privacy is important to us. Please review our ` +
     `<a href="/privacy-policy/" style="color:#0070f3;text-decoration:underline;">Privacy Policy page</a>` +
     ` to understand how we collect, use, and protect your data. By using our services, you consent to our data practices.`,
+
   termination: `We may suspend or terminate your access at any time for violations of these Terms, abuse of services, or if required by law. Upon termination, you must cease all use of our platform.`,
+
   changes: `We may update these Terms occasionally. If we make material changes, we will notify you via email or on our website. Continued use of the service after changes means you accept the revised Terms.`,
+
   contact:
     `If you have questions about these Terms, please contact us via the ` +
     `<a href="/contact/" style="color:#0070f3;text-decoration:underline;">Contact page</a>` +
     ` or email us at 📨 <strong>support@jktagrocket.com</strong>.`,
+};
+
+// Animation Variants
+const fadeInStagger = {
+  hidden: {},
+  show: {
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+};
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
 };
 
 export default function TermsOfServicePage() {
@@ -42,7 +70,7 @@ export default function TermsOfServicePage() {
         }
       },
       {
-        threshold: 0.4,
+        threshold: 0.5,
         rootMargin: "0px 0px -50% 0px",
       }
     );
@@ -109,25 +137,45 @@ export default function TermsOfServicePage() {
       </div>
 
       {/* Main Content */}
-      <div style={{ flex: 1, background: "#fff", padding: "24px" }}>
-        <h1 style={{ marginBottom: "1.5rem" }}>Terms of Service</h1>
-        <p style={{ fontSize: "0.99rem", color: "#909", marginBottom: "2rem" }}>
+      <motion.div
+        style={{ flex: 1, background: "#fff", padding: "24px" }}
+        variants={fadeInStagger}
+        initial="hidden"
+        animate="show"
+      >
+        <motion.h1 variants={fadeInUp} style={{ marginBottom: "1.5rem" }}>
+          Terms of Service
+        </motion.h1>
+
+        <motion.p variants={fadeInUp} style={{ fontSize: "0.99rem", color: "#909", marginBottom: "2rem" }}>
           Last updated: <strong>July 2025</strong>
-        </p>
-        <p style={{ marginBottom: 24 }}>
+        </motion.p>
+
+        <motion.p variants={fadeInUp} style={{ marginBottom: 24 }}>
           Please read these Terms of Service carefully before using our services.
-        </p>
+        </motion.p>
 
         {sections.map(({ id, title }) => (
-          <section key={id} id={id} style={{ marginBottom: "2rem", scrollMarginTop: 120 }}>
-            <h2 style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>{title}</h2>
-            <p
+          <motion.section
+            key={id}
+            id={id}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: false, amount: 0.3 }} // retriggers every time in view
+            variants={fadeInStagger}
+            style={{ marginBottom: "2rem", scrollMarginTop: "140px" }}
+          >
+            <motion.h2 variants={fadeInUp} style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>
+              {title}
+            </motion.h2>
+            <motion.p
+              variants={fadeInUp}
               style={{ lineHeight: "1.7", color: "#444" }}
               dangerouslySetInnerHTML={{ __html: content[id] }}
             />
-          </section>
+          </motion.section>
         ))}
-      </div>
+      </motion.div>
     </div>
   );
 }

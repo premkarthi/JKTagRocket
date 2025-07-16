@@ -1,78 +1,70 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import "@/styles/globals.css";
+import React from "react";
+import { motion } from "framer-motion";
+import "../../styles/globals.css";
 
 const sections = [
-  { id: "information", title: "1. Information We Collect" },
-  { id: "usage", title: "2. How We Use Your Information" },
-  { id: "retention", title: "3. Data Retention" },
-  { id: "thirdparty", title: "4. Third-Party Services" },
-  { id: "cookies", title: "5. Cookies" },
+  { id: "data", title: "1. What Data We Collect" },
+  { id: "usage", title: "2. How We Use Your Data" },
+  { id: "cookies", title: "3. Cookies and Tracking" },
+  { id: "security", title: "4. Data Security" },
+  { id: "thirdparty", title: "5. Third-Party Services" },
   { id: "rights", title: "6. Your Rights" },
-  { id: "updates", title: "7. Updates" },
-  { id: "contact", title: "8. Contact" },
+  { id: "contact", title: "7. Contact Us" },
 ];
 
+const content = {
+  data: `We may collect personal and usage data including IP addresses, browser types, and session behaviors. We also collect voluntarily submitted information such as email addresses when you contact us.`,
+  usage: `Your data is used to improve our services, analyze traffic, and ensure security. We do not sell your personal information.`,
+  cookies: `We use cookies and similar technologies to enhance your experience. You may disable cookies in your browser settings, but some features may not work as intended.`,
+  security: `We implement security measures to protect your data, including encryption and regular system audits.`,
+  thirdparty: `Some tools on our platform may interact with third-party services. These services have their own privacy policies.`,
+  rights: `You may request to access, update, or delete your personal data by contacting us. We comply with GDPR and other regional laws where applicable.`,
+  contact: `If you have questions about our Privacy Policy, contact us via the <a href="/contact/" style="color:#0070f3;text-decoration:underline;">Contact page</a> or email <strong>support@jktagrocket.com</strong>.`,
+};
+
+const fadeInStagger = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
+};
+
 export default function PrivacyPolicyPage() {
-  const [activeSection, setActiveSection] = useState("");
-  const observerRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.find((entry) => entry.isIntersecting);
-        if (visible?.target?.id) {
-          setActiveSection(visible.target.id);
-        }
-      },
-      { threshold: 0.3 }
-    );
-    sections.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    observerRef.current = observer;
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <div
       style={{
         display: "flex",
         border: "2px solid #ccc",
         borderRadius: "10px",
-        overflow: "hidden",
         margin: "2rem 1rem",
-        minHeight: "100vh",
+        overflow: "hidden",
       }}
     >
-      {/* TOC Container */}
-      <div
-        style={{
-          width: 260,
-          background: "#f9f9f9",
-          padding: 24,
-          borderRight: "2px solid #ccc",
-        }}
-      >
+      {/* Sidebar */}
+      <div style={{ width: 260, padding: 24, background: "#f9f9f9", borderRight: "2px solid #ccc" }}>
         <div style={{ position: "sticky", top: 100 }}>
           <h3 style={{ fontSize: "1.1rem", marginBottom: "1rem" }}>On this page</h3>
-          <ul style={{ listStyle: "none", paddingLeft: 0, lineHeight: "1.6", margin: 0 }}>
+          <ul style={{ listStyle: "none", paddingLeft: 0 }}>
             {sections.map(({ id, title }) => (
               <li key={id}>
                 <a
                   href={`#${id}`}
-                  className={`toc-link ${activeSection === id ? "active-toc" : ""}`}
                   style={{
-                    color: activeSection === id ? "#000" : "#0070f3",
-                    fontWeight: activeSection === id ? "bold" : "normal",
-                    textDecoration: activeSection === id ? "underline" : "none",
+                    color: "#0070f3",
                     display: "block",
-                    padding: "4px 0",
-                    transition: "color 0.3s",
+                    marginBottom: 8,
+                    textDecoration: "none",
                   }}
                 >
                   {title}
@@ -83,83 +75,41 @@ export default function PrivacyPolicyPage() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div
-        style={{
-          flex: 1,
-          background: "#fff",
-          padding: "24px",
-        }}
+      {/* Content */}
+      <motion.div
+        style={{ flex: 1, padding: 24, background: "#fff" }}
+        variants={fadeInStagger}
+        initial="hidden"
+        animate="show"
       >
-        <h1 style={{ marginBottom: "1.5rem" }}>Privacy Policy</h1>
-        <p style={{ fontSize: "0.99rem", color: "#909", marginBottom: "2rem" }}>
+        <motion.h1 variants={fadeInUp} style={{ marginBottom: 20 }}>
+          Privacy Policy
+        </motion.h1>
+        <motion.p variants={fadeInUp} style={{ color: "#909", marginBottom: 30 }}>
           Last updated: <strong>July 2025</strong>
-        </p>
-        <p style={{ marginBottom: 24 }}>
-          This Privacy Policy outlines how we collect, use, and protect your information when you use our website and tools.
-        </p>
+        </motion.p>
 
-        <section id="information" style={{ marginBottom: "2rem" }}>
-          <h2>1. Information We Collect</h2>
-          <ul style={{ paddingLeft: "20px", lineHeight: "1.7" }}>
-            <li><strong>Contact Information:</strong> When you submit forms (e.g., Contact), we may collect your name, email, phone number, and message content.</li>
-            <li><strong>Usage Data:</strong> We may collect non-personal technical data like browser type, device type, IP address, and pages visited for analytics and performance improvements.</li>
-            <li><strong>Files Uploaded:</strong> If you upload creative ZIPs or ad tags, we temporarily process them for previewing and analysis. We do not store user-uploaded content permanently.</li>
-          </ul>
-        </section>
-
-        <section id="usage" style={{ marginBottom: "2rem" }}>
-          <h2>2. How We Use Your Information</h2>
-          <ul style={{ paddingLeft: "20px", lineHeight: "1.7" }}>
-            <li>To respond to your support or contact inquiries</li>
-            <li>To improve our services, tooling, and user experience</li>
-            <li>To detect abuse or misuse of our platform</li>
-          </ul>
-        </section>
-
-        <section id="retention" style={{ marginBottom: "2rem" }}>
-          <h2>3. Data Retention</h2>
-          <p style={{ fontSize: "1rem", lineHeight: "1.7" }}>
-            We do not store uploaded creative files or ad tags after your session. Contact form submissions may be stored securely for record-keeping and response purposes.
-          </p>
-        </section>
-
-        <section id="thirdparty" style={{ marginBottom: "2rem" }}>
-          <h2>4. Third-Party Services</h2>
-          <p style={{ fontSize: "1rem", lineHeight: "1.7" }}>
-            We may use third-party services like analytics providers or email processors. These providers are bound by their own privacy policies and do not receive your uploaded creative content.
-          </p>
-        </section>
-
-        <section id="cookies" style={{ marginBottom: "2rem" }}>
-          <h2>5. Cookies</h2>
-          <p style={{ fontSize: "1rem", lineHeight: "1.7" }}>
-            Our site uses minimal cookies only for functionality or analytics. You may disable cookies in your browser settings, though some features may not work correctly.
-          </p>
-        </section>
-
-        <section id="rights" style={{ marginBottom: "2rem" }}>
-          <h2>6. Your Rights</h2>
-          <p style={{ fontSize: "1rem", lineHeight: "1.7" }}>
-            You may request access to, correction of, or deletion of your personal information by contacting us. We comply with applicable data privacy laws including GDPR and CCPA.
-          </p>
-        </section>
-
-        <section id="updates" style={{ marginBottom: "2rem" }}>
-          <h2>7. Updates</h2>
-          <p style={{ fontSize: "1rem", lineHeight: "1.7" }}>
-            We may update this Privacy Policy from time to time. The latest version will always be available on this page.
-          </p>
-        </section>
-
-        <section id="contact">
-          <h2>8. Contact</h2>
-          <p style={{ fontSize: "1rem", lineHeight: "1.7" }}>
-            For questions about this policy, please reach out via our
-            <a href="/contact" style={{ color: "#0070f3", textDecoration: "underline", marginLeft: 6 }}>Contact Page</a>.
-          </p>
-        </section>
-      </div>
+        {sections.map(({ id, title }) => (
+          <motion.section
+            key={id}
+            id={id}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: false, amount: 0.3 }}
+            variants={fadeInStagger}
+            style={{ marginBottom: "2rem", scrollMarginTop: "140px" }}
+          >
+            <motion.h2 variants={fadeInUp} style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>
+              {title}
+            </motion.h2>
+            <motion.p
+              variants={fadeInUp}
+              style={{ lineHeight: "1.7", color: "#444" }}
+              dangerouslySetInnerHTML={{ __html: content[id] }}
+            />
+          </motion.section>
+        ))}
+      </motion.div>
     </div>
   );
 }
