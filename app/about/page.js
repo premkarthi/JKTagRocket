@@ -1,19 +1,36 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
 import "@/styles/globals.css";
 
 const sections = [
   { id: "what-we-offer", title: "1. What We Offer" },
   { id: "why-we-built", title: "2. Why We Built This" },
   { id: "our-mission", title: "3. Our Mission" },
-  { id: "who-its-for", title: "4. Who It's For" },
+  { id: "who-its-for", title: "4. Who It&rsquo;s For" },
   { id: "contact", title: "5. Get in Touch" },
 ];
 
+const fadeInStagger = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+};
+
 export default function AboutPage() {
   const [activeSection, setActiveSection] = useState("");
-  const observerRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -23,15 +40,11 @@ export default function AboutPage() {
           setActiveSection(visible.target.id);
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.4 }
     );
 
-    sections.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
-
-    observerRef.current = observer;
+    const targets = document.querySelectorAll("section");
+    targets.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 
@@ -44,6 +57,7 @@ export default function AboutPage() {
         overflow: "hidden",
         margin: "2rem 1rem",
         minHeight: "100vh",
+        scrollBehavior: "smooth",
       }}
     >
       {/* TOC */}
@@ -71,9 +85,8 @@ export default function AboutPage() {
                     padding: "4px 0",
                     transition: "color 0.3s",
                   }}
-                >
-                  {title}
-                </a>
+                  dangerouslySetInnerHTML={{ __html: title }}
+                />
               </li>
             ))}
           </ul>
@@ -81,56 +94,139 @@ export default function AboutPage() {
       </div>
 
       {/* Main Content */}
-      <div style={{ flex: 1, background: "#fff", padding: "24px" }}>
-        <h1 style={{ marginBottom: "1.5rem" }}>About Us</h1>
-        <p style={{ fontSize: "1.1rem", lineHeight: "1.7", marginBottom: "24px" }}>
+      <motion.div
+        style={{ flex: 1, background: "#fff", padding: "24px" }}
+        variants={fadeInStagger}
+        initial="hidden"
+        animate="show"
+      >
+        <motion.h1 variants={fadeInUp} style={{ marginBottom: "1.5rem" }}>
+          About Us
+        </motion.h1>
+
+        <motion.p
+          variants={fadeInUp}
+          style={{ fontSize: "1.1rem", lineHeight: "1.7", marginBottom: "24px" }}
+        >
           <strong>JK Tag Rocket</strong> is a suite of professional tools built to simplify and supercharge display ad validation, instant HTML5 validation, native ad inspection, creative testing, and debugging across ad formats.
-        </p>
+        </motion.p>
 
-        <section id="what-we-offer" style={{ marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>1. What We Offer</h2>
-          <ul style={{ paddingLeft: "20px", lineHeight: "1.7", marginBottom: "20px" }}>
-            <li>🚀 Instant display & HTML5 ad previewing</li>
-            <li>🎯 Tracker & pixel detection with domain mapping</li>
-            <li>📦 Asset analysis for GWD / AnimateCC / HTML5 zips</li>
-            <li>🧠 Tag health scoring, performance timelines & JS error insights</li>
-            <li>🌍 Geo-location simulation, GDPR/CCPA checks (coming soon)</li>
-          </ul>
-        </section>
+        {/* Section 1 */}
+        <motion.section
+          id="what-we-offer"
+          variants={fadeInStagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, amount: 0.3 }}
+          style={{ marginBottom: "2rem", scrollMarginTop: "140px" }}
+        >
+          <motion.h2 variants={fadeInUp} style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>
+            1. What We Offer
+          </motion.h2>
+          <motion.ul
+            variants={fadeInStagger}
+            style={{ paddingLeft: "20px", lineHeight: "1.7", marginBottom: "20px" }}
+          >
+            {[
+              "🚀 Instant display & HTML5 ad previewing",
+              "🎯 Tracker & pixel detection with domain mapping",
+              "📦 Asset analysis for GWD / AnimateCC / HTML5 zips",
+              "🧠 Tag health scoring, performance timelines & JS error insights",
+              "🌍 Geo-location simulation, GDPR/CCPA checks (coming soon)",
+            ].map((item, index) => (
+              <motion.li key={index} variants={fadeInUp}>
+                {item}
+              </motion.li>
+            ))}
+          </motion.ul>
+        </motion.section>
 
-        <section id="why-we-built" style={{ marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>2. Why We Built This</h2>
-          <p style={{ fontSize: "1.05rem", lineHeight: "1.7" }}>
+        {/* Section 2 */}
+        <motion.section
+          id="why-we-built"
+          variants={fadeInStagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, amount: 0.3 }}
+          style={{ marginBottom: "2rem", scrollMarginTop: "140px" }}
+        >
+          <motion.h2 variants={fadeInUp} style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>
+            2. Why We Built This
+          </motion.h2>
+          <motion.p variants={fadeInUp} style={{ fontSize: "1.05rem", lineHeight: "1.7" }}>
             Ad tech is complex. Developers often face slow feedback loops, unclear creative bugs, or inconsistent tag behavior across environments. We created JK Tag Rocket to solve these pain points with intuitive, modern tooling for faster debugging, testing, and learning.
-          </p>
-        </section>
+          </motion.p>
+        </motion.section>
 
-        <section id="our-mission" style={{ marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>3. Our Mission</h2>
-          <p style={{ fontSize: "1.05rem", lineHeight: "1.7" }}>
+        {/* Section 3 */}
+        <motion.section
+          id="our-mission"
+          variants={fadeInStagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, amount: 0.3 }}
+          style={{ marginBottom: "2rem", scrollMarginTop: "140px" }}
+        >
+          <motion.h2 variants={fadeInUp} style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>
+            3. Our Mission
+          </motion.h2>
+          <motion.p variants={fadeInUp} style={{ fontSize: "1.05rem", lineHeight: "1.7" }}>
             Our mission is to empower every developer and marketer to ship ads that load fast, track cleanly, and comply confidently — without needing a full engineering team to debug basic issues.
-          </p>
-        </section>
+          </motion.p>
+        </motion.section>
 
-        <section id="who-its-for" style={{ marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>4. Who It's For</h2>
-          <ul style={{ paddingLeft: "20px", lineHeight: "1.7", marginBottom: "20px" }}>
-            <li>🧑‍💻 Developers & Ad Engineers</li>
-            <li>🔍 QA & Tag Implementation Teams</li>
-            <li>📈 Marketing Ops & Performance Analysts</li>
-            <li>🎨 Creative Studios working on display assets</li>
-          </ul>
-        </section>
+        {/* Section 4 */}
+        <motion.section
+          id="who-its-for"
+          variants={fadeInStagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, amount: 0.3 }}
+          style={{ marginBottom: "2rem", scrollMarginTop: "140px" }}
+        >
+          <motion.h2 variants={fadeInUp} style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>
+            4. Who It&rsquo;s For
+          </motion.h2>
+          <motion.ul
+            variants={fadeInStagger}
+            style={{ paddingLeft: "20px", lineHeight: "1.7", marginBottom: "20px" }}
+          >
+            {[
+              "🧑‍💻 Developers & Ad Engineers",
+              "🔍 QA & Tag Implementation Teams",
+              "📈 Marketing Ops & Performance Analysts",
+              "🎨 Creative Studios working on display assets",
+            ].map((item, index) => (
+              <motion.li key={index} variants={fadeInUp}>
+                {item}
+              </motion.li>
+            ))}
+          </motion.ul>
+        </motion.section>
 
-        <section id="contact" style={{ marginBottom: "2rem" }}>
-          <h2 style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>5. Get in Touch</h2>
-          <p style={{ fontSize: "1.05rem", lineHeight: "1.7" }}>
+        {/* Section 5 */}
+        <motion.section
+          id="contact"
+          variants={fadeInStagger}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: false, amount: 0.3 }}
+          style={{ marginBottom: "2rem", scrollMarginTop: "140px" }}
+        >
+          <motion.h2 variants={fadeInUp} style={{ fontSize: "1.25rem", marginBottom: "0.75rem" }}>
+            5. Get in Touch
+          </motion.h2>
+          <motion.p variants={fadeInUp} style={{ fontSize: "1.05rem", lineHeight: "1.7" }}>
             Have feedback, a bug to report, or want to partner with us?
             <br />
-            Visit our <a href="/contact" style={{ color: "#0070f3", textDecoration: "underline" }}>Contact Page</a>.
-          </p>
-        </section>
-      </div>
+            Visit our{" "}
+            <Link href="/contact" style={{ color: "#0070f3", textDecoration: "underline" }}>
+              Contact Page
+            </Link>
+            .
+          </motion.p>
+        </motion.section>
+      </motion.div>
     </div>
   );
 }
