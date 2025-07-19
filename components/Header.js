@@ -39,7 +39,15 @@ export default function Header() {
             width: "100%",
           }}
         >
-          <Link href="https://jktagrocket.com/tools/html5-validator/" target="_blank">
+          <Link href="https://jktagrocket.com/tools/video-validator/" target="_blank">
+            <Image
+              src="/images/728x90-bottomallapges.jpg"
+              alt="Bottom Ad"
+              width={728}
+              height={90}
+            />
+          </Link>
+          {/* <Link href="https://jktagrocket.com/tools/html5-validator/" target="_blank">
             <Image
               src="/images/970x90-topheader.jpg"
               alt="Top Ad Banner"
@@ -48,7 +56,7 @@ export default function Header() {
               priority
               style={{ maxWidth: "100%", height: "auto" }}
             />
-          </Link>
+          </Link> */}
         </div>
 
         {/* Navigation */}

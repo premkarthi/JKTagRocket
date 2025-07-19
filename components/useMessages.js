@@ -6,17 +6,22 @@ import { useState, useEffect } from "react";
  * @param {number} timeout - Duration before auto-dismiss in ms
  * @returns [message, setMessage]
  */
-export function useAutoDismissMessage(initialMessage = null, timeout = 5500) {
+export function useAutoDismissMessage(initialMessage = null, timeout = 5000) {
     const [message, setMessage] = useState(initialMessage);
+    const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         if (message) {
-            const timer = setTimeout(() => setMessage(null), timeout);
+            setVisible(true);
+            const timer = setTimeout(() => {
+                setVisible(false);
+                setTimeout(() => setMessage(null), 300); // wait for fade-out
+            }, timeout);
             return () => clearTimeout(timer);
         }
     }, [message, timeout]);
 
-    return [message, setMessage];
+    return [visible ? message : null, setMessage];
 }
 
 /**

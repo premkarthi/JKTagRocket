@@ -11,6 +11,8 @@ import { RESOURCE_TYPE_FILTERS, getResourceType } from "./utils";
 import computePerformanceSummary from "./computePerformanceSummary";
 import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
 import "../../../styles/globals.css";
+import { sendGAEvent } from "@/utils/ga4";
+
 
 const TRACKER_DOMAINS = {
   "doubleclick.net": "Google Ads",
@@ -109,68 +111,104 @@ export default function DisplayAds() {
   const [adSizes, setAdSizes] = useState([]);
   const [iframeSrcDocs, setIframeSrcDocs] = useState([]);
   const frames = useRef([]);
+  const [input, setInput] = useState("");
 
   const preview = () => {
-    if (!adCode.trim()) return setMessage({ type: "warning", text: "Please enter a valid dispaly tag's before submitting.." });
-    const blocks = splitAdBlocks(adCode);
-    for (const b of blocks) {
-      const e = validateAdBlock(b);
-      if (e) return setMessage({ type: "error", text: e });
-    }
-    setAdBlocks(blocks);
-    setShow(true);
-    setTab("preview");
-    setNetData(blocks.map(() => ({ resources: [], summary: null, timings: {}, timeline: [] })));
-    setPreviewLoaded(Array(blocks.length).fill(false));
-    setNetworkLoaded(Array(blocks.length).fill(!deepCapture));
-    setIframeH(Array(blocks.length).fill(320));
-    setAdSizes(Array(blocks.length).fill({ width: 0, height: 0 }));
-    setIframeSrcDocs([]);
-    setFilters(blocks.map(() => RESOURCE_TYPE_FILTERS.reduce((a, f) => { a[f.label] = true; return a; }, {})));
+  const trimmed = adCode.trim();
 
-    if (deepCapture) {
-      blocks.forEach(async (b, i) => {
-        const tag = /^(https?:)?\/\//i.test(b.trim())
-          ? `<script src="${b.trim()}"></script>`
-          : b;
-        const html = `<!doctype html><html><body>${tag}</body></html>`;
-        try {
-          const { calls, perf } = await captureServerSide(html);
-          setNetData((prev) => {
-            const next = [...prev];
-            next[i] = {
-              resources: calls,
-              timings: perf,
-              summary: computePerformanceSummary(calls, perf),
-              timeline: buildTimeline(calls)
-            };
-            return next;
-          });
-        } finally {
-          setNetworkLoaded((prev) => { const updated = [...prev]; updated[i] = true; return updated; });
-        }
-      });
-    }
-    setMessage({ type: "success", text: " Dispaly ad's Previews are loaded successfully" });
-  };
+  if (!trimmed) {
+    console.log("⛔ No input entered");
+    setMessage({ type: "error", text: "Please enter a tag to preview." });
+    return;
+  }
+
+  const blocks = splitAdBlocks(trimmed);
+  const errorMsg = blocks.map(validateAdBlock).find((e) => e);
+  if (errorMsg) {
+    setMessage({ type: "error", text: errorMsg });
+    return;
+  }
+
+  // ✅ GA4 event
+  sendGAEvent({
+    action: "tag_submitted",
+    category: "interaction",
+    label: "DisplayAds Tag Submit",
+  });
+
+  setAdBlocks(blocks);
+  setShow(true);
+  setTab("preview");
+  setNetData(blocks.map(() => ({ resources: [], summary: null, timings: {}, timeline: [] })));
+  setPreviewLoaded(Array(blocks.length).fill(false));
+  setNetworkLoaded(Array(blocks.length).fill(!deepCapture));
+  setIframeH(Array(blocks.length).fill(320));
+  setAdSizes(Array(blocks.length).fill({ width: 0, height: 0 }));
+  setIframeSrcDocs([]);
+  setFilters(
+    blocks.map(() =>
+      RESOURCE_TYPE_FILTERS.reduce((acc, f) => {
+        acc[f.label] = true;
+        return acc;
+      }, {})
+    )
+  );
+
+  if (deepCapture) {
+    blocks.forEach(async (b, i) => {
+      const tag = /^(https?:)?\/\//i.test(b.trim())
+        ? `<script src="${b.trim()}"></script>`
+        : b;
+      const html = `<!doctype html><html><body>${tag}</body></html>`;
+      try {
+        const { calls, perf } = await captureServerSide(html);
+        setNetData((prev) => {
+          const next = [...prev];
+          next[i] = {
+            resources: calls,
+            timings: perf,
+            summary: computePerformanceSummary(calls, perf),
+            timeline: buildTimeline(calls),
+          };
+          return next;
+        });
+      } finally {
+        setNetworkLoaded((prev) => {
+          const updated = [...prev];
+          updated[i] = true;
+          return updated;
+        });
+      }
+    });
+  }
+
+  setMessage({ type: "success", text: "Display ad previews loaded successfully." });
+};
 
   const reset = () => {
-    setAdCode("");
-    setAdBlocks([]);
-    setShow(false);
-    setError("");
-    setFilters([]);
-    setTab("preview");
-    setIframeH([]);
-    setPreviewLoaded([]);
-    setNetworkLoaded([]);
-    setNetData([]);
-    setAdSizes([]);
-    setIframeSrcDocs([]);
-    frames.current = [];
-    // setModal({ idx: null, call: null });
-    setMessage({ type: "info", text: "Reset successful — All inputs and previews have been cleared.." });
-  };
+  setAdCode("");
+  setAdBlocks([]);
+  setShow(false);
+  setError("");
+  setFilters([]);
+  setTab("preview");
+  setIframeH([]);
+  setPreviewLoaded([]);
+  setNetworkLoaded([]);
+  setNetData([]);
+  setAdSizes([]);
+  setIframeSrcDocs([]);
+  frames.current = [];
+  setMessage({ type: "info", text: "Reset successful — All inputs and previews have been cleared.." });
+
+  // ✅ GA4 Custom Event
+  sendGAEvent({
+    action: "reset_clicked",
+    category: "interaction",
+    label: "DisplayAds Reset Button"
+  });
+};
+
 
   useEffect(() => {
     const handler = (e) => {

@@ -8,6 +8,8 @@ import Faq from "../../../components/Faq";
 import JSZip from "jszip";
 import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
 import "../../../styles/globals.css";
+import { sendGAEvent } from "@/utils/ga4"; // ✅ adjust if your path differs
+
 
 export default function HTML5ValidatorPage() {
   const inputRef = useRef(null);
@@ -34,11 +36,14 @@ export default function HTML5ValidatorPage() {
   }, [iframeUrl]);
 
   const handleDrop = (e) => {
-    e.preventDefault();
-    setIsActive(false);
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) handleFileChange({ target: { files } });
-  };
+  e.preventDefault();
+  setIsActive(false);
+  const files = e.dataTransfer.files;
+  if (files && files.length > 0) {
+    handleFileChange({ target: { files } }, "drag");
+  }
+};
+
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -53,12 +58,32 @@ export default function HTML5ValidatorPage() {
     inputRef.current?.click();
   };
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file || !file.name.endsWith(".zip")) {
-      setMessage({ type: "error", text: "Please upload a valid ZIP file" });
-      return;
-    }
+      const handleFileChange = async (e, source = "browse") => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+      const file = files[0];
+
+      const labelPrefix = source === "drag" ? "Drag Upload" : "Browse Upload";
+
+      if (!file.name.endsWith(".zip")) {
+        setMessage({ type: "error", text: "Please upload a valid ZIP file." });
+        console.log(`📡 GA4 Event: ${labelPrefix} - Invalid file type`);
+        sendGAEvent({
+          action: "file_upload_error",
+          category: "HTML5 Validator",
+          label: `${labelPrefix} - Non-ZIP file`,
+        });
+        return;
+      }
+
+  try {
+    console.log(`📡 GA4 Event: ${labelPrefix} - Valid ZIP file`);
+    sendGAEvent({
+      action: "file_upload",
+      category: "HTML5 Validator",
+      label: `${labelPrefix} - ZIP with HTML`,
+      value: Math.round(file.size / 1024),
+    });
 
     setUploadedFileName(file.name);
 
@@ -76,7 +101,13 @@ export default function HTML5ValidatorPage() {
       if (htmlFiles.length > 0) {
         indexFile = htmlFiles[0];
       } else {
-        setMessage({ type: "error", text: "No HTML file found inside the zip (e.g., index.html)." });
+        setMessage({ type: "error", text: "❌ No HTML file found in ZIP (e.g., index.html)" });
+        console.log("📡 GA4 Event: ZIP missing HTML file");
+        sendGAEvent({
+          action: "file_upload_error",
+          category: "HTML5 Validator",
+          label: "ZIP without HTML",
+        });
         return;
       }
     }
@@ -124,7 +155,18 @@ export default function HTML5ValidatorPage() {
     setIframeUrl(previewUrl);
 
     setMessage({ type: "success", text: `✅ ZIP uploaded: ${file.name}` });
-  };
+  } catch (error) {
+    console.error("File upload error:", error);
+    setMessage({ type: "error", text: `Error: ${error.message}` });
+    console.log("📡 GA4 Event: Exception during ZIP processing");
+    sendGAEvent({
+      action: "file_upload_error",
+      category: "HTML5 Validator",
+      label: error.message,
+    });
+  }
+};
+
 
   useEffect(() => {
     const handler = (e) => {
@@ -184,17 +226,26 @@ export default function HTML5ValidatorPage() {
 
         <div className={styles.resetButtonGroup} style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
           <button
-            className="reset-btn"
-            onClick={() => {
-              setIframeUrl(null);
-              setAdSize({ width: 0, height: 0 });
-              setUploadedFileName("");
-              if (inputRef.current) inputRef.current.value = null;
-              setMessage({ type: "info", text: "Reset successful — All inputs and previews have been cleared." });
-            }}
-          >
-            🔄 RESET
-          </button>
+          className="reset-btn"
+          onClick={() => {
+            setIframeUrl(null);
+            setAdSize({ width: 0, height: 0 });
+            setUploadedFileName("");
+            if (inputRef.current) inputRef.current.value = null;
+            setMessage({ type: "info", text: "Reset successful — All inputs and previews have been cleared." });
+
+            // 🟢 GA4 Reset Event
+            console.log("📡 GA4 Event: Reset Clicked");
+            sendGAEvent({
+              action: "reset_clicked",
+              category: "HTML5 Validator",
+              label: "Reset Button",
+            });
+          }}
+        >
+          🔄 RESET
+        </button>
+
         </div>
 
         {iframeUrl && (
