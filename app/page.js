@@ -1,8 +1,9 @@
+// app/page.js
+"use client";
+
 import Head from 'next/head';
-// import Header from '../components/Header';
 import Hero from '../components/Hero';
 import FeatureGrid from '../components/FeatureGrid';
-// import Footer from '../components/Footer';
 
 export default function Home() {
   return (
@@ -12,15 +13,14 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      {/* <Header /> */}
-      <Hero />
+      <main>
+        {/* <h1>Welcome to TagRocket</h1> */}
+        <Hero />
 
-      {/* This is the Learn More anchor point */}
-      <div id="learn-more">
-        <FeatureGrid />
-      </div>
-
-      {/* <Footer /> */}
+        <div id="learn-more">
+          <FeatureGrid />
+        </div>
+      </main>
     </>
   );
 }

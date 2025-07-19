@@ -6,6 +6,8 @@ import "./NativeAdsAddon.css";
 import Image from "next/image";
 import { useEffect } from "react";
 import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
+import { sendGAEvent } from "@/utils/ga4";
+
 
 
 // Dummy helpers and maps for demonstration
@@ -236,6 +238,9 @@ export default function NativeAds() {
         setVideoPreview("");
         setVideoEvents([]);
         setDataSignals([]);
+        sendGAEvent({
+        action: "native_reset_click",
+        label: "Reset button clicked",});
         // ✅ Scroll & focus back to input
         setTimeout(() => {
             inputRef.current?.focus();
@@ -311,6 +316,10 @@ export default function NativeAds() {
 
         if (!nativeTag.trim()) {
             setMessage({ type: "warning", text: " Please enter a valid Native tag URL before submitting.." });
+            sendGAEvent({
+            action: "native_tag_error",
+            label: "Empty or invalid tag submitted",
+            });
             return;
         }
 
@@ -321,15 +330,26 @@ export default function NativeAds() {
             .replaceAll(new RegExp('&amp;cMacro=(.*?)\\&amp;', 'gi'), '&amp;cMacro=&amp;');
 
         let dataType = url.includes("jsonp") ? "jsonp" : "json";
-
+        sendGAEvent({
+        action: "native_submit_tag",
+        label: "Submitted Native tag",
+        });
         try {
             setLoading(true);
             const nativeData = await fetchNativeDataWithFallback(url);
             buildNativeData(nativeData, url);
             // You would call buildNativeData(nativeData, url) here
             setMessage({ type: "success", text: " Native tag processed successfully!" });
+            sendGAEvent({
+            action: "native_tag_success",
+            label: "Tag parsed successfully",
+            });
         } catch (err) {
             setMessage({ type: "error", text: " Failed to fetch or parse the native tag, Please check the URLonce .." });
+            sendGAEvent({
+            action: "native_tag_error",
+            label: "Parsing failed",
+    });
         } finally {
             setLoading(false);
         }
@@ -484,6 +504,16 @@ export default function NativeAds() {
         typeof url === "string" && /\.(jpe?g|png|gif|svg|webp)$/i.test(url);
     const isVideoUrl = (url) =>
         typeof url === "string" && /\.(mp4|webm|ogg)$/i.test(url);
+    // will track the GA4 tab switch
+    const handleTabSwitch = (index) => {
+        const label = index === 0 ? "Ad Preview" : "Trackers & Pixels";
+        setTab(index);
+        sendGAEvent({
+            action: "native_tab_switch",
+            category: "Native Tool",
+            label,
+        });
+        };
 
     return (
         <div className={styles.displayAdsContainer + " nativeAdsContainer"}>
@@ -528,15 +558,15 @@ export default function NativeAds() {
                     <button className={styles.displayAdsPreviewBtn + " nativeAdsSubmitBtn"} type="button" onClick={handleSubmit}> 🚀 Submit Tag</button>
                 </div>
             </div>
-
-
             <div className="nativeAdsTabsWrapper">
                 <div className="nativeAdsTabs">
                     {TABS.map((t, idx) => (
                         <button
                             key={t.label}
                             className={tab === idx ? "nativeAdsTab nativeAdsTabActive" : "nativeAdsTab"}
-                            onClick={() => setTab(idx)}
+                            // onClick={() => setTab(idx)}
+                            onClick={() => handleTabSwitch(idx)}
+
                             type="button"
                         >
                             {t.label}
@@ -710,7 +740,7 @@ export default function NativeAds() {
                                                 <Image
                                                     src={imagevideoPreview}
                                                     alt="Preview"
-                                                    style={{ maxHeight: 300, maxWidth: 500, marginBottom: 9 }}
+                                                    style={{ maxHeight: 300, maxWidth: 400, marginBottom: 9 }}
                                                     onError={e => (e.target.style.display = 'none')}
                                                     height={700}
                                                     width={500}
