@@ -5,6 +5,7 @@ import { useState, useRef } from 'react';
 import '../../../styles/databeautifytools.css';
 import { FiExternalLink, FiDownload, FiCopy, FiUpload, FiSmartphone, FiMaximize2 } from 'react-icons/fi';
 import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
+import MediaModal from './MediaModal';
 
 export default function BulkUrlPanel() {
   const [input, setInput] = useState('');
@@ -16,10 +17,14 @@ export default function BulkUrlPanel() {
   const [page, setPage] = useState(1);
   const [dragActive, setDragActive] = useState(false);
   const [mobileView, setMobileView] = useState(false);
+  const [isMobilePreview, setIsMobilePreview] = useState(false);
   const [expandedColumns, setExpandedColumns] = useState(false);
   const [progress, setProgress] = useState(null);
   const [duplicateUrls, setDuplicateUrls] = useState([]);
   const [userMessage, setUserMessage] = useAutoDismissMessage(null, 5000);
+  const [mediaList, setMediaList] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [expandedMedia, setExpandedMedia] = useState(null); // <-- still needed for modal
   const fileInputRef = useRef(null);
   const ITEMS_PER_PAGE = 15;
   const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -30,8 +35,16 @@ export default function BulkUrlPanel() {
     const kb = bytes / 1024;
     return kb > 1024 ? `${(kb / 1024).toFixed(2)} MB` : `${kb.toFixed(2)} KB`;
   };
+    const validateImageUrl = (url) => {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve({ ok: true });
+        img.onerror = () => resolve({ ok: false });
+        img.src = url;
+    });
+    };
 
-  const handleValidateUrls = async () => {
+    const handleValidateUrls = async () => {
     setResults([]);
     setPage(1);
     setProgress(1);
@@ -68,25 +81,41 @@ export default function BulkUrlPanel() {
       setLoadingRow(index);
       setProgress(Math.round(((index + 1) / uniqueUrls.length) * 100));
 
-      try {
-        const response = await fetch(url, { method: 'HEAD' });
-        const sizeInBytes = response.headers.get('content-length');
-        const size = sizeInBytes ? formatSize(sizeInBytes) : 'Unknown';
+            let status = '❌ Failed';
+            let size = 'Unknown';
 
-        resultsWithDetails.push({
-          sno: index + 1,
-          url,
-          status: response.ok ? '✅ Success' : '❌ Failed',
-          size,
-        });
-      } catch {
-        resultsWithDetails.push({
-          sno: index + 1,
-          url,
-          status: '❌ Failed',
-          size: 'Error',
-        });
-      }
+            try {
+            let response = await fetch(url, { method: 'HEAD' });
+
+            if (!response.ok) {
+                response = await fetch(url, { method: 'GET' });
+            }
+
+            const sizeInBytes = response.headers.get('content-length');
+            size = sizeInBytes ? formatSize(parseInt(sizeInBytes)) : 'Unknown';
+            status = response.ok ? '✅ Success' : '❌ Failed';
+            } catch {
+            // Final fallback for image types
+            const isImage = /\.(jpe?g|png|gif|webp|svg)$/i.test(url);
+            if (isImage) {
+                const result = await validateImageUrl(url);
+                if (result.ok) {
+                status = '✅ Success';
+                size = 'Unknown'; // No reliable way to get image file size here
+                }
+            } else {
+                status = '❌ Failed';
+                size = 'Error';
+            }
+            }
+
+            resultsWithDetails.push({
+            sno: index + 1,
+            url,
+            status,
+            size,
+            });
+
       await delay(10);
     }
 
@@ -97,58 +126,9 @@ export default function BulkUrlPanel() {
     window.gtag && window.gtag('event', 'validate_urls');
   };
 
-  const handleSort = (key) => {
-    if (sortKey === key) setSortAsc(!sortAsc);
-    else {
-      setSortKey(key);
-      setSortAsc(true);
-    }
-  };
-
-  const changePage = (newPage) => {
-    setPage(newPage);
-    const el = document.querySelector('.results-table');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const handleCopy = () => {
-    const text = results.map(r => `${r.url}\t${r.status}\t${r.size}`).join('\n');
-    navigator.clipboard.writeText(text);
-    window.gtag && window.gtag('event', 'copy_results');
-  };
-
-  const handleExport = () => {
-    const header = 'S.No,URL,Status,Size';
-    const rows = results.map(r => `${r.sno},${r.url},${r.status},${r.size}`);
-    const csvContent = [header, ...rows].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'bulk-url-results.csv';
-    link.click();
-    window.gtag && window.gtag('event', 'download_csv');
-  };
-
-  const handleOpenAll = () => {
-    const urls = input.split('\n').map(url => url.trim()).filter(Boolean);
-    let index = 0;
-    const openNext = () => {
-      if (index >= urls.length) return;
-      window.open(urls[index], '_blank');
-      index++;
-      setTimeout(openNext, 1000);
-    };
-    openNext();
-    window.gtag && window.gtag('event', 'open_all_urls');
-  };
-
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    else {
-        alert('Only .txt, .csv, or .xlsx files are supported.');
-        setUserMessage({ type: 'error', text: 'Only .txt, .csv, or .xlsx files are supported.' });
-    }
 
     const reader = new FileReader();
     const fileName = file.name.toLowerCase();
@@ -158,8 +138,7 @@ export default function BulkUrlPanel() {
     reader.onload = (event) => {
       let urls = [];
       if (isTextOrCsv) {
-        const text = event.target.result;
-        const lines = text.split(/\r?\n/);
+        const lines = event.target.result.split(/\r?\n/);
         urls = lines.map(line => line.trim()).filter(line => line.startsWith('http'));
       } else if (isXlsx) {
         const data = new Uint8Array(event.target.result);
@@ -169,36 +148,37 @@ export default function BulkUrlPanel() {
         urls = jsonData.flat().filter(cell => typeof cell === 'string' && cell.trim().startsWith('http'));
       }
       setInput(prev => (prev ? prev + '\n' + urls.join('\n') : urls.join('\n')));
-      window.gtag && window.gtag('event', 'browse_file_upload');
     };
 
     if (isTextOrCsv) reader.readAsText(file);
     else if (isXlsx) reader.readAsArrayBuffer(file);
-    else alert('Only .txt, .csv, or .xlsx files are supported.');
+    else alert('Unsupported file format.');
   };
 
   const handleDragEnter = (e) => { e.preventDefault(); setDragActive(true); };
   const handleDragLeave = (e) => { e.preventDefault(); setDragActive(false); };
   const handleDragOver = (e) => { e.preventDefault(); setDragActive(true); };
   const handleDrop = (e) => {
-    e.preventDefault();
-    setDragActive(false);
+    e.preventDefault(); setDragActive(false);
     const file = e.dataTransfer.files[0];
-    if (!file) return;
-    else {
-        alert('Only .txt, .csv, or .xlsx files are supported.');
-        setUserMessage({ type: 'error', text: 'Only .txt, .csv, or .xlsx files are supported.' });
-    }
-
-    handleFileSelect({ target: { files: [file] } });
-    
+    if (file) handleFileSelect({ target: { files: [file] } });
   };
 
-  const filteredResults = results.filter((item) => {
+  const handleSort = (key) => {
+    if (sortKey === key) setSortAsc(!sortAsc);
+    else { setSortKey(key); setSortAsc(true); }
+  };
+
+  const changePage = (newPage) => {
+    setPage(newPage);
+    const el = document.querySelector('.results-table');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const filteredResults = results.filter(item => {
     if (filter === 'success') return item.status.includes('Success');
     if (filter === 'failed') return item.status.includes('Failed');
     return true;
-    
   });
 
   const sortedResults = [...filteredResults].sort((a, b) => {
@@ -207,9 +187,25 @@ export default function BulkUrlPanel() {
     if (typeof valA === 'string') return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
     return sortAsc ? valA - valB : valB - valA;
   });
+    const handleLoadAllMedia = () => {
+    const urls = input.split('\n').map((url) => url.trim()).filter(Boolean);
+    const mediaUrls = urls.filter((url) =>
+        /\.(jpe?g|png|gif|webp|svg|mp4|webm|mov)$/i.test(url)
+    );
 
-  const totalPages = Math.ceil(sortedResults.length / ITEMS_PER_PAGE);
+    if (mediaUrls.length === 0) {
+        setUserMessage({ type: 'warning', text: 'Please enter at least one valid media URL before loading.' });
+        window.gtag && window.gtag('event', 'load_all_skipped_empty');
+        return;
+    }
+
+    setMediaList(mediaUrls);
+    setShowModal(true);
+    window.gtag && window.gtag('event', 'load_all_opened', { count: mediaUrls.length });
+    };
+
   const startIndex = (page - 1) * ITEMS_PER_PAGE;
+  const totalPages = Math.ceil(sortedResults.length / ITEMS_PER_PAGE);
   const paginatedResults = sortedResults.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   const successCount = results.filter(r => r.status.includes('Success')).length;
   const failedCount = results.filter(r => r.status.includes('Failed')).length;
@@ -217,6 +213,7 @@ export default function BulkUrlPanel() {
   return (
     <div className={`bulk-url-panel ${mobileView ? 'mobile-preview' : ''} ${expandedColumns ? 'expand-columns' : ''}`}>
       <h1 className="panel-title">🔗 Bulk URL Enhancer</h1>
+
       <div className="view-toggles">
         <button onClick={() => setMobileView(prev => !prev)}><FiSmartphone /> {mobileView ? '🖥️ Desktop View' : '📱 Mobile Preview'}</button>
         <button onClick={() => setExpandedColumns(prev => !prev)}><FiMaximize2 /> {expandedColumns ? '🔻 Shrink Columns' : '🔺 Expand Columns'}</button>
@@ -226,31 +223,27 @@ export default function BulkUrlPanel() {
         <FiUpload size={32} className="upload-icon" />
         <p>Drag & Drop .txt, .csv or .xlsx file</p>
         <span>Or</span>
-        <p>
-        <button type="button" className="browse-button" onClick={() => fileInputRef.current?.click()}>Browse & Upload</button></p>
+        <p><button type="button" className="browse-button" onClick={() => fileInputRef.current?.click()}>Browse & Upload</button></p>
         <input ref={fileInputRef} type="file" accept=".txt,.csv,.xlsx" onChange={handleFileSelect} style={{ display: 'none' }} />
       </div>
 
       <textarea className="panel-textarea" placeholder="Paste your URLs here (one per line)" value={input} onChange={handleChange} />
 
       <div className="button-group">
-        <button onClick={handleValidateUrls}>✅ Validate All URLs</button>
-        {/* <button onClick={handleOpenAll}>🔗 Open All URLs</button>
-        <button disabled>❌ Close Tabs</button>
-        <button disabled>✏️ Test URLs</button>
-        <button disabled>📤 Load All Here</button> */}
-        <button onClick={() => { setInput(''); setResults([]); setPage(1); setUserMessage({ type: 'info', text: 'Tool reset successfully.' }); window.gtag && window.gtag('event', 'reset_tool'); }}>🔄 Reset</button>
-        {/* <button onClick={handleExport}><FiDownload /> Export</button>
-        <button onClick={handleCopy}><FiCopy /> Copy</button> */}
-    
+            <button onClick={() => {
+            setInput('');
+            setResults([]);
+            setPage(1);
+            setUserMessage({ type: 'info', text: 'Tool reset successfully.' });
+            window.gtag && window.gtag('event', 'reset_tool');
+            }}>🔄 Reset</button>
+            <button onClick={handleValidateUrls}>✅ Validate All URLs</button>
+            <button onClick={handleLoadAllMedia}>📤 Load All Here</button>
       </div>
-        {userMessage && (
-            <div className={`user-message ${userMessage.type} user-message-show`}>
-                <span>{getIcon(userMessage.type)} {userMessage.text}</span>
-            </div>
-        )}
 
-        {(results.length > 0 || progress !== null) && (
+      {userMessage && <div className={`user-message ${userMessage.type} user-message-show`}><span>{getIcon(userMessage.type)} {userMessage.text}</span></div>}
+
+      {(results.length > 0 || progress !== null) && (
         <div className="results-container">
           <div className="radio-pagination-row">
             <div className="radio-filters">
@@ -269,7 +262,7 @@ export default function BulkUrlPanel() {
 
           {duplicateUrls.length > 0 && (
             <div className="warning-duplicates">
-              ⚠️ {duplicateUrls.length} duplicate URL(s) detected and ignored from validation.
+              ⚠️ {duplicateUrls.length} duplicate URL(s) detected and ignored during validation process .
             </div>
           )}
 
@@ -287,7 +280,7 @@ export default function BulkUrlPanel() {
                   <th onClick={() => handleSort('sno')}>S.No {sortKey === 'sno' && (sortAsc ? '↑' : '↓')}</th>
                   <th onClick={() => handleSort('url')}>Source URL’s {sortKey === 'url' && (sortAsc ? '↑' : '↓')}</th>
                   <th onClick={() => handleSort('status')}>Status {sortKey === 'status' && (sortAsc ? '↑' : '↓')}</th>
-                  <th onClick={() => handleSort('size')}>Size {sortKey === 'size' && (sortAsc ? '↑' : '↓')}</th>
+                  {/* <th onClick={() => handleSort('size')}>Size {sortKey === 'size' && (sortAsc ? '↑' : '↓')}</th> */}
                   <th>Action</th>
                 </tr>
               </thead>
@@ -298,17 +291,14 @@ export default function BulkUrlPanel() {
                     <td className={`url-cell ${expandedColumns ? 'expanded' : ''} ${duplicateUrls.includes(item.url) ? 'duplicate' : ''}`}>
                       <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a>
                     </td>
-                    <td className={item.status.includes('Success') ? 'success' : 'failed'}>
-                      {loadingRow === i ? '⏳' : item.status}
-                    </td>
-                    <td>{item.size}</td>
+                    <td className={item.status.includes('Success') ? 'success' : 'failed'}>{loadingRow === i ? '⏳' : item.status}</td>
+                    {/* <td>{item.size}</td> */}
                     <td><a href={item.url} target="_blank" rel="noopener noreferrer"><FiExternalLink /></a></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-
           {totalPages > 1 && (
             <div className="pagination bottom">
               <button disabled={page === 1} onClick={() => changePage(page - 1)}>⬅️ Previous</button>
@@ -318,6 +308,27 @@ export default function BulkUrlPanel() {
           )}
         </div>
       )}
+      <MediaModal
+        mediaList={mediaList}
+        showModal={showModal}
+        setShowModal={setShowModal}
+        setExpandedMedia={setExpandedMedia}
+        isMobilePreview={isMobilePreview} 
+      />
+      {expandedMedia && (
+       <div className="media-zoom-overlay" onClick={() => setExpandedMedia(null)}>
+        <div className="zoomed-media" onClick={(e) => e.stopPropagation()}>
+            {expandedMedia.type === 'image' ? (
+            <img src={expandedMedia.url} alt="Zoomed Media" />
+            ) : (
+            <video src={expandedMedia.url} controls autoPlay />
+            )}
+            <button className="zoom-close" onClick={() => setExpandedMedia(null)}>X Close</button>
+        </div>
+        </div>
+
+        )}
+
     </div>
   );
 }
