@@ -8,6 +8,7 @@ import { useAutoDismissMessage, getIcon } from "../../../components/useMessages"
 import MediaModal from './MediaModal';
 
 export default function BulkUrlPanel() {
+  const [uploadedFileName, setUploadedFileName] = useState('');
   const [input, setInput] = useState('');
   const [results, setResults] = useState([]);
   const [filter, setFilter] = useState('all');
@@ -24,10 +25,9 @@ export default function BulkUrlPanel() {
   const [userMessage, setUserMessage] = useAutoDismissMessage(null, 5000);
   const [mediaList, setMediaList] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [expandedMedia, setExpandedMedia] = useState(null); // <-- still needed for modal
+  const [expandedMedia, setExpandedMedia] = useState(null);
   const fileInputRef = useRef(null);
   const ITEMS_PER_PAGE = 15;
-  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   const handleChange = (e) => setInput(e.target.value);
 
@@ -35,16 +35,15 @@ export default function BulkUrlPanel() {
     const kb = bytes / 1024;
     return kb > 1024 ? `${(kb / 1024).toFixed(2)} MB` : `${kb.toFixed(2)} KB`;
   };
-    const validateImageUrl = (url) => {
-    return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve({ ok: true });
-        img.onerror = () => resolve({ ok: false });
-        img.src = url;
-    });
-    };
 
-    const handleValidateUrls = async () => {
+  const validateImageUrl = (url) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ ok: true });
+    img.onerror = () => resolve({ ok: false });
+    img.src = url;
+  });
+
+  const handleValidateUrls = async () => {
     setResults([]);
     setPage(1);
     setProgress(1);
@@ -57,7 +56,6 @@ export default function BulkUrlPanel() {
 
     const rawUrls = input.split('\n').map(url => url.trim()).filter(Boolean);
     const malformedUrls = rawUrls.filter(url => !/^https?:\/\/.+\..+/.test(url));
-
     if (malformedUrls.length > 0) {
       setUserMessage({ type: 'error', text: `${malformedUrls.length} invalid URL(s) were skipped.` });
     }
@@ -75,46 +73,43 @@ export default function BulkUrlPanel() {
 
     const uniqueUrls = [...new Set(filteredUrls)];
     const resultsWithDetails = [];
+    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     for (let index = 0; index < uniqueUrls.length; index++) {
       const url = uniqueUrls[index];
       setLoadingRow(index);
       setProgress(Math.round(((index + 1) / uniqueUrls.length) * 100));
 
-            let status = '❌ Failed';
-            let size = 'Unknown';
+      let status = '❌ Failed';
+      let size = 'Unknown';
 
-            try {
-            let response = await fetch(url, { method: 'HEAD' });
+      try {
+        let response = await fetch(url, { method: 'HEAD' });
+        if (!response.ok) response = await fetch(url);
 
-            if (!response.ok) {
-                response = await fetch(url, { method: 'GET' });
-            }
+        const sizeInBytes = response.headers.get('content-length');
+        size = sizeInBytes ? formatSize(parseInt(sizeInBytes)) : 'Unknown';
+        status = response.ok ? '✅ Success' : '❌ Failed';
+      } catch {
+        const isImage = /\.(jpe?g|png|gif|webp|svg)$/i.test(url);
+        if (isImage) {
+          const result = await validateImageUrl(url);
+          if (result.ok) {
+            status = '✅ Success';
+            size = 'Unknown';
+          }
+        } else {
+          status = '❌ Failed';
+          size = 'Error';
+        }
+      }
 
-            const sizeInBytes = response.headers.get('content-length');
-            size = sizeInBytes ? formatSize(parseInt(sizeInBytes)) : 'Unknown';
-            status = response.ok ? '✅ Success' : '❌ Failed';
-            } catch {
-            // Final fallback for image types
-            const isImage = /\.(jpe?g|png|gif|webp|svg)$/i.test(url);
-            if (isImage) {
-                const result = await validateImageUrl(url);
-                if (result.ok) {
-                status = '✅ Success';
-                size = 'Unknown'; // No reliable way to get image file size here
-                }
-            } else {
-                status = '❌ Failed';
-                size = 'Error';
-            }
-            }
-
-            resultsWithDetails.push({
-            sno: index + 1,
-            url,
-            status,
-            size,
-            });
+      resultsWithDetails.push({
+        sno: index + 1,
+        url,
+        status,
+        size,
+      });
 
       await delay(10);
     }
@@ -128,40 +123,36 @@ export default function BulkUrlPanel() {
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (file) processUploadedFile(file);
+  };
+
+  const processUploadedFile = (file) => {
+    const allowedExtensions = /\.(txt|csv|xlsx)$/i;
+    if (!allowedExtensions.test(file.name)) {
+      setUploadedFileName('');
+      setUserMessage({ type: 'error', text: `❌ Unsupported file type: ${file.name}` });
+      return;
+    }
+
+    setUploadedFileName(file.name);
+    setUserMessage({ type: 'success', text: `✅ File uploaded: ${file.name}` });
 
     const reader = new FileReader();
-    const fileName = file.name.toLowerCase();
-    const isTextOrCsv = fileName.endsWith('.txt') || fileName.endsWith('.csv');
-    const isXlsx = fileName.endsWith('.xlsx');
-
-    reader.onload = (event) => {
-      let urls = [];
-      if (isTextOrCsv) {
-        const lines = event.target.result.split(/\r?\n/);
-        urls = lines.map(line => line.trim()).filter(line => line.startsWith('http'));
-      } else if (isXlsx) {
-        const data = new Uint8Array(event.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-        urls = jsonData.flat().filter(cell => typeof cell === 'string' && cell.trim().startsWith('http'));
-      }
-      setInput(prev => (prev ? prev + '\n' + urls.join('\n') : urls.join('\n')));
+    reader.onload = (e) => {
+      const content = e.target.result;
+      setInput(content);
     };
-
-    if (isTextOrCsv) reader.readAsText(file);
-    else if (isXlsx) reader.readAsArrayBuffer(file);
-    else alert('Unsupported file format.');
+    reader.readAsText(file);
   };
 
   const handleDragEnter = (e) => { e.preventDefault(); setDragActive(true); };
   const handleDragLeave = (e) => { e.preventDefault(); setDragActive(false); };
   const handleDragOver = (e) => { e.preventDefault(); setDragActive(true); };
   const handleDrop = (e) => {
-    e.preventDefault(); setDragActive(false);
+    e.preventDefault();
+    setDragActive(false);
     const file = e.dataTransfer.files[0];
-    if (file) handleFileSelect({ target: { files: [file] } });
+    if (file) processUploadedFile(file);
   };
 
   const handleSort = (key) => {
@@ -173,6 +164,19 @@ export default function BulkUrlPanel() {
     setPage(newPage);
     const el = document.querySelector('.results-table');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleLoadAllMedia = () => {
+    const urls = input.split('\n').map((url) => url.trim()).filter(Boolean);
+    const mediaUrls = urls.filter((url) =>
+      /\.(jpe?g|png|gif|webp|svg|mp4|webm|mov)$/i.test(url)
+    );
+    if (mediaUrls.length === 0) {
+      setUserMessage({ type: 'warning', text: 'Please enter at least one valid media URL.' });
+      return;
+    }
+    setMediaList(mediaUrls);
+    setShowModal(true);
   };
 
   const filteredResults = results.filter(item => {
@@ -187,22 +191,6 @@ export default function BulkUrlPanel() {
     if (typeof valA === 'string') return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
     return sortAsc ? valA - valB : valB - valA;
   });
-    const handleLoadAllMedia = () => {
-    const urls = input.split('\n').map((url) => url.trim()).filter(Boolean);
-    const mediaUrls = urls.filter((url) =>
-        /\.(jpe?g|png|gif|webp|svg|mp4|webm|mov)$/i.test(url)
-    );
-
-    if (mediaUrls.length === 0) {
-        setUserMessage({ type: 'warning', text: 'Please enter at least one valid media URL before loading.' });
-        window.gtag && window.gtag('event', 'load_all_skipped_empty');
-        return;
-    }
-
-    setMediaList(mediaUrls);
-    setShowModal(true);
-    window.gtag && window.gtag('event', 'load_all_opened', { count: mediaUrls.length });
-    };
 
   const startIndex = (page - 1) * ITEMS_PER_PAGE;
   const totalPages = Math.ceil(sortedResults.length / ITEMS_PER_PAGE);
@@ -225,6 +213,15 @@ export default function BulkUrlPanel() {
         <span>Or</span>
         <p><button type="button" className="browse-button" onClick={() => fileInputRef.current?.click()}>Browse & Upload</button></p>
         <input ref={fileInputRef} type="file" accept=".txt,.csv,.xlsx" onChange={handleFileSelect} style={{ display: 'none' }} />
+        {userMessage && (
+        <div className={`user-message ${userMessage.type}`}>
+            {userMessage.text}
+        </div>
+        )}
+
+        {uploadedFileName && (
+              <div style={{ marginTop: 11, fontSize: 15, color: '#909' }}>File Name : 📁 <strong>{uploadedFileName}</strong></div>
+            )}
       </div>
 
       <textarea className="panel-textarea" placeholder="Paste your URLs here (one per line)" value={input} onChange={handleChange} />
@@ -234,11 +231,15 @@ export default function BulkUrlPanel() {
             setInput('');
             setResults([]);
             setPage(1);
+            setUploadedFileName(''); // 🔄 Clear uploaded file name
             setUserMessage({ type: 'info', text: 'Tool reset successfully.' });
             window.gtag && window.gtag('event', 'reset_tool');
-            }}>🔄 Reset</button>
-            <button onClick={handleValidateUrls}>✅ Validate All URLs</button>
-            <button onClick={handleLoadAllMedia}>📤 Load All Here</button>
+            }}>
+            🔄 Reset
+            </button>
+
+            <button onClick={handleValidateUrls}>🌐 Fetch Status</button>
+            <button onClick={handleLoadAllMedia}>🎞️ View All Thumbnails</button>
       </div>
 
       {userMessage && <div className={`user-message ${userMessage.type} user-message-show`}><span>{getIcon(userMessage.type)} {userMessage.text}</span></div>}

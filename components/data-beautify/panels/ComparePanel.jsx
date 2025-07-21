@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import styles from "../../../app/tools/display-ads/DisplayAds.module.css"; // or wherever your buttons styles live
 import "../../../styles/globals.css"; // make sure this includes the .user-message CSS
+import '../../../styles/databeautifytools.css';
+import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
+
 
 export default function ComparePanel() {
   const [primaryText, setPrimaryText] = useState("");
