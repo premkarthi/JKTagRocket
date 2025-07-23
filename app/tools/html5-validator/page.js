@@ -6,9 +6,12 @@ import React, { useRef, useState, useEffect } from "react";
 import styles from "../display-ads/DisplayAds.module.css";
 import Faq from "../../../components/Faq";
 import JSZip from "jszip";
-import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
+import { useAutoDismissMessage, UserMessage, getIcon } from "@components/Usemessages";
+import "../../../styles/Usemessages.css";
 import "../../../styles/globals.css";
-import { sendGAEvent } from "@/utils/ga4"; // ✅ adjust if your path differs
+import "../../../styles/Html5validator.css";
+import { sendGAEvent } from "@utils/ga4";
+
 
 
 export default function HTML5ValidatorPage() {
@@ -101,7 +104,7 @@ export default function HTML5ValidatorPage() {
       if (htmlFiles.length > 0) {
         indexFile = htmlFiles[0];
       } else {
-        setMessage({ type: "error", text: "❌ No HTML file found in ZIP (e.g., index.html)" });
+        setMessage({ type: "error", text: " No HTML file found in ZIP (e.g., index.html)" });
         console.log("📡 GA4 Event: ZIP missing HTML file");
         sendGAEvent({
           action: "file_upload_error",
@@ -154,7 +157,7 @@ export default function HTML5ValidatorPage() {
     const previewUrl = URL.createObjectURL(blob);
     setIframeUrl(previewUrl);
 
-    setMessage({ type: "success", text: `✅ ZIP uploaded: ${file.name}` });
+    setMessage({ type: "success", text: ` ZIP uploaded: ${file.name}` });
   } catch (error) {
     console.error("File upload error:", error);
     setMessage({ type: "error", text: `Error: ${error.message}` });
@@ -224,15 +227,15 @@ export default function HTML5ValidatorPage() {
           </div>
         )}
 
-        <div className={styles.resetButtonGroup} style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
+        <div className={styles.html5AdsButtonGroup} style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
           <button
-          className="reset-btn"
+          className="html5AdsResetBtn"
           onClick={() => {
             setIframeUrl(null);
             setAdSize({ width: 0, height: 0 });
             setUploadedFileName("");
             if (inputRef.current) inputRef.current.value = null;
-            setMessage({ type: "info", text: "Reset successful — All inputs and previews have been cleared." });
+            setMessage({ type: "info", text: " All inputs and previews have been cleared." });
 
             // 🟢 GA4 Reset Event
             console.log("📡 GA4 Event: Reset Clicked");

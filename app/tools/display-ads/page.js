@@ -1,4 +1,4 @@
-// DisplayAds.js — Final Patch with Structured UI
+
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
@@ -9,10 +9,9 @@ import PerformanceSummaryBlock from "./PerformanceSummaryBlock";
 import { RESOURCE_TYPE_FILTERS, getResourceType } from "./utils";
 // import ad-iframe-network-data from "./computePerformanceSummary";
 import computePerformanceSummary from "./computePerformanceSummary";
-import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
+import { useAutoDismissMessage, getIcon } from "../../../components/Usemessages";
 import "../../../styles/globals.css";
-import { sendGAEvent } from "@/utils/ga4";
-
+import { sendGAEvent } from "@utils/ga4";
 
 const TRACKER_DOMAINS = {
   "doubleclick.net": "Google Ads",

@@ -1,9 +1,9 @@
 import React from "react";
-import UrlEncodePanel from "./panels/UrlEncodePanel";
-import Base64Panel from "./panels/Base64Panel";
-import ComparePanel from "./panels/ComparePanel";
-import BulkUrlPanel from "./panels/BulkUrlPanel";
-import ManipulatePanel from "./panels/ManipulatePanel";
+import UrlEncodePanel from "./panels/Urlencodedecode";
+import Base64Panel from "./panels/Base64encodedecode";
+import ComparePanel from "./panels/Comparedata";
+import BulkUrlPanel from "./panels/Bulkurlvalidation";
+import ManipulatePanel from "./panels/Datamanipulation";
 
 export default function DataBeautifyPanel({ tab }) {
     if (tab === "urlencode") return <UrlEncodePanel />;

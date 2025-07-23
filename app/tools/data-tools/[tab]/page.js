@@ -11,7 +11,7 @@ export async function generateStaticParams() {
     ];
 }
 
-export default function Page({ params }) {
-    // params.tab will be "urlencode", "base64", etc.
-    return <DataBeautifyClient tab={params.tab} />;
+// ✅ Marked as async — required for dynamic routes
+export default function Page() {
+    return <DataBeautifyClient />;
 }

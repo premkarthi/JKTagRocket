@@ -1,0 +1,15 @@
+.html5AdsButtonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.html5AdsResetBtn {
+  padding: 10px 20px;
+  font-size: 15px;
+  border-radius: 6px;
+  /* cursor: pointer; */
+  border: none;
+  color: white;
+  background-color: #333;
+}
