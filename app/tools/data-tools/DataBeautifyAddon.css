@@ -1,6 +1,11 @@
 .dataBeautifyContainer {
   max-width: 1050px;
   margin: 0 auto;
+   border: 2px solid #ccc; /* single visible border */
+  padding: 16px;          /* add padding to prevent inner content from touching border */
+  box-sizing: border-box;
+  border-radius: 6px;     /* optional */
+
 }
 .dataBeautifyHeader {
   color: #ecb84b !important;

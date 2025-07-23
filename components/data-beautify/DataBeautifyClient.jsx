@@ -1,14 +1,17 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import styles from "../../app/tools/display-ads/DisplayAds.module.css";
 import DataBeautifyTabs, { TABS } from "./DataBeautifyTabs";
 import DataBeautifyPanel from "./DataBeautifyPanel";
 
-export default function DataBeautifyClient({ tab }) {
+export default function DataBeautifyClient() {
     const router = useRouter();
-    const tabIdx = TABS.findIndex(t => t.route === tab);
+    const params = useParams();
+
+    const tabParam = params?.tab;
+    const tabIdx = TABS.findIndex(t => t.route === tabParam);
     const activeTab = tabIdx === -1 ? 0 : tabIdx;
 
     const handleTabChange = (route) => {

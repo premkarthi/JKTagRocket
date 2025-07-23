@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
 import * as XLSX from 'xlsx';
 import { useState, useRef } from 'react';
-import '../../../styles/databeautifytools.css';
+import '../../../styles/Bulkurlvalidation.css';
+import "../../../styles/Usemessages.css";
 import { FiExternalLink, FiDownload, FiCopy, FiUpload, FiSmartphone, FiMaximize2 } from 'react-icons/fi';
-import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
+import { useAutoDismissMessage, UserMessage } from "../../Usemessages";
 import MediaModal from './MediaModal';
 
 export default function BulkUrlPanel() {
@@ -22,7 +23,7 @@ export default function BulkUrlPanel() {
   const [expandedColumns, setExpandedColumns] = useState(false);
   const [progress, setProgress] = useState(null);
   const [duplicateUrls, setDuplicateUrls] = useState([]);
-  const [userMessage, setUserMessage] = useAutoDismissMessage(null, 5000);
+  const [message, setMessage] = useAutoDismissMessage(null, 5000);
   const [mediaList, setMediaList] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [expandedMedia, setExpandedMedia] = useState(null);
@@ -49,7 +50,7 @@ export default function BulkUrlPanel() {
     setProgress(1);
 
     if (!input.trim()) {
-      setUserMessage({ type: 'warning', text: 'Please enter at least one URL before validating.' });
+      setMessage({ type: 'warning', text: 'Please enter at least one URL before validating.' });
       setProgress(null);
       return;
     }
@@ -57,7 +58,7 @@ export default function BulkUrlPanel() {
     const rawUrls = input.split('\n').map(url => url.trim()).filter(Boolean);
     const malformedUrls = rawUrls.filter(url => !/^https?:\/\/.+\..+/.test(url));
     if (malformedUrls.length > 0) {
-      setUserMessage({ type: 'error', text: `${malformedUrls.length} invalid URL(s) were skipped.` });
+      setMessage({ type: 'error', text: `${malformedUrls.length} invalid URL(s) were skipped.` });
     }
 
     const filteredUrls = rawUrls.filter(url => /^https?:\/\/.+\..+/.test(url));
@@ -66,10 +67,8 @@ export default function BulkUrlPanel() {
     const duplicates = Object.keys(urlCount).filter(url => urlCount[url] > 1);
     setDuplicateUrls(duplicates);
     if (duplicates.length > 0) {
-      setUserMessage({ type: 'warning', text: `${duplicates.length} duplicate URL(s) detected and skipped.` });
+      setMessage({ type: 'warning', text: `${duplicates.length} duplicate URL(s) detected and skipped.` });
     }
-
-    window.gtag && window.gtag('event', 'detected_duplicates', { count: duplicates.length });
 
     const uniqueUrls = [...new Set(filteredUrls)];
     const resultsWithDetails = [];
@@ -117,8 +116,7 @@ export default function BulkUrlPanel() {
     setResults(resultsWithDetails);
     setLoadingRow(null);
     setProgress(null);
-    setUserMessage({ type: 'success', text: `${resultsWithDetails.length} URL(s) validated successfully.` });
-    window.gtag && window.gtag('event', 'validate_urls');
+    setMessage({ type: 'success', text: `${resultsWithDetails.length} URL(s) validated successfully.` });
   };
 
   const handleFileSelect = (e) => {
@@ -130,34 +128,50 @@ export default function BulkUrlPanel() {
     const allowedExtensions = /\.(txt|csv|xlsx)$/i;
     if (!allowedExtensions.test(file.name)) {
       setUploadedFileName('');
-      setUserMessage({ type: 'error', text: `❌ Unsupported file type: ${file.name}` });
+      setMessage({
+        type: 'error',
+        text: `Unsupported file type: ${file.name}. Please upload a .txt, .csv, or .xlsx file.`,
+      });
       return;
     }
 
     setUploadedFileName(file.name);
-    setUserMessage({ type: 'success', text: `✅ File uploaded: ${file.name}` });
+    setMessage({
+      type: 'success',
+      text: `File uploaded: ${file.name} — supported file types: .txt, .csv, .xlsx`,
+    });
+
+    const normalizeUrls = (text) => {
+      return text
+        .split(/[\n,]+/)
+        .map(line => line.trim())
+        .filter(line => /^https?:\/\/.+\..+/.test(line))
+        .join('\n');
+    };
 
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = e.target.result;
-      setInput(content);
-    };
-    reader.readAsText(file);
-  };
+    const fileName = file.name.toLowerCase();
 
-  const handleDragEnter = (e) => { e.preventDefault(); setDragActive(true); };
-  const handleDragLeave = (e) => { e.preventDefault(); setDragActive(false); };
-  const handleDragOver = (e) => { e.preventDefault(); setDragActive(true); };
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragActive(false);
-    const file = e.dataTransfer.files[0];
-    if (file) processUploadedFile(file);
-  };
-
-  const handleSort = (key) => {
-    if (sortKey === key) setSortAsc(!sortAsc);
-    else { setSortKey(key); setSortAsc(true); }
+    if (fileName.endsWith('.txt') || fileName.endsWith('.csv')) {
+      reader.onload = (e) => {
+        const content = e.target.result;
+        setInput(prev => (prev ? prev + '\n' : '') + normalizeUrls(content));
+      };
+      reader.readAsText(file);
+    } else if (fileName.endsWith('.xlsx')) {
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+        const urls = jsonData
+          .flat()
+          .filter(cell => typeof cell === 'string' && cell.trim().startsWith('http'))
+          .map(cell => cell.trim());
+        setInput(prev => (prev ? prev + '\n' : '') + urls.join('\n'));
+      };
+      reader.readAsArrayBuffer(file);
+    }
   };
 
   const changePage = (newPage) => {
@@ -172,7 +186,7 @@ export default function BulkUrlPanel() {
       /\.(jpe?g|png|gif|webp|svg|mp4|webm|mov)$/i.test(url)
     );
     if (mediaUrls.length === 0) {
-      setUserMessage({ type: 'warning', text: 'Please enter at least one valid media URL.' });
+      setMessage({ type: 'warning', text: 'Please enter at least one valid media URL.' });
       return;
     }
     setMediaList(mediaUrls);
@@ -200,49 +214,65 @@ export default function BulkUrlPanel() {
 
   return (
     <div className={`bulk-url-panel ${mobileView ? 'mobile-preview' : ''} ${expandedColumns ? 'expand-columns' : ''}`}>
-      <h1 className="panel-title">🔗 Bulk URL Enhancer</h1>
-
+      {/* <h1 className="panel-title">🔗 Bulk URL Enhancer</h1> */}
+      <span className="base64PanelTitleIcon">
+        <img src="/images/bulkurlvalidation.png" alt="Base64 Icon" width="33" height="33" />
+       Bulk URL Validation </span>
       <div className="view-toggles">
         <button onClick={() => setMobileView(prev => !prev)}><FiSmartphone /> {mobileView ? '🖥️ Desktop View' : '📱 Mobile Preview'}</button>
         <button onClick={() => setExpandedColumns(prev => !prev)}><FiMaximize2 /> {expandedColumns ? '🔻 Shrink Columns' : '🔺 Expand Columns'}</button>
       </div>
 
-      <div className={`upload-box ${dragActive ? 'active' : ''}`} onDragEnter={handleDragEnter} onDragLeave={handleDragLeave} onDragOver={handleDragOver} onDrop={handleDrop}>
+      <div className="upload-box">
         <FiUpload size={32} className="upload-icon" />
         <p>Drag & Drop .txt, .csv or .xlsx file</p>
         <span>Or</span>
-        <p><button type="button" className="browse-button" onClick={() => fileInputRef.current?.click()}>Browse & Upload</button></p>
-        <input ref={fileInputRef} type="file" accept=".txt,.csv,.xlsx" onChange={handleFileSelect} style={{ display: 'none' }} />
-        {userMessage && (
-        <div className={`user-message ${userMessage.type}`}>
-            {userMessage.text}
+        <p>
+          <button type="button" className="browse-button" onClick={() => fileInputRef.current?.click()}>
+            Browse & Upload
+          </button>
+        </p>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".txt,.csv,.xlsx"
+          onChange={handleFileSelect}
+          style={{ display: 'none' }}
+        />
+        <div className="upload-filename">
+          {uploadedFileName ? (
+            <><b>File Name :</b> 📁 <strong>{uploadedFileName}</strong></>
+          ) : (
+            <span style={{ visibility: 'hidden' }}>File Name placeholder</span>
+          )}
         </div>
-        )}
-
-        {uploadedFileName && (
-              <div style={{ marginTop: 11, fontSize: 15, color: '#909' }}>File Name : 📁 <strong>{uploadedFileName}</strong></div>
-            )}
       </div>
 
-      <textarea className="panel-textarea" placeholder="Paste your URLs here (one per line)" value={input} onChange={handleChange} />
+      <textarea
+        className="panel-textarea"
+        placeholder="Paste your URLs here (one per line)"
+        value={input}
+        onChange={handleChange}
+      />
 
       <div className="button-group">
-            <button onClick={() => {
-            setInput('');
-            setResults([]);
-            setPage(1);
-            setUploadedFileName(''); // 🔄 Clear uploaded file name
-            setUserMessage({ type: 'info', text: 'Tool reset successfully.' });
-            window.gtag && window.gtag('event', 'reset_tool');
-            }}>
-            🔄 Reset
-            </button>
-
-            <button onClick={handleValidateUrls}>🌐 Fetch Status</button>
-            <button onClick={handleLoadAllMedia}>🎞️ View All Thumbnails</button>
+        <button onClick={() => {
+          setInput('');
+          setResults([]);
+          setPage(1);
+          setUploadedFileName('');
+          if (fileInputRef.current) fileInputRef.current.value = '';
+          setMessage({ type: 'info', text: 'All inputs cleared. Ready for a fresh start..!' });
+        }}>
+          🔄 Reset
+        </button>
+        <button onClick={handleValidateUrls}>🌐 Fetch Status</button>
+        <button onClick={handleLoadAllMedia}>🎞️ View All Thumbnails</button>
       </div>
+         
+      {/* ✅ Show messages */}
+      <UserMessage message={message} setMessage={setMessage} />
 
-      {userMessage && <div className={`user-message ${userMessage.type} user-message-show`}><span>{getIcon(userMessage.type)} {userMessage.text}</span></div>}
 
       {(results.length > 0 || progress !== null) && (
         <div className="results-container">
@@ -263,7 +293,7 @@ export default function BulkUrlPanel() {
 
           {duplicateUrls.length > 0 && (
             <div className="warning-duplicates">
-              ⚠️ {duplicateUrls.length} duplicate URL(s) detected and ignored during validation process .
+              ⚠️ {duplicateUrls.length} Duplicate URL(s) detected and ignored during validation process .
             </div>
           )}
 

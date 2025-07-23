@@ -56,34 +56,13 @@
 }
 
 .displayAdsResetBtn {
-  /* padding: 0.3rem 1rem;
-  border-radius: 6px;
-  border: 2px solid rgba(226, 232, 240, 1);
-  background: #f9f9ff;
-  color: #6c3fe2;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  outline: none;
-  margin-right: 4px;
-  transition: border 0.2s, background 0.2s; */
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0.6rem 1.2rem;
-  background-color: #f3f4f6;
-  color: #111827;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-weight: 500;
-  transition: background 0.2s ease;
-  font-size: 1rem;
-}
-.displayAdsResetBtn:hover,
-.displayAdsResetBtn:focus {
-  border: 2px solid rgba(226, 232, 240, 1);
-  /* background: #edeaff; */
-  background: #e5e7eb;
+ padding: 10px 20px;
+  font-size: 17px;
+  border-radius: 7px;
+  /* cursor: pointer; */
+  border: none;
+  color: white;
+  background-color: #333;
 }
 
 .displayAdsPreviewBtn {
@@ -559,19 +538,6 @@ label span:hover .info-tooltip {
   border-radius: 6px;
 }
 
-.displayAdsResetBtn,
-.displayAdsPreviewBtn {
-  padding: 6px 14px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.displayAdsResetBtn {
-  background: #eee;
-  color: #333;
-}
 
 .displayAdsPreviewBtn {
   background: #2563eb;

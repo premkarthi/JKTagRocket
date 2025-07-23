@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef,useEffect } from "react";
 import styles from "../display-ads/DisplayAds.module.css";
-import "./NativeAdsAddon.css";
+import "../../../styles/Nativeads.css";
 import Image from "next/image";
-import { useEffect } from "react";
-import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
-import { sendGAEvent } from "@/utils/ga4";
+import "../../../styles/Usemessages.css";
+import { useAutoDismissMessage, UserMessage } from "@components/Usemessages";
+import { sendGAEvent } from "@utils/ga4";
 
 
 
@@ -71,9 +71,60 @@ function TooltipCopyButton({ value }) {
                 setShowTooltip(false);
             }, 1200);
         }
-    };
+};
 
     const tooltipText = copied ? "Copied!" : "Copy to Clipboard";
+
+//     "use client";
+// import React, { useState, useRef } from "react";
+
+// export default function TooltipCopyButton({ value }) {
+//   const [showTooltip, setShowTooltip] = useState(false);
+//   const [copied, setCopied] = useState(false);
+//   const timeoutRef = useRef(null);
+
+//   const handleMouseEnter = () => {
+//     setShowTooltip(true);
+//     if (timeoutRef.current) clearTimeout(timeoutRef.current);
+//   };
+
+//   const handleMouseLeave = () => {
+//     setShowTooltip(false);
+//     setCopied(false);
+//     if (timeoutRef.current) clearTimeout(timeoutRef.current);
+//   };
+
+//   const handleCopy = () => {
+//     if (value && value !== "NA") {
+//       navigator.clipboard.writeText(value);
+//       setCopied(true);
+//       if (timeoutRef.current) clearTimeout(timeoutRef.current);
+//       timeoutRef.current = setTimeout(() => {
+//         setCopied(false);
+//         setShowTooltip(false);
+//       }, 1200);
+//     }
+//   };
+
+//   const tooltipText = copied ? "Copied!" : "Copy to Clipboard";
+
+//   return (
+//     <div
+//       onMouseEnter={handleMouseEnter}
+//       onMouseLeave={handleMouseLeave}
+//       onClick={handleCopy}
+//       style={{ display: "inline-block", position: "relative", cursor: "pointer" }}
+//     >
+//       📋
+//       {showTooltip && (
+//         <div className="custom-tooltip">
+//           {tooltipText}
+//           <span className="tooltip-arrow" />
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
 
     return (
         <span
@@ -215,6 +266,9 @@ export default function NativeAds() {
     const [error, setError] = useState("");
     // isSubmitted is true after a successful fetch/parse
     const [isSubmitted, setIsSubmitted] = useState(false);
+    // page scroll smooth to bottom 
+    const resultRef = useRef(null);
+
 
     const handleReset = () => {
         setNativeTag("");
@@ -353,6 +407,11 @@ export default function NativeAds() {
         } finally {
             setLoading(false);
         }
+        setTimeout(() => {
+            if (resultRef.current) {
+            resultRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }, 300);
     };
 
     function buildNativeData(res, url) {
@@ -516,11 +575,11 @@ export default function NativeAds() {
         };
 
     return (
-        <div className={styles.displayAdsContainer + " nativeAdsContainer"}>
-            <h1 className={styles.displayAdsHeader + " nativeAdsHeader"}> 🧾 Native Ad Inspector & Creative Preview Tool</h1>
-            <div className={styles.displayAdsSubtitle + " nativeAdsSubtitle"}>No more guessing. Understand your native tags like never before ..</div>
-            <div className={styles.displayAdsInputCard + " nativeAdsInputCard"}>
-                {/* <label htmlFor="nativeTag" className={styles.displayAdsInputLabel}>Paste your link</label> */}
+        <div className={styles.nativeAdsContainer + " nativeAdsContainer"}>
+            <h1 className={styles.nativeAdsHeader + " nativeAdsHeader"}> 🧾 Native Ad Inspector & Creative Preview Tool</h1>
+            <div className={styles.nativeAdsSubtitle + " nativeAdsSubtitle"}>No more guessing. Understand your native tags like never before ..</div>
+            <div className={styles.nativeAdsInputCard + " nativeAdsInputCard"}>
+                {/* <label htmlFor="nativeTag" className={styles.nativeAdsInputLabel}>Paste your link</label> */}
                 <textarea
                     ref={inputRef} // ✅ set ref here
                     id="nativeTag"
@@ -552,10 +611,13 @@ export default function NativeAds() {
                         )}
                     </>
                 )}
-
-                <div className={styles.displayAdsButtonGroup} style={{ marginTop: 16 }}>
-                    <button className={styles.displayAdsResetBtn + " nativeAdsResetBtn"} type="button" onClick={handleReset}> 🔄 Reset</button>
-                    <button className={styles.displayAdsPreviewBtn + " nativeAdsSubmitBtn"} type="button" onClick={handleSubmit}> 🚀 Submit Tag</button>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "16px" }}>
+                <button className={styles.nativeAdsResetBtn + " nativeAdsResetBtn"} type="button" onClick={handleReset}>
+                    🔄 Reset
+                </button>
+                <button className={styles.nativeAdsSubmitBtn + " nativeAdsSubmitBtn"} type="button" onClick={handleSubmit}>
+                    🚀 Submit Tag
+                </button>
                 </div>
             </div>
             <div className="nativeAdsTabsWrapper">
