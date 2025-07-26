@@ -70,13 +70,15 @@
   font-weight: bold;
   margin-bottom: 12px;
 }
-.panel-textarea {
+.urlpanel-textarea {
   width: 100%;
-  height: 120px;
+  height: 150px;
   padding: 10px;
   border: 2px solid #999;
   border-radius: 4px;
   font-family: monospace;
+  background-color: #f1eff1;
+  color: #6b2074;
 }
 
 /* Buttons */
@@ -187,6 +189,11 @@
   cursor: pointer;
   white-space: nowrap;
 }
+.center-column {
+  text-align: center !important;
+  vertical-align: middle;
+}
+
 .success { color: green; font-weight: 600; }
 .failed { color: red; font-weight: 600; }
 
@@ -286,9 +293,9 @@
   .browse-button {
     width: 100%;
   }
-  .panel-textarea {
+  /* .panel-textarea {
     height: 100px;
-  }
+  } */
   
 }
 
@@ -551,11 +558,27 @@
     align-items: stretch;
   }
 
-  .panel-textarea {
+  /* .panel-textarea {
     height: 100px;
-  }
+  } */
 
   .browse-button {
     width: 100%;
   }
+}
+
+/* Sorting icon styling */
+.sort-icon {
+  font-size: 12px;
+  margin-left: 4px;
+  color: #909; /* default icon color */
+  transition: color 0.2s;
+}
+
+.sortable:hover .sort-icon {
+  color: #909; /* darker on hover */
+}
+
+.sort-active {
+  color: #005eff; /* active sort icon color */
 }

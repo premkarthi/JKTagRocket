@@ -4,6 +4,12 @@ import * as XLSX from 'xlsx';
 import { useState, useRef } from 'react';
 import '../../../styles/Bulkurlvalidation.css';
 import "../../../styles/Usemessages.css";
+import "../../../styles/Customtooltip.css";
+import "../../../styles/TooltipcopyButton.css";
+import "../../../styles/TooltipOpenNewTabButton.css";
+import Customtooltip from "components/Customtooltip";
+import TooltipcopyButton from "components/TooltipcopyButton"; 
+import TooltipOpenNewTabButton from "components/TooltipOpenNewTabButton";
 import { FiExternalLink, FiDownload, FiCopy, FiUpload, FiSmartphone, FiMaximize2 } from 'react-icons/fi';
 import { useAutoDismissMessage, UserMessage } from "../../Usemessages";
 import MediaModal from './MediaModal';
@@ -29,6 +35,8 @@ export default function BulkUrlPanel() {
   const [expandedMedia, setExpandedMedia] = useState(null);
   const fileInputRef = useRef(null);
   const ITEMS_PER_PAGE = 15;
+  
+  
 
   const handleChange = (e) => setInput(e.target.value);
 
@@ -43,6 +51,14 @@ export default function BulkUrlPanel() {
     img.onerror = () => resolve({ ok: false });
     img.src = url;
   });
+  const handleSort = (key) => {
+  if (sortKey === key) {
+    setSortAsc(!sortAsc); // toggle order if already sorting by this key
+  } else {
+    setSortKey(key); // sort by new key
+    setSortAsc(true);
+  }
+};
 
   const handleValidateUrls = async () => {
     setResults([]);
@@ -193,11 +209,12 @@ export default function BulkUrlPanel() {
     setShowModal(true);
   };
 
-  const filteredResults = results.filter(item => {
-    if (filter === 'success') return item.status.includes('Success');
-    if (filter === 'failed') return item.status.includes('Failed');
-    return true;
-  });
+  const filteredResults = Array.isArray(results)
+  ? results.map((item, index) => ({
+      ...item,
+      originalIndex: index + 1,
+    }))
+  : [];
 
   const sortedResults = [...filteredResults].sort((a, b) => {
     const valA = a[sortKey];
@@ -249,7 +266,7 @@ export default function BulkUrlPanel() {
       </div>
 
       <textarea
-        className="panel-textarea"
+        className="urlpanel-textarea"
         placeholder="Paste your URLs here (one per line)"
         value={input}
         onChange={handleChange}
@@ -303,33 +320,54 @@ export default function BulkUrlPanel() {
               <div className="progress-label">{progress}%</div>
             </div>
           )}
+            <div className={`results-table-wrapper ${expandedColumns ? 'expanded' : ''} ${mobileView ? 'mobile-preview' : ''}`}>
+              <table className="results-table">
+                <thead>
+                  <tr>
+                    <th className="center-column sortable" onClick={() => handleSort('sno')}>
+                      S.No
+                      <span className={`sort-icon ${sortKey === 'sno' ? 'sort-active' : ''}`}>
+                        {sortKey === 'sno' ? (sortAsc ? '▲' : '▼') : '▼'}
+                      </span>
+                    </th>
 
-          <div className={`results-table-wrapper ${expandedColumns ? 'expanded' : ''} ${mobileView ? 'mobile-preview' : ''}`}>
-            <table className="results-table">
-              <thead>
-                <tr>
-                  <th onClick={() => handleSort('sno')}>S.No {sortKey === 'sno' && (sortAsc ? '↑' : '↓')}</th>
-                  <th onClick={() => handleSort('url')}>Source URL’s {sortKey === 'url' && (sortAsc ? '↑' : '↓')}</th>
-                  <th onClick={() => handleSort('status')}>Status {sortKey === 'status' && (sortAsc ? '↑' : '↓')}</th>
-                  {/* <th onClick={() => handleSort('size')}>Size {sortKey === 'size' && (sortAsc ? '↑' : '↓')}</th> */}
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
+                    <th className="sortable" onClick={() => handleSort('url')}>
+                      Source URLs
+                      <span className={`sort-icon ${sortKey === 'url' ? 'sort-active' : ''}`}>
+                        {sortKey === 'url' ? (sortAsc ? '▲' : '▼') : '▼'}
+                      </span>
+                    </th>
+
+                    <th className="center-column sortable" onClick={() => handleSort('status')}>
+                      Status
+                      <span className={`sort-icon ${sortKey === 'status' ? 'sort-active' : ''}`}>
+                        {sortKey === 'status' ? (sortAsc ? '▲' : '▼') : '▼'}
+                      </span>
+                    </th>
+                    <th className="center-column">Action</th>
+                  </tr>
+                </thead>
+
+                <tbody>
                 {paginatedResults.map((item, i) => (
                   <tr key={i}>
-                    <td>{startIndex + i + 1}</td>
+                    <td className="center-column">{item.originalIndex}</td>
                     <td className={`url-cell ${expandedColumns ? 'expanded' : ''} ${duplicateUrls.includes(item.url) ? 'duplicate' : ''}`}>
                       <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a>
                     </td>
-                    <td className={item.status.includes('Success') ? 'success' : 'failed'}>{loadingRow === i ? '⏳' : item.status}</td>
-                    {/* <td>{item.size}</td> */}
-                    <td><a href={item.url} target="_blank" rel="noopener noreferrer"><FiExternalLink /></a></td>
+                    <td className={`center-column ${item.status.includes('Success') ? 'success' : 'failed'}`}>
+                      {loadingRow === i ? '⏳' : item.status}
+                    </td>
+                    <td className="center-column">
+                      <Customtooltip text="Open New Tab" variant="animated">
+                        <TooltipOpenNewTabButton url={item.url} />
+                      </Customtooltip>
+                    </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
+                </tbody>
+              </table>
+            </div>         
           {totalPages > 1 && (
             <div className="pagination bottom">
               <button disabled={page === 1} onClick={() => changePage(page - 1)}>⬅️ Previous</button>

@@ -1,0 +1,219 @@
+.panelContainer {
+  padding: 24px;
+  background-color: #e5e5eb;
+  border-radius: 8px;
+  font-family: sans-serif;
+}
+
+.title {
+  font-size: 20px;
+  margin-bottom: 16px;
+  font-weight: bold;
+}
+
+.editorContainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.textSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.textSection label {
+  margin-bottom: 8px;
+  color: #7c4cb8;
+  font-weight: 600;
+}
+
+.textSection textarea {
+  height: 333;
+  resize: vertical;
+  padding: 10px;
+  font-size: 17px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-bottom: 8px;
+}
+
+.textSection select {
+  padding: 6px;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.buttonSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* .message-wrapper {
+  border: 2px solid #ccc;
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+} */
+.manipulate-panel-wrapper {
+  border: 2px solid #ccc;
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+
+.panel-section {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.datamanipulationpanel-textarea {
+ width: 100%; /* Or set a fixed width like 600px */
+  height: 444px;
+  resize: vertical;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 19px;
+  padding: 12px;
+  margin-bottom: 24px;
+  background: #f9f9ff;
+  color: #6b2074;
+}
+
+.panel-controls {
+  flex: 1;
+  min-width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 20px;
+}
+.target-group label {
+  display: block;
+  margin-bottom: 4px;
+}
+.delimiter-select select {
+  padding: 6px;
+  width: 100%;
+}
+.target-group select {
+  padding: 6px;
+}
+
+.btn-action {
+  padding: 11px 11px;
+  background-color: #2563eb;
+  color: white;
+  font-size: 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  border-radius: 7px;
+  unicode-bidi: plaintext;
+  direction: ltr; 
+}
+.btn-utility {
+  padding: 11px 11px;
+  background-color: #2563eb;
+  color: white;
+  font-size: 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  border-radius: 5px;
+  unicode-bidi: plaintext;
+  direction: ltr; 
+}
+.btn-action.reverse {
+ padding: 11px 11px;
+  background-color: #2563eb;
+  color: white;
+  font-size: 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  border-radius: 5px;
+  unicode-bidi: plaintext;
+  direction: ltr;
+}
+.btn-action:hover,
+.btn-utility:hover,
+.btn-action:focus,
+.btn-utility:focus,
+.btn-action.reverse:focus,
+.btn-action.reverse:hover {
+   background-color: #4a26b6;
+  opacity: 0.9;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px; /* optional */
+}
+
+.btn-reset {
+  font-size: 17px;
+  border-radius: 7px;
+  cursor: pointer;
+  color: white;
+  background-color: #333;
+  padding: 12px 19px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-copy {
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+}
+.tooltip-button {
+  background-color: #6f06ef;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.message-bar {
+  width: 100%;
+  padding: 8px 16px;
+  background-color: #fff8dc;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+}
+.message-wrapper {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 16px;
+}
+.textarea-with-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.copy-button-wrapper {
+  margin-top: 8px; /* space below textarea */
+  display: flex;
+  justify-content: center;
+}
+
+

@@ -1,0 +1,46 @@
+.custom-tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip bubble above the button */
+.tooltip-bubble {
+  position: absolute;
+  bottom: 100%; /* places it above the button */
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px); /* fine-tune vertical */
+  background-color: #C0C;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 0;
+  animation: fadeInUp 0.3s ease forwards;
+  pointer-events: none;
+}
+
+/* Tooltip arrow pointing down at the button */
+.tooltip-arrow {
+  position: absolute;
+  top: 100%; /* just below the bubble */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #333;
+}
+
+/* Fade-in animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-8px);
+  }
+}

@@ -3,6 +3,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import FeatureCard from "./FeatureCard";
+import ToolUpdatesBanner from "./ToolUpdatesBanner";
+
 
 const features = [
   {
@@ -82,6 +84,7 @@ export default function FeatureGrid() {
         margin: "2rem 1rem",
       }}
     >
+      <ToolUpdatesBanner />
       <motion.h2
         variants={headingVariants}
         initial="hidden"
