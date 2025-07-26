@@ -1,0 +1,7 @@
+.btn-open-tab {
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  padding: 4px;
+}

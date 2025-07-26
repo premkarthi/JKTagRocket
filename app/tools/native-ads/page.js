@@ -5,10 +5,14 @@ import styles from "../display-ads/DisplayAds.module.css";
 import "../../../styles/Nativeads.css";
 import Image from "next/image";
 import "../../../styles/Usemessages.css";
-import { useAutoDismissMessage, UserMessage } from "@components/Usemessages";
+import "../../../styles/Customtooltip.css";
+import "../../../styles/TooltipcopyButton.css";
+import "../../../styles/TooltipOpenNewTabButton.css";
+import Customtooltip from "components/Customtooltip";
+import TooltipcopyButton from "components/TooltipcopyButton"; 
+import TooltipOpenNewTabButton from "components/TooltipOpenNewTabButton";
+import { useAutoDismissMessage, UserMessage } from "components/Usemessages";
 import { sendGAEvent } from "@utils/ga4";
-
-
 
 // Dummy helpers and maps for demonstration
 const eventNamesMap = {};
@@ -43,196 +47,6 @@ const TABS = [
     { label: "🎯 Event Trackers & Pixels" },
 ];
 
-
-// TooltipButton component for clipboard with tooltip & copied
-function TooltipCopyButton({ value }) {
-    const [showTooltip, setShowTooltip] = useState(false);
-    const [copied, setCopied] = useState(false);
-    const timeoutRef = useRef();
-    // const inputRef = useRef(null);
-
-    const handleMouseEnter = () => {
-        setShowTooltip(true);
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-    const handleMouseLeave = () => {
-        setShowTooltip(false);
-        setCopied(false);
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-
-    const handleCopy = () => {
-        if (value && value !== "NA") {
-            navigator.clipboard.writeText(value);
-            setCopied(true);
-            if (timeoutRef.current) clearTimeout(timeoutRef.current);
-            timeoutRef.current = setTimeout(() => {
-                setCopied(false);
-                setShowTooltip(false);
-            }, 1200);
-        }
-};
-
-    const tooltipText = copied ? "Copied!" : "Copy to Clipboard";
-
-//     "use client";
-// import React, { useState, useRef } from "react";
-
-// export default function TooltipCopyButton({ value }) {
-//   const [showTooltip, setShowTooltip] = useState(false);
-//   const [copied, setCopied] = useState(false);
-//   const timeoutRef = useRef(null);
-
-//   const handleMouseEnter = () => {
-//     setShowTooltip(true);
-//     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-//   };
-
-//   const handleMouseLeave = () => {
-//     setShowTooltip(false);
-//     setCopied(false);
-//     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-//   };
-
-//   const handleCopy = () => {
-//     if (value && value !== "NA") {
-//       navigator.clipboard.writeText(value);
-//       setCopied(true);
-//       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-//       timeoutRef.current = setTimeout(() => {
-//         setCopied(false);
-//         setShowTooltip(false);
-//       }, 1200);
-//     }
-//   };
-
-//   const tooltipText = copied ? "Copied!" : "Copy to Clipboard";
-
-//   return (
-//     <div
-//       onMouseEnter={handleMouseEnter}
-//       onMouseLeave={handleMouseLeave}
-//       onClick={handleCopy}
-//       style={{ display: "inline-block", position: "relative", cursor: "pointer" }}
-//     >
-//       📋
-//       {showTooltip && (
-//         <div className="custom-tooltip">
-//           {tooltipText}
-//           <span className="tooltip-arrow" />
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-    return (
-        <span
-            className="nativeAdsCopyBtnWrapper"
-            style={{ position: "relative", display: "inline-block" }}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-        >
-            <button
-                type="button"
-                className="nativeAdsCopyBtn"
-                aria-label="Copy"
-                onClick={handleCopy}
-                tabIndex={0}
-            >
-                <span role="img" aria-label="Copy">📋</span>
-            </button>
-            {showTooltip && (
-                <span
-                    className="nativeAdsCopyTooltip"
-                    style={{
-                        position: "absolute",
-                        left: "50%",
-                        top: "-34px",
-                        background: "#7543e0",
-                        color: "#fff",
-                        borderRadius: "5px",
-                        padding: "6px 12px",
-                        fontSize: "15px",
-                        whiteSpace: "nowrap",
-                        zIndex: 10000,
-                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
-                        fontFamily: "sans-serif",
-                        opacity: 1,
-                        transition: "opacity 0.2s ease",
-                    }}
-                >
-                    {tooltipText}
-                </span>
-            )}
-        </span>
-    );
-}
-
-// TooltipButton for open in new tab with tooltip
-function TooltipOpenNewTabButton({ url }) {
-    const [showTooltip, setShowTooltip] = useState(false);
-    const timeoutRef = useRef();
-
-    const handleClick = () => {
-        if (!url || url === "NA" || url === "undefined") return;
-        let openUrl = url.trim();
-        if (!openUrl) return;
-        if (openUrl.includes("redirectURL")) {
-            const idx = openUrl.indexOf("redirectURL");
-            openUrl = openUrl.substring(idx + "redirectURL".length + 1);
-        }
-        if (openUrl.startsWith("http")) {
-            window.open(openUrl, "_blank");
-        } else if (openUrl.includes("www") || openUrl.includes(".")) {
-            window.open("https://" + openUrl, "_blank");
-        }
-    };
-
-    const handleMouseEnter = () => {
-        setShowTooltip(true);
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-    const handleMouseLeave = () => {
-        setShowTooltip(false);
-        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-
-    return (
-        <span
-            style={{ cursor: url && url !== "NA" ? "pointer" : "not-allowed", marginLeft: 5, position: "relative", display: "inline-block" }}
-            onClick={handleClick}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            tabIndex={-1}
-        >
-            <Image className="open-new-tab-icon" src="/images/open-new-tab.jpeg" alt="Click to open url in new tab" width={20} height={20} style={{ objectFit: 'contain' }} />
-            {showTooltip && (
-                <span
-                    className="nativeAdsCopyTooltip"
-                    style={{
-                        position: "absolute",
-                        left: "50%",
-                        top: "-34px",
-                        background: "#7543e0",
-                        color: "#fff",
-                        borderRadius: "5px",
-                        padding: "6px 12px",
-                        fontSize: "15px",
-                        whiteSpace: "nowrap",
-                        zIndex: 10000,
-                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.3)",
-                        fontFamily: "sans-serif",
-                        opacity: 1,
-                        transition: "opacity 0.2s ease",
-                    }}
-                >
-                    Open in new tab
-                </span>
-            )}
-        </span>
-    );
-}
 
 export default function NativeAds() {
     const [nativeTag, setNativeTag] = useState("");
@@ -640,16 +454,18 @@ export default function NativeAds() {
                         <div>
                             <div className="nativeAdsFieldRow">
                                 <label className="nativeAdsFieldLabel">Native SSP : </label>
-                                <div className="nativeAdsFieldInputWrapper">
-                                    <input
+                                    <div className="nativeAdsFieldInputWrapper">
+                                        <input
                                         type="text"
                                         value={fieldValue(nativeSsp)}
                                         onChange={e => setNativeSsp(e.target.value)}
                                         className="nativeAdsFieldInput"
                                         placeholder="Native SSP"
-                                    />
-                                    <TooltipCopyButton value={fieldValue(nativeSsp)} />
-                                </div>
+                                        />
+                                        <Customtooltip text="Copy SSP" variant="copy">
+                                            <TooltipcopyButton value={fieldValue(nativeSsp)} />
+                                        </Customtooltip>
+                                    </div>
                             </div>
                             <div className="nativeAdsFieldRow">
                                 <label className="nativeAdsFieldLabel">Headline ( Title ) :</label>
@@ -661,7 +477,10 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Headline ( Title )"
                                     />
-                                    <TooltipCopyButton value={fieldValue(headline)} />
+                                    <Customtooltip text="Copy Headline" variant="copy">
+                                            <TooltipcopyButton value={fieldValue(headline)} />
+                                    </Customtooltip>
+                                    
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -674,7 +493,10 @@ export default function NativeAds() {
                                         rows={2}
                                         placeholder="Sub Headline / Description"
                                     />
-                                    <TooltipCopyButton value={fieldValue(description)} />
+                                    <Customtooltip text="Copy Description" variant="copy">
+                                            <TooltipcopyButton value={fieldValue(description)} />
+                                    </Customtooltip>
+                                    
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -687,7 +509,10 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Brand Name"
                                     />
-                                    <TooltipCopyButton value={fieldValue(brandName)} />
+                                    <Customtooltip text="Copy Brand Name" variant="copy">
+                                            <TooltipcopyButton value={fieldValue(brandName)} />
+                                    </Customtooltip>
+                                    
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -700,7 +525,10 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Reporting Name"
                                     />
-                                    <TooltipCopyButton value={fieldValue(reportingName)} />
+                                    <Customtooltip text="Copy ReportingName" variant="copy">
+                                            <TooltipcopyButton value={fieldValue(reportingName)} />
+                                    </Customtooltip>
+                                    
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -713,8 +541,13 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Impression Tracker"
                                     />
-                                    <TooltipCopyButton value={fieldValue(impressionTracker)} />
-                                    <TooltipOpenNewTabButton url={impressionTracker} />
+                                    <Customtooltip text="Copy Impression Tracker" variant="copy">
+                                            <TooltipcopyButton value={fieldValue(impressionTracker)} />
+                                    </Customtooltip>
+                                    <Customtooltip text="Open New Tab" variant="animated">
+                                            <TooltipOpenNewTabButton url={impressionTracker} />
+                                    </Customtooltip>
+                                    
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -727,8 +560,13 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Secondary Click Tracker"
                                     />
-                                    <TooltipCopyButton value={fieldValue(secondaryClickTracker)} />
-                                    <TooltipOpenNewTabButton url={secondaryClickTracker} />
+                                    <Customtooltip text="Copy SecondaryClickTracker" variant="copy">
+                                            <TooltipcopyButton value={fieldValue(secondaryClickTracker)} />
+                                    </Customtooltip>
+                                    <Customtooltip text="Open New Tab" variant="animated">
+                                            <TooltipOpenNewTabButton url={secondaryClickTracker} />
+                                    </Customtooltip>
+                                    
                                 </div>
                             </div>
                             <div className="nativeAdsFieldRow">
@@ -741,8 +579,13 @@ export default function NativeAds() {
                                         className="nativeAdsFieldInput"
                                         placeholder="Primary Click Tracker"
                                     />
-                                    <TooltipCopyButton value={fieldValue(primaryClickTracker)} />
-                                    <TooltipOpenNewTabButton url={primaryClickTracker} />
+                                    <Customtooltip text="Copy PrimaryClickTracker" variant="copy">
+                                            <TooltipcopyButton value={fieldValue(primaryClickTracker)} />
+                                    </Customtooltip>
+                                    <Customtooltip text="Open New Tab" variant="animated">
+                                            <TooltipOpenNewTabButton url={primaryClickTracker} />
+                                    </Customtooltip>
+                                    
                                 </div>
                             </div>
                             {/* Brand Logo: Label & input, copy, open new tab */}
@@ -758,8 +601,13 @@ export default function NativeAds() {
                                             placeholder="Brand Logo"
                                             style={{ minWidth: 200 }}
                                         />
-                                        <TooltipCopyButton value={fieldValue(brandLogo)} />
-                                        <TooltipOpenNewTabButton url={brandLogo} />
+                                        <Customtooltip text="Copy BrandLogo URL" variant="copy">
+                                            <TooltipcopyButton value={fieldValue(brandLogo)} />
+                                        </Customtooltip>
+                                        <Customtooltip text="Open New Tab" variant="animated">
+                                            <TooltipOpenNewTabButton url={brandLogo} />
+                                        </Customtooltip>
+                                        
                                     </div>
                                     {brandLogo && isImageUrl(brandLogo) && (
                                         <Image
@@ -793,8 +641,13 @@ export default function NativeAds() {
                                             placeholder="Image / Video Preview"
                                             style={{ minWidth: 200 }}
                                         />
-                                        <TooltipCopyButton value={fieldValue(imagevideoPreview)} />
-                                        <TooltipOpenNewTabButton url={imagevideoPreview} />
+                                         <Customtooltip text="Copy Image/videoPreview URL" variant="copy">
+                                            <TooltipcopyButton value={fieldValue(imagevideoPreview)} />
+                                        </Customtooltip>
+                                        <Customtooltip text="Open New Tab" variant="animated">
+                                            <TooltipOpenNewTabButton url={imagevideoPreview} />
+                                        </Customtooltip>
+                                        
                                     </div>
                                     {(isImageUrl(imagevideoPreview) || isVideoUrl(imagevideoPreview)) ? (
                                         <>
@@ -875,7 +728,10 @@ export default function NativeAds() {
                                                     <td style={{ ...tdStyle, wordBreak: "break-all", color: "#334155" }}>{url || "NA"}</td>
                                                     <td style={tdStyle}>
                                                         {url && url !== "NA" && (
-                                                            <TooltipOpenNewTabButton url={url} />
+                                                            <Customtooltip text="Open New Tab" variant="animated">
+                                                                <TooltipOpenNewTabButton url={url} />
+                                                            </Customtooltip>
+                                                            
                                                         )}
                                                     </td>
                                                 </tr>

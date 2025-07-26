@@ -9,7 +9,7 @@ export function useAutoDismissMessage(initialMessage = null, timeout = 5000) {
   const [isVisible, setIsVisible] = useState(false);
 
   const setSmartMessage = (msg) => {
-    setMessageState(msg ? { ...msg } : null); // force rerender for same message
+    setMessageState(msg ? { ...msg } : null);
   };
 
   useEffect(() => {
@@ -17,14 +17,16 @@ export function useAutoDismissMessage(initialMessage = null, timeout = 5000) {
       setIsVisible(true);
       const timer = setTimeout(() => {
         setIsVisible(false);
-        setTimeout(() => setMessageState(null), 300); // wait fade out
+        setTimeout(() => setMessageState(null), 300); // fade delay
       }, timeout);
       return () => clearTimeout(timer);
     }
   }, [message, timeout]);
 
-  return [isVisible ? message : null, setSmartMessage];
+  // include visibility in return
+  return [message && isVisible ? message : message ? { ...message, fading: true } : null, setSmartMessage];
 }
+
 
 export function getIcon(type) {
   switch (type) {
@@ -37,8 +39,11 @@ export function getIcon(type) {
 
 export function UserMessage({ message, setMessage }) {
   if (!message) return null;
+
+  const fadingOut = message.fading === true;
+
   return (
-    <div className={`user-message ${message.type}`}>
+    <div className={`user-message ${message.type} ${fadingOut ? "fade-out" : ""}`}>
       <div className="user-message-icon">{getIcon(message.type)}</div>
       <div className="user-message-content">{message.text}</div>
       <div

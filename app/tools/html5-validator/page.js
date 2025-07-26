@@ -6,7 +6,7 @@ import React, { useRef, useState, useEffect } from "react";
 import styles from "../display-ads/DisplayAds.module.css";
 import Faq from "../../../components/Faq";
 import JSZip from "jszip";
-import { useAutoDismissMessage, UserMessage, getIcon } from "@components/Usemessages";
+import { useAutoDismissMessage, UserMessage, getIcon } from "components/Usemessages";
 import "../../../styles/Usemessages.css";
 import "../../../styles/globals.css";
 import "../../../styles/Html5validator.css";

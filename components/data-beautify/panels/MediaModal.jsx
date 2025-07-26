@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-const fallbackImage = "/fallback-image-1.png";
-const fallbackVideo = "/fallback-video-1.png";
+const fallbackImage = "/fallback-image.png";
+const fallbackVideo = "/fallback-video.png";
 
 export default function MediaModal({ mediaList, showModal, setShowModal, setExpandedMedia, isMobilePreview }) {
   const [isThumbnail, setIsThumbnail] = useState(true);
