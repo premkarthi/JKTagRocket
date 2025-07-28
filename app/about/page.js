@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import "@/styles/globals.css";
 
 const sections = [
   { id: "what-we-offer", title: "1. What We Offer" },

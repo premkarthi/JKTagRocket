@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import "../../../styles/Base64encodedecode.css";
 import "../../../styles/Usemessages.css";
-import { useAutoDismissMessage, UserMessage } from "../../Usemessages";
+import { useAutoDismissMessage, UserMessage } from "../../useMessages";
 
 export default function Base64Panel() {
   const [input, setInput] = useState("");

@@ -6,7 +6,7 @@ import React, { useRef, useState, useEffect } from "react";
 import styles from "../display-ads/DisplayAds.module.css";
 import Faq from "../../../components/Faq";
 import JSZip from "jszip";
-import { useAutoDismissMessage, UserMessage, getIcon } from "components/Usemessages";
+import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
 import "../../../styles/Usemessages.css";
 import "../../../styles/globals.css";
 import "../../../styles/Html5validator.css";
@@ -39,13 +39,13 @@ export default function HTML5ValidatorPage() {
   }, [iframeUrl]);
 
   const handleDrop = (e) => {
-  e.preventDefault();
-  setIsActive(false);
-  const files = e.dataTransfer.files;
-  if (files && files.length > 0) {
-    handleFileChange({ target: { files } }, "drag");
-  }
-};
+    e.preventDefault();
+    setIsActive(false);
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      handleFileChange({ target: { files } }, "drag");
+    }
+  };
 
 
   const handleDragOver = (e) => {
@@ -61,88 +61,88 @@ export default function HTML5ValidatorPage() {
     inputRef.current?.click();
   };
 
-      const handleFileChange = async (e, source = "browse") => {
-      const files = e.target.files;
-      if (!files || files.length === 0) return;
-      const file = files[0];
+  const handleFileChange = async (e, source = "browse") => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
 
-      const labelPrefix = source === "drag" ? "Drag Upload" : "Browse Upload";
+    const labelPrefix = source === "drag" ? "Drag Upload" : "Browse Upload";
 
-      if (!file.name.endsWith(".zip")) {
-        setMessage({ type: "error", text: "Please upload a valid ZIP file." });
-        console.log(`📡 GA4 Event: ${labelPrefix} - Invalid file type`);
-        sendGAEvent({
-          action: "file_upload_error",
-          category: "HTML5 Validator",
-          label: `${labelPrefix} - Non-ZIP file`,
-        });
-        return;
-      }
-
-  try {
-    console.log(`📡 GA4 Event: ${labelPrefix} - Valid ZIP file`);
-    sendGAEvent({
-      action: "file_upload",
-      category: "HTML5 Validator",
-      label: `${labelPrefix} - ZIP with HTML`,
-      value: Math.round(file.size / 1024),
-    });
-
-    setUploadedFileName(file.name);
-
-    const zip = await JSZip.loadAsync(file);
-    let indexFile = null;
-
-    zip.forEach((relativePath, zipEntry) => {
-      if (!indexFile && zipEntry.name.toLowerCase().includes("index.html")) {
-        indexFile = zipEntry;
-      }
-    });
-
-    if (!indexFile) {
-      const htmlFiles = Object.values(zip.files).filter(f => f.name.endsWith(".html"));
-      if (htmlFiles.length > 0) {
-        indexFile = htmlFiles[0];
-      } else {
-        setMessage({ type: "error", text: " No HTML file found in ZIP (e.g., index.html)" });
-        console.log("📡 GA4 Event: ZIP missing HTML file");
-        sendGAEvent({
-          action: "file_upload_error",
-          category: "HTML5 Validator",
-          label: "ZIP without HTML",
-        });
-        return;
-      }
+    if (!file.name.endsWith(".zip")) {
+      setMessage({ type: "error", text: "Please upload a valid ZIP file." });
+      console.log(`📡 GA4 Event: ${labelPrefix} - Invalid file type`);
+      sendGAEvent({
+        action: "file_upload_error",
+        category: "HTML5 Validator",
+        label: `${labelPrefix} - Non-ZIP file`,
+      });
+      return;
     }
 
-    const fileMap = new Map();
-    for (const path in zip.files) {
-      const entry = zip.files[path];
-      if (!entry.dir) {
-        const blob = await entry.async("blob");
-        const blobURL = URL.createObjectURL(blob);
-        fileMap.set(path, blobURL);
-      }
-    }
+    try {
+      console.log(`📡 GA4 Event: ${labelPrefix} - Valid ZIP file`);
+      sendGAEvent({
+        action: "file_upload",
+        category: "HTML5 Validator",
+        label: `${labelPrefix} - ZIP with HTML`,
+        value: Math.round(file.size / 1024),
+      });
 
-    const htmlContent = await indexFile.async("text");
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(htmlContent, "text/html");
+      setUploadedFileName(file.name);
 
-    ["img", "script", "link"].forEach(tag => {
-      const attr = tag === "link" ? "href" : "src";
-      doc.querySelectorAll(`${tag}[${attr}]`).forEach(el => {
-        const src = el.getAttribute(attr);
-        if (!src) return;
-        const normalizedPath = Object.keys(zip.files).find(p => p.endsWith(src) || p.includes(src));
-        if (normalizedPath && fileMap.has(normalizedPath)) {
-          el.setAttribute(attr, fileMap.get(normalizedPath));
+      const zip = await JSZip.loadAsync(file);
+      let indexFile = null;
+
+      zip.forEach((relativePath, zipEntry) => {
+        if (!indexFile && zipEntry.name.toLowerCase().includes("index.html")) {
+          indexFile = zipEntry;
         }
       });
-    });
 
-    const sizeScript = doc.createElement("script");
-    sizeScript.textContent = `
+      if (!indexFile) {
+        const htmlFiles = Object.values(zip.files).filter(f => f.name.endsWith(".html"));
+        if (htmlFiles.length > 0) {
+          indexFile = htmlFiles[0];
+        } else {
+          setMessage({ type: "error", text: " No HTML file found in ZIP (e.g., index.html)" });
+          console.log("📡 GA4 Event: ZIP missing HTML file");
+          sendGAEvent({
+            action: "file_upload_error",
+            category: "HTML5 Validator",
+            label: "ZIP without HTML",
+          });
+          return;
+        }
+      }
+
+      const fileMap = new Map();
+      for (const path in zip.files) {
+        const entry = zip.files[path];
+        if (!entry.dir) {
+          const blob = await entry.async("blob");
+          const blobURL = URL.createObjectURL(blob);
+          fileMap.set(path, blobURL);
+        }
+      }
+
+      const htmlContent = await indexFile.async("text");
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlContent, "text/html");
+
+      ["img", "script", "link"].forEach(tag => {
+        const attr = tag === "link" ? "href" : "src";
+        doc.querySelectorAll(`${tag}[${attr}]`).forEach(el => {
+          const src = el.getAttribute(attr);
+          if (!src) return;
+          const normalizedPath = Object.keys(zip.files).find(p => p.endsWith(src) || p.includes(src));
+          if (normalizedPath && fileMap.has(normalizedPath)) {
+            el.setAttribute(attr, fileMap.get(normalizedPath));
+          }
+        });
+      });
+
+      const sizeScript = doc.createElement("script");
+      sizeScript.textContent = `
       window.addEventListener('load', function() {
         setTimeout(function() {
           const w = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth);
@@ -151,24 +151,24 @@ export default function HTML5ValidatorPage() {
         }, 300);
       });
     `;
-    doc.body.appendChild(sizeScript);
+      doc.body.appendChild(sizeScript);
 
-    const blob = new Blob([doc.documentElement.outerHTML], { type: "text/html" });
-    const previewUrl = URL.createObjectURL(blob);
-    setIframeUrl(previewUrl);
+      const blob = new Blob([doc.documentElement.outerHTML], { type: "text/html" });
+      const previewUrl = URL.createObjectURL(blob);
+      setIframeUrl(previewUrl);
 
-    setMessage({ type: "success", text: ` ZIP uploaded: ${file.name}` });
-  } catch (error) {
-    console.error("File upload error:", error);
-    setMessage({ type: "error", text: `Error: ${error.message}` });
-    console.log("📡 GA4 Event: Exception during ZIP processing");
-    sendGAEvent({
-      action: "file_upload_error",
-      category: "HTML5 Validator",
-      label: error.message,
-    });
-  }
-};
+      setMessage({ type: "success", text: ` ZIP uploaded: ${file.name}` });
+    } catch (error) {
+      console.error("File upload error:", error);
+      setMessage({ type: "error", text: `Error: ${error.message}` });
+      console.log("📡 GA4 Event: Exception during ZIP processing");
+      sendGAEvent({
+        action: "file_upload_error",
+        category: "HTML5 Validator",
+        label: error.message,
+      });
+    }
+  };
 
 
   useEffect(() => {
@@ -229,25 +229,25 @@ export default function HTML5ValidatorPage() {
 
         <div className={styles.html5AdsButtonGroup} style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
           <button
-          className="html5AdsResetBtn"
-          onClick={() => {
-            setIframeUrl(null);
-            setAdSize({ width: 0, height: 0 });
-            setUploadedFileName("");
-            if (inputRef.current) inputRef.current.value = null;
-            setMessage({ type: "info", text: " All inputs and previews have been cleared." });
+            className="html5AdsResetBtn"
+            onClick={() => {
+              setIframeUrl(null);
+              setAdSize({ width: 0, height: 0 });
+              setUploadedFileName("");
+              if (inputRef.current) inputRef.current.value = null;
+              setMessage({ type: "info", text: " All inputs and previews have been cleared." });
 
-            // 🟢 GA4 Reset Event
-            console.log("📡 GA4 Event: Reset Clicked");
-            sendGAEvent({
-              action: "reset_clicked",
-              category: "HTML5 Validator",
-              label: "Reset Button",
-            });
-          }}
-        >
-          🔄 RESET
-        </button>
+              // 🟢 GA4 Reset Event
+              console.log("📡 GA4 Event: Reset Clicked");
+              sendGAEvent({
+                action: "reset_clicked",
+                category: "HTML5 Validator",
+                label: "Reset Button",
+              });
+            }}
+          >
+            🔄 RESET
+          </button>
 
         </div>
 
