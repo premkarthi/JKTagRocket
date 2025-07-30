@@ -11,7 +11,7 @@ import "../../../styles/TooltipOpenNewTabButton.css";
 import Customtooltip from "components/Customtooltip";
 import TooltipcopyButton from "components/TooltipcopyButton";
 import TooltipOpenNewTabButton from "components/TooltipOpenNewTabButton";
-import { useAutoDismissMessage, UserMessage } from "components/Usemessages";
+import { useAutoDismissMessage, UserMessage } from "components/useMessages";
 import { sendGAEvent } from "@utils/ga4";
 
 // Dummy helpers and maps for demonstration
