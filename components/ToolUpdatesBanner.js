@@ -32,7 +32,7 @@ export default function ToolUpdatesBanner() {
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prevIndex) => (prevIndex + 1) % updates.length);
-    }, 15000);
+    }, 11000);
 
     return () => clearInterval(interval);
   }, []);
