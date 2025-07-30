@@ -1,71 +1,51 @@
-import React, { useState, useEffect } from "react";
-import "@styles/ToolUpdatesBanner.css";
 
-const updates = [
-  {
-    title: 'Tool Update: Launched - 25/07/2025',
-    messageParts: [
-      '🎉 Native Ads tool fully redesigned with ',
-      {
-        text: 'Here to go Newchanges',
-        href: 'https://jktagrocket.com/tools/native-ads/'
-      },
-      ' and preview improvements!'
-    ]
-  },
-  {
-    title: 'Tool Update: Upcoming - 30/07/2025',
-    messageParts: [
-      '🧪 ',
-      {
-        text: 'Here to go Newchanges',
-        href: '/tools/ab-comparison'
-      },
-      ' – A/B Comparison tool launching soon with inline diff highlights and export support.'
-    ]
-  }
-];
+"use client";
+import React from "react";
+import Image from "next/image";
+import "@styles/TooltipOpenNewTabButton.css"; // Optional if you want custom styling
 
-export default function ToolUpdatesBanner() {
-  const [activeIndex, setActiveIndex] = useState(0);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveIndex((prevIndex) => (prevIndex + 1) % updates.length);
-    }, 15000);
 
-    return () => clearInterval(interval);
-  }, []);
+export default function TooltipOpenNewTabButton({ url }) {
+  const handleClick = () => {
+    if (!url || url === "NA" || url === "undefined") return;
+    let openUrl = url.trim();
+    if (!openUrl) return;
 
-  const { title, messageParts } = updates[activeIndex];
+    if (openUrl.includes("redirectURL")) {
+      const idx = openUrl.indexOf("redirectURL");
+      openUrl = openUrl.substring(idx + "redirectURL".length + 1);
+    }
+
+    if (openUrl.startsWith("http")) {
+      window.open(openUrl, "_blank");
+    } else if (openUrl.includes("www") || openUrl.includes(".")) {
+      window.open("https://" + openUrl, "_blank");
+    }
+  };
 
   return (
-    <div className="banner-wrapper">
-      <div className="banner-content" key={activeIndex}>
-        <h4 className="banner-title">{title}</h4>
-        <p className="banner-message">
-          {messageParts.map((part, i) =>
-            typeof part === "string" ? (
-              part
-            ) : (
-              <a
-                key={i}
-                href={part.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-link-with-icon"
-              >
-                {part.text}
-                <img
-                  src="/images/open-new-tab.jpeg"
-                  alt="open"
-                  className="link-icon"
-                />
-              </a>
-            )
-          )}
-        </p>
-      </div>
-    </div>
+    <button
+      onClick={handleClick}
+      disabled={!url || url === "NA"}
+      className="icon-button"
+      style={{
+        cursor: url && url !== "NA" ? "pointer" : "not-allowed",
+        padding: 0,
+        border: "none",
+        background: "transparent",
+      }}
+    >
+      <Image
+        className="open-new-tab-icon"
+        src="/images/open-new-tab.jpeg"
+        alt="Click to open url in new tab"
+        width={20}
+        height={20}
+        style={{ objectFit: "contain" }}
+      />
+    </button>
   );
 }
+
+
