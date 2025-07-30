@@ -2,7 +2,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import "../../../styles/Comparedata.css";
 import "../../../styles/Usemessages.css";
-import { useAutoDismissMessage, UserMessage } from "../../Usemessages";
+import { useAutoDismissMessage, UserMessage } from "../../useMessages";
 
 export default function ComparePanel() {
   const [primaryText, setPrimaryText] = useState("");

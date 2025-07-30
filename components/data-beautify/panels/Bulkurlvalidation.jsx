@@ -11,7 +11,7 @@ import Customtooltip from "components/Customtooltip";
 import TooltipcopyButton from "components/TooltipcopyButton"; 
 import TooltipOpenNewTabButton from "components/TooltipOpenNewTabButton";
 import { FiExternalLink, FiDownload, FiCopy, FiUpload, FiSmartphone, FiMaximize2 } from 'react-icons/fi';
-import { useAutoDismissMessage, UserMessage } from "../../Usemessages";
+import { useAutoDismissMessage, UserMessage } from "../../useMessages";
 import MediaModal from './MediaModal';
 
 export default function BulkUrlPanel() {

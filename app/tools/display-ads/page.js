@@ -9,7 +9,7 @@ import PerformanceSummaryBlock from "./PerformanceSummaryBlock";
 import { RESOURCE_TYPE_FILTERS, getResourceType } from "./utils";
 // import ad-iframe-network-data from "./computePerformanceSummary";
 import computePerformanceSummary from "./computePerformanceSummary";
-import { useAutoDismissMessage, getIcon } from "../../../components/Usemessages";
+import { useAutoDismissMessage, getIcon } from "../../../components/useMessages";
 import "../../../styles/globals.css";
 import { sendGAEvent } from "@utils/ga4";
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../../../styles/Datamanipulation.css";
 import "../../../styles/Usemessages.css";
-import { useAutoDismissMessage, UserMessage } from "../../Usemessages";
+import { useAutoDismissMessage, UserMessage } from "../../useMessages";
 import "../../../styles/Customtooltip.css";
 import "../../../styles/TooltipcopyButton.css";
 import "../../../styles/TooltipOpenNewTabButton.css";
