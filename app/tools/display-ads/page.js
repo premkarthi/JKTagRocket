@@ -113,100 +113,100 @@ export default function DisplayAds() {
   const [input, setInput] = useState("");
 
   const preview = () => {
-  const trimmed = adCode.trim();
+    const trimmed = adCode.trim();
 
-  if (!trimmed) {
-    console.log("⛔ No input entered");
-    setMessage({ type: "error", text: "Please enter a tag to preview." });
-    return;
-  }
+    if (!trimmed) {
+      console.log("⛔ No input entered");
+      setMessage({ type: "error", text: "Please enter a tag to preview." });
+      return;
+    }
 
-  const blocks = splitAdBlocks(trimmed);
-  const errorMsg = blocks.map(validateAdBlock).find((e) => e);
-  if (errorMsg) {
-    setMessage({ type: "error", text: errorMsg });
-    return;
-  }
+    const blocks = splitAdBlocks(trimmed);
+    const errorMsg = blocks.map(validateAdBlock).find((e) => e);
+    if (errorMsg) {
+      setMessage({ type: "error", text: errorMsg });
+      return;
+    }
 
-  // ✅ GA4 event
-  sendGAEvent({
-    action: "tag_submitted",
-    category: "interaction",
-    label: "DisplayAds Tag Submit",
-  });
-
-  setAdBlocks(blocks);
-  setShow(true);
-  setTab("preview");
-  setNetData(blocks.map(() => ({ resources: [], summary: null, timings: {}, timeline: [] })));
-  setPreviewLoaded(Array(blocks.length).fill(false));
-  setNetworkLoaded(Array(blocks.length).fill(!deepCapture));
-  setIframeH(Array(blocks.length).fill(320));
-  setAdSizes(Array(blocks.length).fill({ width: 0, height: 0 }));
-  setIframeSrcDocs([]);
-  setFilters(
-    blocks.map(() =>
-      RESOURCE_TYPE_FILTERS.reduce((acc, f) => {
-        acc[f.label] = true;
-        return acc;
-      }, {})
-    )
-  );
-
-  if (deepCapture) {
-    blocks.forEach(async (b, i) => {
-      const tag = /^(https?:)?\/\//i.test(b.trim())
-        ? `<script src="${b.trim()}"></script>`
-        : b;
-      const html = `<!doctype html><html><body>${tag}</body></html>`;
-      try {
-        const { calls, perf } = await captureServerSide(html);
-        setNetData((prev) => {
-          const next = [...prev];
-          next[i] = {
-            resources: calls,
-            timings: perf,
-            summary: computePerformanceSummary(calls, perf),
-            timeline: buildTimeline(calls),
-          };
-          return next;
-        });
-      } finally {
-        setNetworkLoaded((prev) => {
-          const updated = [...prev];
-          updated[i] = true;
-          return updated;
-        });
-      }
+    // ✅ GA4 event
+    sendGAEvent({
+      action: "tag_submitted",
+      category: "interaction",
+      label: "DisplayAds Tag Submit",
     });
-  }
 
-  setMessage({ type: "success", text: "Display ad previews loaded successfully." });
-};
+    setAdBlocks(blocks);
+    setShow(true);
+    setTab("preview");
+    setNetData(blocks.map(() => ({ resources: [], summary: null, timings: {}, timeline: [] })));
+    setPreviewLoaded(Array(blocks.length).fill(false));
+    setNetworkLoaded(Array(blocks.length).fill(!deepCapture));
+    setIframeH(Array(blocks.length).fill(320));
+    setAdSizes(Array(blocks.length).fill({ width: 0, height: 0 }));
+    setIframeSrcDocs([]);
+    setFilters(
+      blocks.map(() =>
+        RESOURCE_TYPE_FILTERS.reduce((acc, f) => {
+          acc[f.label] = true;
+          return acc;
+        }, {})
+      )
+    );
+
+    if (deepCapture) {
+      blocks.forEach(async (b, i) => {
+        const tag = /^(https?:)?\/\//i.test(b.trim())
+          ? `<script src="${b.trim()}"></script>`
+          : b;
+        const html = `<!doctype html><html><body>${tag}</body></html>`;
+        try {
+          const { calls, perf } = await captureServerSide(html);
+          setNetData((prev) => {
+            const next = [...prev];
+            next[i] = {
+              resources: calls,
+              timings: perf,
+              summary: computePerformanceSummary(calls, perf),
+              timeline: buildTimeline(calls),
+            };
+            return next;
+          });
+        } finally {
+          setNetworkLoaded((prev) => {
+            const updated = [...prev];
+            updated[i] = true;
+            return updated;
+          });
+        }
+      });
+    }
+
+    setMessage({ type: "success", text: "Display ad previews loaded successfully." });
+  };
 
   const reset = () => {
-  setAdCode("");
-  setAdBlocks([]);
-  setShow(false);
-  setError("");
-  setFilters([]);
-  setTab("preview");
-  setIframeH([]);
-  setPreviewLoaded([]);
-  setNetworkLoaded([]);
-  setNetData([]);
-  setAdSizes([]);
-  setIframeSrcDocs([]);
-  frames.current = [];
-  setMessage({ type: "info", text: "Reset successful — All inputs and previews have been cleared.." });
+    setAdCode("");
+    setAdBlocks([]);
+    setShow(false);
+    setError("");
+    setFilters([]);
+    setTab("preview");
+    setIframeH([]);
+    setPreviewLoaded([]);
+    setNetworkLoaded([]);
+    setNetData([]);
+    setAdSizes([]);
+    setIframeSrcDocs([]);
+    frames.current = [];
+    setMessage({ type: "info", text: "Reset successful — All inputs and previews have been cleared.." });
 
-  // ✅ GA4 Custom Event
-  sendGAEvent({
-    action: "reset_clicked",
-    category: "interaction",
-    label: "DisplayAds Reset Button"
-  });
-};
+    // ✅ GA4 Custom Event
+    sendGAEvent({
+      action: "reset_clicked",
+      category: "interaction",
+      label: "DisplayAds Reset Button"
+    });
+  };
 
 
   useEffect(() => {
@@ -254,10 +254,10 @@ export default function DisplayAds() {
     <div className={styles.displayAdsContainer}>
       <div style={{ border: "2px solid #ccc", borderRadius: 6, padding: 16, marginBottom: 24 }}>
         {/* header */}
-            <h1 className={styles.displayAdsHeader}>Display Ad Tag Preview & Network Analyzer</h1>
-            <p className={styles.displayAdsSubtitle}>
-                Test and preview display ad tags in a secure sandbox with <b>Deep Capture </b> support ..
-            </p>
+        <h1 className={styles.displayAdsHeader}>Display Ad Tag Preview & Network Analyzer</h1>
+        <p className={styles.displayAdsSubtitle}>
+          Test and preview display ad tags in a secure sandbox with <b>Deep Capture </b> support ..
+        </p>
         <textarea
           value={adCode}
           rows={9}
@@ -267,90 +267,90 @@ export default function DisplayAds() {
           style={{ width: "100%", padding: 8 }}
         />
         {message && (
-        <div className={`user-message ${message.type}`} style={{ marginTop: 16 }}>
+          <div className={`user-message ${message.type}`} style={{ marginTop: 16 }}>
             <div className="user-message-icon">{getIcon(message.type)}</div>
             <div className="user-message-content">
-            <span>{message.text}</span>
-            <a
+              <span>{message.text}</span>
+              <a
                 href="#"
                 className="user-message-action"
                 onClick={(e) => {
-                e.preventDefault();
-                setMessage(null);
+                  e.preventDefault();
+                  setMessage(null);
                 }}
-            >
+              >
                 Dismiss
-            </a>
+              </a>
             </div>
-        </div>
+          </div>
         )}
 
         <div
-                    style={{
-                        display: "flex",
-                        gap: 12,
-                        marginTop: 8,
-                        justifyContent: "flex-end", // ✅ Align to right
-                        alignItems: "center",
-                    }}
-                >   {/* Toggle on far left */}
-                    <label className="toggle-switch">
-                        <input
-                            type="checkbox"
-                            checked={deepCapture}
-                            onChange={(e) => setDeep(e.target.checked)}
-                        />
-                        <span className="slider"></span>
-                        <span className="label-text">Deep capture</span>
-                    </label>
-                    {/* Reset in middle */}
-                    <button
-                        className={styles.displayAdsResetBtn}
-                        onClick={reset}
-                    >
-                        🔄 Reset
-                    </button>
-                    {/* Submit on far right */}
-                    <button
-                        className={styles.displayAdsPreviewBtn}
-                        onClick={preview}
-                    >
-                        🚀 Submit Tag
-                    </button>
-                </div>
+          style={{
+            display: "flex",
+            gap: 12,
+            marginTop: 8,
+            justifyContent: "flex-end", // ✅ Align to right
+            alignItems: "center",
+          }}
+        >   {/* Toggle on far left */}
+          <label className="toggle-switch">
+            <input
+              type="checkbox"
+              checked={deepCapture}
+              onChange={(e) => setDeep(e.target.checked)}
+            />
+            <span className="slider"></span>
+            <span className="label-text">Deep capture</span>
+          </label>
+          {/* Reset in middle */}
+          <button
+            className={styles.displayAdsResetBtn}
+            onClick={reset}
+          >
+            🔄 Reset
+          </button>
+          {/* Submit on far right */}
+          <button
+            className={styles.displayAdsPreviewBtn}
+            onClick={preview}
+          >
+            🚀 Submit Tag
+          </button>
+        </div>
       </div>
 
       {show && (
         <div style={{ border: "2px solid #ccc", borderRadius: 6, padding: 16 }}>
           <div className={styles.tabButtons}>
-                <button onClick={() => setTab("preview")} className={tab === "preview" ? styles.activeTab : ""}>🖥️ Ad Preview</button>
-                <button onClick={() => setTab("trackers")} className={tab === "trackers" ? styles.activeTab : ""}>🎯 Trackers</button>
-            </div>
+            <button onClick={() => setTab("preview")} className={tab === "preview" ? styles.activeTab : ""}>🖥️ Ad Preview</button>
+            <button onClick={() => setTab("trackers")} className={tab === "trackers" ? styles.activeTab : ""}>🎯 Trackers</button>
+          </div>
 
-            {tab === "preview" && adBlocks.map((b, i) => {
-                const net = netData[i] || {};
-                const size = adSizes[i] || {};
-                return (
-                <section key={`preview-${i}`} className={styles.displayAdsPreviewArea}>
-                    <p>Ad Size: {size.width || "?"}×{size.height || "?"}</p>
-                    <iframe
-                    key={`preview-${tab}-${i}`}
-                    ref={(el) => (frames.current[i] = el)}
-                    srcDoc={iframeSrcDocs[i] || ""}
-                    sandbox="allow-scripts allow-same-origin"
-                    style={{ width: "100%", height: iframeH[i] || 320, border: "1px solid #ccc" }}
-                    title={`ad-preview-${i}`}
-                    />
-                    <details style={{ marginTop: 10 }}>
-                    <summary>📡 Network & Performance Details</summary>
-                    <div style={{ marginTop: 10 }}>
-                        <NetworkTimelineChart timeline={net.timeline || []} />
-                        <PerformanceSummaryBlock summary={net.summary} />
-                    </div>
-                    </details>
-                </section>
-                );
-            })}
+          {tab === "preview" && adBlocks.map((b, i) => {
+            const net = netData[i] || {};
+            const size = adSizes[i] || {};
+            return (
+              <section key={`preview-${i}`} className={styles.displayAdsPreviewArea}>
+                <p>Ad Size: {size.width || "?"}×{size.height || "?"}</p>
+                <iframe
+                  key={`preview-${tab}-${i}`}
+                  ref={(el) => (frames.current[i] = el)}
+                  srcDoc={iframeSrcDocs[i] || ""}
+                  sandbox="allow-scripts allow-same-origin"
+                  style={{ width: "100%", height: iframeH[i] || 320, border: "1px solid #ccc" }}
+                  title={`ad-preview-${i}`}
+                />
+                <details style={{ marginTop: 10 }}>
+                  <summary>📡 Network & Performance Details</summary>
+                  <div style={{ marginTop: 10 }}>
+                    <NetworkTimelineChart timeline={net.timeline || []} />
+                    <PerformanceSummaryBlock summary={net.summary} />
+                  </div>
+                </details>
+              </section>
+            );
+          })}
 
           {tab === "trackers" && adBlocks.map((b, i) => {
             const calls = netData[i]?.resources || [];
