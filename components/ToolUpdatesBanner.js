@@ -3,7 +3,7 @@ import "@styles/ToolUpdatesBanner.css";
 
 const updates = [
   {
-    title: 'Tool Update: Launched - 25/07/2025',
+    title: 'Tool Update: Launched - 30/07/2025',
     messageParts: [
       '🎉 Native Ads tool fully redesigned with ',
       {
@@ -14,7 +14,7 @@ const updates = [
     ]
   },
   {
-    title: 'Tool Update: Upcoming - 30/07/2025',
+    title: 'Tool Update: Upcoming - ASAP',
     messageParts: [
       '🧪 ',
       {
