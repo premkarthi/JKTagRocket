@@ -1,9 +1,9 @@
-// app/page.js
 "use client";
 
 import Head from 'next/head';
 import Hero from '../components/Hero';
 import FeatureGrid from '../components/FeatureGrid';
+import ReviewsSection from '../components/ReviewsSection'; // ← NEW
 
 export default function Home() {
   return (
@@ -14,12 +14,13 @@ export default function Home() {
       </Head>
 
       <main>
-        {/* <h1>Welcome to TagRocket</h1> */}
         <Hero />
 
         <div id="learn-more">
           <FeatureGrid />
         </div>
+
+        <ReviewsSection /> {/* ← Inserted here */}
       </main>
     </>
   );
