@@ -1,0 +1,21 @@
+.quartile-chart {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+  gap: 8px;
+}
+
+.quartile-chart div {
+  flex: 1;
+  text-align: center;
+  padding: 4px;
+  background: #ccc;
+  color: #333;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.quartile-chart .active {
+  background: #2196f3;
+  color: #fff;
+}

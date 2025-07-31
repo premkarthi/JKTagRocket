@@ -1,0 +1,235 @@
+:root {
+  --vv-bg: #0b0f14;
+  --vv-card: #121821;
+  --vv-text: #e6edf3;
+  --vv-text-muted: #9aa7b2;
+  --vv-primary: #4f8cff;
+  --vv-primary-600: #3f7cf0;
+  --vv-primary-700: #3368cc;
+  --vv-border: #263241;
+  --vv-success: #22c55e;
+  --vv-warning: #f59e0b;
+  --vv-danger: #ef4444;
+  --vv-radius: 12px;
+  --vv-shadow: 0 6px 24px rgba(0,0,0,0.25);
+}
+
+/* Container */
+.video-validator-container {
+  border: 2px solid #ddd; /* Light gray or choose your preferred color */
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+
+/* Header */
+.vv-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.vv-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #6c3fe2;
+  margin: 0;
+}
+
+.vv-subtitle {
+  font-size: 16px;
+  color: #2f2f30;
+  margin-top: 8px;
+}
+
+
+/* Input Card */
+.vv-input-card {
+  background: var(--vv-card);
+  border: 1px solid var(--vv-border);
+  border-radius: var(--vv-radius);
+  padding: 16px;
+  box-shadow: var(--vv-shadow);
+}
+
+.vv-input-label {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--vv-text-muted);
+  margin-bottom: 8px;
+}
+
+.vv-input-row {
+  display: grid;
+  gap: 8px;
+}
+
+.vv-textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 140px;
+  border: 1px solid var(--vv-border);
+  background: #f9f9ff;
+  color: #909;
+  border-radius: 10px;
+  padding: 12px 14px;
+  line-height: 1.45;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.vv-textarea::placeholder {
+  color: #6b7785;
+}
+
+.vv-textarea:focus {
+  border-color: var(--vv-primary);
+  box-shadow: 0 0 0 4px rgba(79, 140, 255, 0.15);
+}
+
+/* Actions */
+.vv-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 12px;
+}
+
+/* Buttons */
+.btn {
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.05s ease, filter 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(180deg, var(--vv-primary), var(--vv-primary-600));
+  color: white;
+  border-color: var(--vv-primary-700);
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--vv-text);
+  border-color: var(--vv-border);
+  border-width: 1px;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  border-color: #3a4a60;
+}
+
+/* Tiny inline spinner */
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  display: inline-block;
+  animation: vvspin 0.75s linear infinite;
+}
+@keyframes vvspin {
+  to { transform: rotate(360deg); }
+}
+
+/* Player block */
+.vv-player-block {
+  background: var(--vv-card);
+  border: 1px solid var(--vv-border);
+  border-radius: var(--vv-radius);
+  padding: 12px;
+  box-shadow: var(--vv-shadow);
+  margin-top: 33px;
+}
+
+.video-wrapper {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  background: #0e141b;
+  border: 1px solid var(--vv-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Progress bar */
+.progress-bar {
+  margin: 12px auto 0;
+  width: 100%;
+  max-width: 960px;
+  height: 8px;
+  background: #0f1620;
+  border: 1px solid var(--vv-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #67e8f9, #4f46e5);
+  width: 0%;
+  transition: width 0.15s linear;
+}
+
+/* Tabs */
+.tab-header {
+  display: flex;
+  margin-top: 24px;
+  border-bottom: 1px solid #ccc;
+}
+
+.tab-button {
+  background: #f9f9f9;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-radius: 6px 6px 0 0;
+  margin-right: 8px;
+  font-weight: 500;
+  color: #444;
+  transition: background 0.2s;
+  font-size: 16px;
+}
+
+.tab-button:hover {
+  background: #eee;
+}
+
+.tab-button.active {
+  border-bottom: 3px solid #6b21a8;
+    font-weight: 600;
+    color: #6b21a8;
+}
+
+
+.tab-content {
+  margin-top: 12px;
+}
+.vv-message-block {
+  z-index: 20;
+  position: relative;
+  
+}
