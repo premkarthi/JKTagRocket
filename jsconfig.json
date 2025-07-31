@@ -4,6 +4,7 @@
     "paths": {
       "@/*": ["app/*"],          // for pages and components inside /app
       "@components/*": ["components/*"],
+      "@data/*": ["data/*"],
       "@utils/*": ["utils/*"],
       "@styles/*": ["styles/*"]
     }
