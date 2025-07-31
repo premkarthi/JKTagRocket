@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import "@styles/Customtooltip.css";
 
@@ -5,10 +6,11 @@ export default function Customtooltip({ text, children, variant }) {
   const [tooltipText, setTooltipText] = useState(text);
   const [showTooltip, setShowTooltip] = useState(false);
 
-  const isAnimated = variant === "animated" || variant === "copy";
+  const isCopy = variant === "copy";
+  const isAnimated = variant === "animated";
 
   const handleMouseEnter = () => {
-    setTooltipText(text); // reset on re-hover
+    setTooltipText(text);
     setShowTooltip(true);
   };
 
@@ -18,23 +20,24 @@ export default function Customtooltip({ text, children, variant }) {
   };
 
   const handleClick = () => {
-    if (variant === "copy") {
+    if (isCopy) {
       setTooltipText("Copied!");
       setShowTooltip(true);
       setTimeout(() => setTooltipText(text), 1500);
     }
+    // no click effect for "animated"
   };
 
   return (
     <div
-      className={`custom-tooltip-wrapper ${isAnimated ? "animated-tooltip" : ""}`}
+      className="custom-tooltip-wrapper"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
     >
       {children}
       {showTooltip && (
-        <div className="tooltip-bubble">
+        <div className={`tooltip-bubble ${isAnimated ? "animated" : ""}`}>
           <div className="tooltip-text">{tooltipText}</div>
           <div className="tooltip-arrow" />
         </div>
@@ -42,5 +45,3 @@ export default function Customtooltip({ text, children, variant }) {
     </div>
   );
 }
-
-

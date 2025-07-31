@@ -1,0 +1,58 @@
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.trackersTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.trackersTable th,
+.trackersTable td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.truncateCell {
+  text-align: left;
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+  text-overflow: ellipsis;
+}
+
+.trackerLink {
+  display: inline-block;
+  max-width: 444px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #0070f3;
+  text-decoration: underline;
+  vertical-align: middle;
+  text-align: left;
+}
+
+.urlWithExpand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actionButtons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.emptyMessage {
+  padding: 20px;
+  text-align: center;
+  color: #888;
+  font-size: 16px;
+}
