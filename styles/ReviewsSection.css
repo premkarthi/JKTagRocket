@@ -1,75 +1,202 @@
-.reviews-section {
-  padding: 60px 20px;
-  background-color: #fff;
+/* styles/ReviewsSection.module.css */
+.reviewsSection {
+  padding: 4rem 1rem;
+  background: #f9f9f9;
   text-align: center;
 }
 
-.reviews-header h2 {
-  font-size: 32px;
-  color: #222;
+.heading {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.slider {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 8px 30px rgba(20, 20, 20, 0.05);
+  padding: 2rem;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.text {
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 1.5rem;
+}
+
+.author {
+  font-weight: 600;
+  color: #555;
+}
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+@media (max-width: 600px) {
+  .heading {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .text {
+    font-size: 1rem;
+  }
+
+  .author {
+    font-size: 0.9rem;
+    text-align: center;
+  }
+}
+.reviewsSection {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.reviewsSection.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reviewHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 8px;
 }
 
-.reviews-header p {
-  color: #666;
-  font-size: 16px;
-  margin-bottom: 40px;
+.reviewerPic {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
 }
 
-.reviews-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 24px;
-  margin-bottom: 40px;
+.reviewerName {
+  font-weight: 600;
+  font-size: 16px;
 }
+.stars {
+  margin-top: 8px;
+}
+
+.star {
+  color: #f5a623;
+  font-size: 1rem;
+}
+
 
 .review-card {
-  background: #f9f9f9;
-  border: 1px solid #eaeaea;
+  background: white;
+  padding: 1.5rem;
   border-radius: 16px;
-  padding: 24px;
-  max-width: 320px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-  flex: 1 1 280px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.quote {
+  font-style: italic;
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 0.75rem;
 }
 
 .stars {
-  color: #f4c150;
-  font-size: 20px;
-  margin-bottom: 12px;
+  font-size: 1.2rem;
+  color: #ffc107; /* gold stars */
 }
 
-.review-text {
-  font-size: 15px;
-  color: #333;
-  margin-bottom: 16px;
+.star {
+  opacity: 0.4;
 }
 
-.review-author {
-  font-size: 14px;
-  font-weight: bold;
-  color: #555;
+.star.filled {
+  opacity: 1;
+}
+.readMoreBtn {
+  background: none;
+  border: none;
+  color: #0070f3;
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 5px;
+  padding: 0;
+   font-size: 1.2rem;
+}
+.readMoreBtn:hover {
+  text-decoration: underline;
+}
+/* Hide default Swiper arrows */
+.swiper-button-next,
+.swiper-button-prev {
+  display: none !important;
 }
 
-.reviews-footer .review-button {
-  display: inline-block;
-  background-color: #3c82f6;
-  color: white;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  text-decoration: none;
-  transition: background 0.3s ease;
+/* Custom arrows */
+.custom-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background-color: rgba(229, 224, 224, 0.85);
+  border: none;
+  border-radius: 999px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.reviews-footer .review-button:hover {
-  background-color: #1e5fd2;
+.custom-arrow:hover {
+  background-color: white;
 }
 
-@media (max-width: 768px) {
-  .reviews-grid {
-    flex-direction: column;
-    align-items: center;
-  }
+.custom-arrow.left {
+  left: 10px;
 }
+
+.custom-arrow.right {
+  right: 10px;
+}
+
+.custom-arrow svg {
+  width: 40px;
+  height: 40px;
+  fill: #909;
+}
+
+
