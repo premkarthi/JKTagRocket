@@ -1,17 +1,122 @@
 [
   {
-    "author": "Priya D., Ad Operations",
-    "text": "JK TagRocket helped us debug VAST issues in seconds. A must-have for ad ops teams.",
-    "stars": 5
+    "name": "Alice Johnson",
+    "review": "JK Tag Rocket saved us countless QA hours. The tracker validation is spot on and saved multiple campaign disasters. Highly recommended!",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
   },
   {
-    "author": "Alex M., Programmatic Manager",
-    "text": "Fast, accurate, and user-friendly. We now validate tags before every campaign.",
-    "stars": 5
+    "name": "Rahul Mehta",
+    "review": "We tested over a dozen tools, but JK Tag Rocket stood out for its speed, simplicity, and comprehensive VAST event tracking.",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
   },
   {
-    "author": "Rina S., Ad Tech Consultant",
-    "text": "One of the best tools in our stack. The Trackers tab is a game changer.",
-    "stars": 5
+    "name": "Lena Schmidt",
+    "review": "The interface is clean, intuitive, and made our QA process far more efficient. Tracker breakdown is a big win.",
+    "rating": 4,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Carlos Rivera",
+    "review": "Finally, a tool that understands the pain of ad tech QA. This saved us hours during our last video ad audit.",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Emily Zhang",
+    "review": "The Events and Trackers tabs are really helpful. Loved the progress chart too — very SpringServe-like!",
+    "rating": 4,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "James O'Neil",
+    "review": "JK Tag Rocket helped us catch broken trackers before launch. A must-have for any video campaign.",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Sofia Petrova",
+    "review": "It’s rare to find a QA tool that's both developer-friendly and useful for campaign managers. Great job!",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Mohammed Al-Khatib",
+    "review": "Very user-friendly and efficient. Loved the URL parsing and real-time log tracking.",
+    "rating": 4,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Haruki Tanaka",
+    "review": "Tracker-level validation and visual feedback is a game changer. Keep improving this tool!",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Laura Bennett",
+    "review": "Our ad ops team now starts every QA round with JK Tag Rocket. Easy to use and reliable.",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "David Kim",
+    "review": "Was able to troubleshoot a VPAID issue in seconds thanks to this tool. It's now part of our standard process.",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Giulia Conti",
+    "review": "Perfect for junior QA folks and senior managers alike. The logs and event mapping are incredibly helpful.",
+    "rating": 4,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Arjun Patel",
+    "review": "We used to debug VAST tags manually. This tool reduced our time by 70%. Love the attention to detail.",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Maya Robinson",
+    "review": "A very smart tool. Clean interface, useful outputs, and great for reviewing 3rd party tags.",
+    "rating": 4,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Niklas Andersen",
+    "review": "Our media team can now verify tracker behavior without bothering devs. Excellent utility.",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Chen Wei",
+    "review": "Simple input, detailed output. JK Tag Rocket is my go-to for ad tag inspection now.",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Rachel Stein",
+    "review": "The logs helped identify a faulty impression tracker instantly. Can't believe we operated without this for so long.",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Ivan Dobrev",
+    "review": "Excellent UI, very quick load time, and supports multiple VAST versions. Great job!",
+    "rating": 4,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Priya Nair",
+    "review": "The animated chart is a nice touch. More importantly, the logs helped us validate campaign performance metrics.",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
+  },
+  {
+    "name": "Tom Becker",
+    "review": "This tool keeps getting better. Keep an eye on JK Tag Rocket — it's setting a new standard.",
+    "rating": 5,
+    "profilePic": "/images/default-avatar.jpg"
   }
 ]

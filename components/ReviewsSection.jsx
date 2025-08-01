@@ -1,12 +1,35 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import Head from "next/head";
+import React, { useEffect, useRef, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay, Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
 import "../styles/ReviewsSection.css";
-import { motion } from "framer-motion";
 
-const ReviewsSection = () => {
+// ✅ SVG icons
+const LeftArrow = () => (
+  <svg viewBox="0 0 20 20">
+    <path d="M13 15l-5-5 5-5v10z" />
+  </svg>
+);
+
+const RightArrow = () => (
+  <svg viewBox="0 0 20 20">
+    <path d="M7 5l5 5-5 5V5z" />
+  </svg>
+);
+
+export default function ReviewsSection() {
   const [reviews, setReviews] = useState([]);
+  const swiperRef = useRef(null);
+
+  const headings = [
+    "Trusted by Leading Ad Tech Professionals",
+    "Validated by Experts Across the Globe",
+    "Join Thousands of Happy Users",
+    "Real Feedback from Real Professionals",
+  ];
+  const [headline, setHeadline] = useState(headings[0]);
 
   useEffect(() => {
     fetch("/data/reviews.json")
@@ -15,76 +38,123 @@ const ReviewsSection = () => {
       .catch((err) => console.error("Failed to load reviews:", err));
   }, []);
 
-  // ✅ Inject SEO structured data using JSON-LD
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "JK Tag Rocket",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "5",
-      reviewCount: reviews.length.toString(),
-    },
-    review: reviews.map((review) => ({
-      "@type": "Review",
-      reviewRating: {
-        "@type": "Rating",
-        ratingValue: review.stars,
-        bestRating: "5",
+  useEffect(() => {
+    const section = document.querySelector(".reviewsSection");
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          section.classList.add("visible");
+        }
       },
-      author: {
-        "@type": "Person",
-        name: review.author,
-      },
-      reviewBody: review.text,
-    })),
-  };
+      { threshold: 0.1 }
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    let i = 0;
+    const interval = setInterval(() => {
+      i = (i + 1) % headings.length;
+      setHeadline(headings[i]);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <>
-      <Head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </Head>
+    <section className="reviewsSection">
+      <h2 className="heading">{headline}</h2>
 
-      <section className="reviews-section">
-        <div className="reviews-header">
-          <h2>What Our Users Say</h2>
-          <p>Trusted by ad ops and marketing teams worldwide</p>
-        </div>
-
-        <div className="reviews-grid">
-          {reviews.map((review, index) => (
-            <motion.div
-              className="review-card"
-              key={index}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.2 }}
-            >
-              <div className="stars">{"★".repeat(review.stars)}</div>
-              <p className="review-text">“{review.text}”</p>
-              <p className="review-author">— {review.author}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* <div className="reviews-footer">
-          <a
-            href="https://www.google.com/search?q=tagrocket+google+reviews"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="review-button"
+      {reviews.length > 0 ? (
+        <div className="slider">
+          <button
+            className="custom-arrow left"
+            onClick={() => swiperRef.current?.slidePrev()}
           >
-            ★ See all reviews on Google
-          </a>
-        </div> */}
-      </section>
-    </>
-  );
-};
+            <LeftArrow />
+          </button>
 
-export default ReviewsSection;
+          <button
+            className="custom-arrow right"
+            onClick={() => swiperRef.current?.slideNext()}
+          >
+            <RightArrow />
+          </button>
+
+          <Swiper
+            modules={[Pagination, Autoplay, Navigation]}
+            spaceBetween={30}
+            slidesPerView={1}
+            pagination={{ clickable: true }}
+            autoplay={{ delay: 4000 }}
+            loop
+            onSwiper={(swiper) => (swiperRef.current = swiper)}
+          >
+            {reviews.map((review, index) => {
+              const name = review.name || review.author || "Anonymous";
+              const text = review.review || review.text || "";
+              const rating = review.rating || review.stars || 5;
+              const profilePic =
+                review.profilePic || "/images/default-avatar.jpg";
+
+              return (
+                <SwiperSlide key={index}>
+                  <div className="review-card">
+                    <div className="profile">
+                      <img
+                        src={profilePic}
+                        alt={`${name}'s profile`}
+                        className="avatar"
+                        width={48}
+                        height={48}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/images/default-avatar.jpg";
+                        }}
+                      />
+                      <h4 className="name">{name}</h4>
+                    </div>
+                    <ReadMore text={text} limit={180} />
+                    <div className="stars">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <span
+                          key={i}
+                          className={`star ${i < rating ? "filled" : ""}`}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </SwiperSlide>
+              );
+            })}
+          </Swiper>
+        </div>
+      ) : (
+        <p>Loading reviews...</p>
+      )}
+    </section>
+  );
+}
+
+// Your ReadMore remains unchanged
+function ReadMore({ text, limit = 180 }) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = text.length > limit;
+  const preview = isLong ? text.slice(0, limit) + "..." : text;
+
+  return (
+    <p className="quote">
+      “{expanded || !isLong ? text : preview}”
+      {isLong && (
+        <button onClick={() => setExpanded(!expanded)} className="readMoreBtn">
+          {expanded ? " Read less" : " Read more"}
+        </button>
+      )}
+    </p>
+  );
+}
