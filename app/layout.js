@@ -6,6 +6,7 @@ import Image from "next/image";
 import UserIdTracker from "../components/UserIdTracker";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { GlobalMessageProvider } from "../components/useGlobalMessage";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        {/* Google Analytics 4 (Replace G-XXXXXXX with your real ID) */}
+        {/* Google Analytics */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXX"></script>
         <script
           dangerouslySetInnerHTML={{
@@ -26,69 +27,63 @@ export default function RootLayout({ children }) {
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              gtag('config', 'G-XXXXXXX', {
-                send_page_view: true
-              });
+              gtag('config', 'G-XXXXXXX', { send_page_view: true });
             `,
+          }}
+        />
+
+        {/* SEO Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "JK Tag Rocket",
+              url: "https://jktagrocket.com",
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: "5",
+                reviewCount: "23"
+              },
+              review: []
+            }),
           }}
         />
       </head>
       <body className={inter.className}>
-        <UserIdTracker />
-        <Header />
+        <GlobalMessageProvider>
+          <UserIdTracker />
+          <Header />
 
-        <div className="main">
-          {/* Left Ad */}
-          <div className="sideAd">
-            <Link href="https://jktagrocket.com/tools/display-ads/" target="_blank">
-              <Image
-                src="/images/160x600-leftside.jpeg"
-                alt="Left Ad"
-                width={160}
-                height={600}
-              />
-            </Link>
+          <div className="main">
+            <div className="sideAd">
+              <Link href="https://jktagrocket.com/tools/display-ads/" target="_blank">
+                <Image
+                  src="/images/160x600-leftside.jpeg"
+                  alt="Left Ad"
+                  width={160}
+                  height={600}
+                />
+              </Link>
+            </div>
+
+            <div className="container">{children}</div>
+
+            <div className="sideAd">
+              <Link href="https://jktagrocket.com/tools/native-ads/" target="_blank">
+                <Image
+                  src="/images/160x600-right.jpg"
+                  alt="Right Ad"
+                  width={160}
+                  height={600}
+                />
+              </Link>
+            </div>
           </div>
 
-          {/* Main Content */}
-          <div className="container">{children}</div>
-
-          {/* Right Ad */}
-          <div className="sideAd">
-            <Link href="https://jktagrocket.com/tools/native-ads/" target="_blank">
-              <Image
-                src="/images/160x600-right.jpg"
-                alt="Right Ad"
-                width={160}
-                height={600}
-              />
-            </Link>
-          </div>
-        </div>
-
-        {/* Bottom Ad */}
-        <div className="bottomAd" style={{ textAlign: "center" }}>
-          {/* <Link href="https://jktagrocket.com/tools/video-validator/" target="_blank">
-            <Image
-              src="/images/728x90-bottomallapges.jpg"
-              alt="Bottom Ad"
-              width={728}
-              height={90}
-            />
-          </Link> */}
-          <Link href="https://jktagrocket.com/tools/html5-validator/" target="_blank">
-            <Image
-              src="/images/970x90-topheader.jpg"
-              alt="Top Ad Banner"
-              width={970}
-              height={90}
-              priority
-              style={{ maxWidth: "100%", height: "auto" }}
-            />
-          </Link>
-        </div>
-
-        <Footer />
+          <Footer />
+        </GlobalMessageProvider>
       </body>
     </html>
   );

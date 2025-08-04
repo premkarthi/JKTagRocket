@@ -1,13 +1,23 @@
 import React from "react";
 import "@styles/QuartileChart.css";
 
-export default function QuartileChart({ progress }) {
+const EVENT_ORDER = ["Start", "First Quartile", "Midpoint", "Third Quartile", "Complete"];
+
+export default function QuartileChart({ eventCounts = {} }) {
   return (
-    <div className="quartile-chart">
-      <div className={progress.Q1 ? "active" : ""}>25%</div>
-      <div className={progress.Mid ? "active" : ""}>50%</div>
-      <div className={progress.Q3 ? "active" : ""}>75%</div>
-      <div className={progress.Complete ? "active" : ""}>100%</div>
+    <div className="event-flow-chart">
+      <h2>Quartile Progress</h2>
+      {EVENT_ORDER.map((event, index) => (
+        <React.Fragment key={event}>
+          <div
+            className={`event-node ${eventCounts[event] ? "active" : "inactive"}`}
+            title={`Count: ${eventCounts[event] || 0}`}
+          >
+            {event}
+          </div>
+          {index < EVENT_ORDER.length - 1 && <div className="event-arrow">→</div>}
+        </React.Fragment>
+      ))}
     </div>
   );
 }
