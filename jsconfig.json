@@ -2,11 +2,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["app/*"],          // for pages and components inside /app
+      "@/*": ["app/*"],
       "@components/*": ["components/*"],
       "@data/*": ["data/*"],
       "@utils/*": ["utils/*"],
-      "@styles/*": ["styles/*"]
+      "@styles/*": ["styles/*"],
+      "@hooks/*": ["hooks/*"]             
     }
   }
 }

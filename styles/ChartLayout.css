@@ -1,0 +1,13 @@
+/* styles/ChartLayout.css */
+.chart-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .chart-layout {
+    grid-template-columns: 1fr;
+  }
+}

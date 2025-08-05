@@ -1,21 +1,75 @@
-.quartile-chart {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 12px;
-  gap: 8px;
+.quartile-chart-container {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 12px;
+  margin-top: 16px;
+  border-radius: 8px;
 }
 
-.quartile-chart div {
-  flex: 1;
-  text-align: center;
-  padding: 4px;
-  background: #ccc;
-  color: #333;
-  border-radius: 4px;
+.quartile-chart-title {
+  font-size: 16px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+/* styles/QuartileChart.css */
+
+.quartile-chart-container {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 12px;
+  margin-top: 16px;
+  border-radius: 8px;
+}
+
+.quartile-chart-title {
+  font-size: 16px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+/* Moved timeline styles from deleted EventFlowChart.css */
+.timeline-chart {
+  width: 100%;
+  margin-top: 12px;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 8px;
+}
+
+.timeline-stage {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
   font-size: 14px;
 }
 
-.quartile-chart .active {
-  background: #2196f3;
-  color: #fff;
+.timeline-circle {
+  width: 12px;
+  height: 12px;
+  background-color: #4caf50;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.timeline-label {
+  flex-grow: 1;
+}
+
+.timeline-error {
+  background-color: #f44336;
+}
+
+.timeline-paused {
+  background-color: #ff9800;
+}
+
+.timeline-clicked {
+  background-color: #2196f3;
+}
+
+.timeline-muted {
+  background-color: #9c27b0;
+}
+
+.timeline-unmuted {
+  background-color: #3f51b5;
 }

@@ -1,10 +1,9 @@
-// import { useState, useEffect } from "react";
-// import "../styles/Usemessages.css"; // Import styles ONCE here
-
 // components/useMessages.js
 import { useState, useEffect } from "react";
+import "../styles/Usemessages.css"; // Optional: ensure only one import globally
 
-export function useAutoDismissMessage(initialMessage = null, timeout = 5000) {
+// Hook: for auto-dismissing user messages
+export function useAutoDismissMessage(initialMessage = null, timeout = 7000) {
   const [message, setMessageState] = useState(initialMessage);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -23,20 +22,28 @@ export function useAutoDismissMessage(initialMessage = null, timeout = 5000) {
     }
   }, [message, timeout]);
 
-  // include visibility in return
-  return [message && isVisible ? message : message ? { ...message, fading: true } : null, setSmartMessage];
+  return [
+    message && isVisible ? message : message ? { ...message, fading: true } : null,
+    setSmartMessage
+  ];
 }
 
-
+// Icon helper based on message type
 export function getIcon(type) {
   switch (type) {
-    case "success": return "✔️";
-    case "error": return "❌";
-    case "warning": return "⚠️";
-    case "info": default: return "ℹ️";
+    case "success":
+      return "✔️";
+    case "error":
+      return "❌";
+    case "warning":
+      return "⚠️";
+    case "info":
+    default:
+      return "ℹ️";
   }
 }
 
+// Component: UserMessage renderer
 export function UserMessage({ message, setMessage }) {
   if (!message) return null;
 
@@ -56,3 +63,6 @@ export function UserMessage({ message, setMessage }) {
     </div>
   );
 }
+
+// ✅ Proper named exports
+export { useAutoDismissMessage, getIcon, UserMessage };

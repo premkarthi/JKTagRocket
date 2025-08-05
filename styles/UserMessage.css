@@ -37,12 +37,10 @@
 /* Types */
 .user-message.info {
   background-color: #007bff;
-  color: #fff;
 }
 
 .user-message.success {
   background-color: #28a745;
-  color: #fff;
 }
 
 .user-message.warning {
@@ -52,24 +50,9 @@
 
 .user-message.error {
   background-color: #dc3545;
-  color: #fff;
 }
 
-/* Dismiss Button */
-.user-message-dismiss {
-  margin-left: 8px;
-  cursor: pointer;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  transition: color 0.2s ease;
-}
-
-.user-message-dismiss:hover {
-  color: #fff;
-  text-decoration: underline;
-}
-
-/* Fade-in animation */
+/* Fade animation */
 @keyframes fadeIn {
   from {
     transform: translateY(-10px);
@@ -78,21 +61,5 @@
   to {
     transform: translateY(0);
     opacity: 0.95;
-  }
-}
-
-/* Fade-out animation */
-.user-message.fade-out {
-  animation: fadeOut 0.3s ease-in forwards;
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 0.95;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-10px);
   }
 }
