@@ -2,12 +2,20 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "preview": "npx serve out"
+    "preview": "npx serve out",
+    "docker:build": "docker build -t jktagrocket .",
+    "docker:run": "docker run -p 3000:3000 jktagrocket",
+    "docker:build-simple": "docker build -f Dockerfile.simple -t jktagrocket-simple .",
+    "docker:run-simple": "docker run -p 3000:3000 jktagrocket-simple"
   },
   "dependencies": {
     "axios": "^1.10.0",

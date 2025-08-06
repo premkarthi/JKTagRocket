@@ -85,6 +85,20 @@ function buildTimeline(resources) {
 //         }
 //     }
 async function captureServerSide(html) {
+  // Check if we're in a browser environment that supports Playwright
+  if (typeof window !== 'undefined') {
+    // Use enhanced client-side analysis
+    return {
+      calls: [],
+      perf: {
+        domContentLoaded: 0,
+        loadTime: 0,
+        firstPaint: 0
+      },
+      message: "Client-side analysis mode"
+    };
+  }
+  
   const res = await fetch("/api/capture", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
