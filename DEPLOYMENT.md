@@ -87,6 +87,9 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXX
 
 # Optional: Custom domain
 NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+
+# For static export (optional)
+STATIC_EXPORT=true
 ```
 
 ## 📊 Performance Optimization
@@ -128,6 +131,29 @@ npx playwright install chromium
 NODE_OPTIONS="--max-old-space-size=2048" npm start
 ```
 
+### Static Export Issues
+```bash
+# Use static export for platforms that don't support server-side rendering
+npm run build:static
+npm run start:static
+```
+
+## 🎯 Deployment Modes
+
+### Server-Side Rendering (Default)
+```bash
+npm run build
+npm start
+```
+**Use for**: Railway, Render, DigitalOcean, VPS
+
+### Static Export (Alternative)
+```bash
+npm run build:static
+npm run start:static
+```
+**Use for**: cPanel, Netlify, GitHub Pages
+
 ## 💰 Cost Comparison
 
 | Platform | Monthly Cost | Playwright | Ease of Use | Recommended |
@@ -149,4 +175,5 @@ NODE_OPTIONS="--max-old-space-size=2048" npm start
 If you encounter issues:
 1. Check the troubleshooting section above
 2. Review platform-specific documentation
-3. Consider using the simple Dockerfile for easier deployment 
+3. Consider using the simple Dockerfile for easier deployment
+4. Use the deployment script: `./deploy.sh` or `./deploy.sh static` 

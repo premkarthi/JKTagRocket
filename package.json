@@ -9,7 +9,9 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
+    "build:static": "STATIC_EXPORT=true next build",
     "start": "next start",
+    "start:static": "npx serve@latest out",
     "lint": "next lint",
     "preview": "npx serve out",
     "docker:build": "docker build -t jktagrocket .",

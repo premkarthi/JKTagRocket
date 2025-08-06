@@ -27,11 +27,11 @@ RUN npm install --production=false
 # Copy the rest of the application
 COPY . .
 
-# Build the application
+# Build the application (server-side rendering)
 RUN npm run build
 
 # Expose the port
 EXPOSE 3000
 
-# Start the application
+# Start the application (server-side rendering)
 CMD ["npm", "start"] 

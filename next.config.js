@@ -1,10 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'export',
-    trailingSlash: true, // optional, for static site compatibility
-    images: {
-        unoptimized: true
-    },
+    // Only use static export if explicitly set
+    ...(process.env.STATIC_EXPORT === 'true' ? {
+        output: 'export',
+        trailingSlash: true,
+        images: {
+            unoptimized: true
+        }
+    } : {
+        // Server-side rendering configuration
+        images: {
+            domains: ['localhost'],
+            unoptimized: false
+        }
+    }),
     allowedDevOrigins: []
 }
 
