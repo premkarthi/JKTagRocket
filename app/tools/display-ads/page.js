@@ -85,9 +85,29 @@ function buildTimeline(resources) {
 //         }
 //     }
 async function captureServerSide(html) {
-  // Check if we're in a browser environment that supports Playwright
-  if (typeof window !== 'undefined') {
-    // Use enhanced client-side analysis
+  try {
+    const res = await fetch("/api/capture", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ html })
+    });
+    
+    if (!res.ok) {
+      console.warn("Server-side capture failed, falling back to client-side");
+      return {
+        calls: [],
+        perf: {
+          domContentLoaded: 0,
+          loadTime: 0,
+          firstPaint: 0
+        },
+        message: "Client-side analysis mode"
+      };
+    }
+    
+    return res.json();
+  } catch (error) {
+    console.warn("Capture error:", error);
     return {
       calls: [],
       perf: {
@@ -98,14 +118,6 @@ async function captureServerSide(html) {
       message: "Client-side analysis mode"
     };
   }
-  
-  const res = await fetch("/api/capture", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ html })
-  });
-  if (!res.ok) throw new Error("Capture failed");
-  return res.json();
 }
 
 export default function DisplayAds() {
@@ -196,6 +208,21 @@ export default function DisplayAds() {
     }
 
     setMessage({ type: "success", text: "Display ad previews loaded successfully." });
+    
+    // Add info about network analysis
+    if (deepCapture) {
+      setTimeout(() => {
+        setMessage({ 
+          type: "info", 
+          text: "Deep capture enabled. Network analysis will be available shortly. If server-side analysis fails, client-side fallback will be used." 
+        });
+      }, 1000);
+    } else {
+      setMessage({ 
+        type: "info", 
+        text: "Client-side network analysis enabled. Some network calls may not be captured due to CORS restrictions." 
+      });
+    }
   };
 
   const reset = () => {
@@ -255,14 +282,63 @@ export default function DisplayAds() {
     if (!show) return;
     const docs = adBlocks.map((blk, i) => {
       const tag = /^(https?:)?\/\//i.test(blk.trim()) ? `<script src='${blk.trim()}'></script>` : blk;
-      const collectScript = !deepCapture
-        ? `<script>(function(){function send(){var r=performance.getEntriesByType('resource');var nav=performance.timing,t={domContentLoaded:nav.domContentLoadedEventEnd-nav.navigationStart,loadTime:nav.loadEventEnd-nav.navigationStart,firstPaint:(performance.getEntriesByType('paint').find(p=>p.name==='first-contentful-paint')||{}).startTime||0};parent.postMessage({type:'ad-iframe-network-data',iframeIdx:${i},resources:Array.from(r),timings:t},'*');}window.addEventListener('load',()=>setTimeout(send,1000));})();</script>`
-        : "";
-      const sizeScript = `<script>window.addEventListener('load', () => {setTimeout(() => {const all = document.body.children;let w = 0, h = 0;for (let j = 0; j < all.length; j++) {const r = all[j].getBoundingClientRect();w = Math.max(w, r.width);h = Math.max(h, r.height);}parent.postMessage({ type: 'ad-iframe-image-size', iframeIdx: ${i}, width: Math.round(w), height: Math.round(h) }, '*');}, 500);});</script>`;
+      
+      // Always include client-side analysis as fallback
+      const collectScript = `<script>
+        (function(){
+          function send(){
+            try {
+              var r = performance.getEntriesByType('resource');
+              var nav = performance.timing || {};
+              var t = {
+                domContentLoaded: nav.domContentLoadedEventEnd ? nav.domContentLoadedEventEnd - nav.navigationStart : 0,
+                loadTime: nav.loadEventEnd ? nav.loadEventEnd - nav.navigationStart : 0,
+                firstPaint: (performance.getEntriesByType('paint').find(p=>p.name==='first-contentful-paint')||{}).startTime || 0
+              };
+              parent.postMessage({
+                type: 'ad-iframe-network-data',
+                iframeIdx: ${i},
+                resources: Array.from(r),
+                timings: t
+              }, '*');
+            } catch(e) {
+              console.warn('Client-side analysis failed:', e);
+            }
+          }
+          window.addEventListener('load', function() {
+            setTimeout(send, 1000);
+          });
+        })();
+      </script>`;
+      
+      const sizeScript = `<script>
+        window.addEventListener('load', () => {
+          setTimeout(() => {
+            try {
+              const all = document.body.children;
+              let w = 0, h = 0;
+              for (let j = 0; j < all.length; j++) {
+                const r = all[j].getBoundingClientRect();
+                w = Math.max(w, r.width);
+                h = Math.max(h, r.height);
+              }
+              parent.postMessage({ 
+                type: 'ad-iframe-image-size', 
+                iframeIdx: ${i}, 
+                width: Math.round(w), 
+                height: Math.round(h) 
+              }, '*');
+            } catch(e) {
+              console.warn('Size detection failed:', e);
+            }
+          }, 500);
+        });
+      </script>`;
+      
       return `<!doctype html><html><body>${tag}${sizeScript}${collectScript}</body></html>`;
     });
     setIframeSrcDocs(docs);
-  }, [adBlocks, show, deepCapture]);
+  }, [adBlocks, show]);
 
   return (
     <div className={styles.displayAdsContainer}>
