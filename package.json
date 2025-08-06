@@ -17,7 +17,10 @@
     "docker:build": "docker build -t jktagrocket .",
     "docker:run": "docker run -p 3000:3000 jktagrocket",
     "docker:build-simple": "docker build -f Dockerfile.simple -t jktagrocket-simple .",
-    "docker:run-simple": "docker run -p 3000:3000 jktagrocket-simple"
+    "docker:run-simple": "docker run -p 3000:3000 jktagrocket-simple",
+    "deploy:railway": "./deploy-railway.sh",
+    "railway:up": "railway up",
+    "railway:logs": "railway logs"
   },
   "dependencies": {
     "axios": "^1.10.0",

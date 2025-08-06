@@ -9,11 +9,15 @@ RUN apk add --no-cache \
     freetype-dev \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    ttf-freefont \
+    # Additional dependencies for Railway
+    libc6-compat \
+    libstdc++
 
 # Set environment variables for Playwright
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PLAYWRIGHT_BROWSERS_PATH=/usr/bin
 
 # Set the working directory
 WORKDIR /app
@@ -23,6 +27,9 @@ COPY package*.json ./
 
 # Install dependencies with npm install instead of npm ci for better compatibility
 RUN npm install --production=false
+
+# Install Playwright browsers explicitly
+RUN npx playwright install chromium
 
 # Copy the rest of the application
 COPY . .

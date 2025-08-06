@@ -267,11 +267,35 @@ export default function DisplayAds() {
             resources: e.data.resources || [],
             timings: e.data.timings || {},
             summary: computePerformanceSummary(e.data.resources, e.data.timings),
-            timeline: buildTimeline(e.data.resources || [])
+            timeline: buildTimeline(e.data.resources || []),
+            source: e.data.source || 'unknown'
           };
           return updated;
         });
         setNetworkLoaded((prev) => { const updated = [...prev]; updated[iframeIdx] = true; return updated; });
+        
+        // Provide feedback about analysis results
+        const resourceCount = e.data.resources?.length || 0;
+        const source = e.data.source || 'unknown';
+        
+        if (source === 'client-side') {
+          if (resourceCount > 0) {
+            setMessage({ 
+              type: "success", 
+              text: `Client-side analysis found ${resourceCount} network calls. Some calls may be missed due to CORS restrictions.` 
+            });
+          } else {
+            setMessage({ 
+              type: "info", 
+              text: "No network calls detected. This could be due to CORS restrictions or the ad not making external requests." 
+            });
+          }
+        } else if (source === 'client-side-error') {
+          setMessage({ 
+            type: "warning", 
+            text: `Client-side analysis failed: ${e.data.error || 'Unknown error'}` 
+          });
+        }
       }
     };
     window.addEventListener("message", handler);
@@ -295,19 +319,43 @@ export default function DisplayAds() {
                 loadTime: nav.loadEventEnd ? nav.loadEventEnd - nav.navigationStart : 0,
                 firstPaint: (performance.getEntriesByType('paint').find(p=>p.name==='first-contentful-paint')||{}).startTime || 0
               };
+              
+              // Filter out data URLs and internal resources
+              var filteredResources = Array.from(r).filter(function(resource) {
+                return !resource.name.startsWith('data:') && 
+                       !resource.name.startsWith('blob:') &&
+                       resource.name !== window.location.href;
+              });
+              
+              console.log('Client-side analysis: Found', filteredResources.length, 'network calls');
+              
               parent.postMessage({
                 type: 'ad-iframe-network-data',
                 iframeIdx: ${i},
-                resources: Array.from(r),
-                timings: t
+                resources: filteredResources,
+                timings: t,
+                source: 'client-side'
               }, '*');
             } catch(e) {
               console.warn('Client-side analysis failed:', e);
+              parent.postMessage({
+                type: 'ad-iframe-network-data',
+                iframeIdx: ${i},
+                resources: [],
+                timings: {},
+                source: 'client-side-error',
+                error: e.message
+              }, '*');
             }
           }
+          
+          // Send data after page loads
           window.addEventListener('load', function() {
             setTimeout(send, 1000);
           });
+          
+          // Also send data after a longer delay to catch delayed requests
+          setTimeout(send, 3000);
         })();
       </script>`;
       

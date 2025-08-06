@@ -16,9 +16,23 @@ export async function POST(req) {
         // Try to use Playwright if available
         const { chromium } = await import('@playwright/test');
         
+        console.log('🚀 Starting Playwright browser...');
+        
         const browser = await chromium.launch({
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process'
+            ],
+            headless: true
         });
+        
+        console.log('✅ Browser launched successfully');
+        
         const page = await browser.newPage();
         const calls = [];
 
@@ -43,12 +57,20 @@ export async function POST(req) {
                     startTime: timing.startTime || 0,
                     responseEnd: timing.responseEnd || timing.startTime || 0,
                 });
+                
+                console.log(`📡 Network call captured: ${request.url()}`);
             } catch (err) {
                 console.warn("Error in requestfinished handler:", err.message);
             }
         });
 
-        await page.goto(`data:text/html,${encodeURIComponent(html)}`, { waitUntil: "load" });
+        console.log('🌐 Navigating to HTML content...');
+        await page.goto(`data:text/html,${encodeURIComponent(html)}`, { 
+            waitUntil: "load",
+            timeout: timeout 
+        });
+        
+        console.log('⏳ Waiting for additional network activity...');
         await page.waitForTimeout(timeout);
 
         const perf = await page.evaluate(() => {
@@ -62,13 +84,15 @@ export async function POST(req) {
         });
 
         await browser.close();
+        console.log(`✅ Analysis complete. Captured ${calls.length} network calls`);
 
         return new Response(JSON.stringify({ calls, perf }), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
     } catch (error) {
-        console.warn("Playwright not available, using fallback:", error.message);
+        console.error('❌ Playwright error:', error.message);
+        console.error('Stack trace:', error.stack);
         
         // Return fallback data
         return new Response(JSON.stringify({ 
@@ -78,7 +102,8 @@ export async function POST(req) {
                 loadTime: 0,
                 firstPaint: 0
             },
-            message: "Server-side analysis not available, using client-side fallback"
+            message: "Server-side analysis not available, using client-side fallback",
+            error: error.message
         }), {
             status: 200,
             headers: { "Content-Type": "application/json" },
