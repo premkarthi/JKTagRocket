@@ -68,13 +68,22 @@ function validateAdBlock(b) {
 }
 
 function buildTimeline(resources) {
-  return resources.map((r) => ({
+  console.log('🔧 Building timeline from resources:', resources?.length || 0);
+  if (!resources || resources.length === 0) {
+    console.log('⚠️ No resources provided to buildTimeline');
+    return [];
+  }
+  
+  const timeline = resources.map((r) => ({
     url: r.name,
     type: getResourceType(r),
     start: r.startTime || 0,
     end: r.responseEnd || 0,
     duration: (r.responseEnd || 0) - (r.startTime || 0),
   }));
+  
+  console.log('📊 Built timeline with', timeline.length, 'entries');
+  return timeline;
 }
 // function getIcon(type) {
 //         switch (type) {
@@ -186,14 +195,39 @@ export default function DisplayAds() {
           : b;
         const html = `<!doctype html><html><body>${tag}</body></html>`;
         try {
-          const { calls, perf } = await captureServerSide(html);
+          console.log(`🔍 Analyzing block ${i + 1} with deep capture...`);
+          const { calls, perf, message, error } = await captureServerSide(html);
+          
+          console.log(`📊 Block ${i + 1} results:`, {
+            callsCount: calls?.length || 0,
+            hasPerf: !!perf,
+            message,
+            error
+          });
+          
           setNetData((prev) => {
             const next = [...prev];
             next[i] = {
-              resources: calls,
-              timings: perf,
-              summary: computePerformanceSummary(calls, perf),
-              timeline: buildTimeline(calls),
+              resources: calls || [],
+              timings: perf || {},
+              summary: computePerformanceSummary(calls || [], perf || {}),
+              timeline: buildTimeline(calls || []),
+              source: 'server-side'
+            };
+            console.log(`📈 Updated netData for block ${i}:`, next[i]);
+            return next;
+          });
+        } catch (error) {
+          console.error(`❌ Error analyzing block ${i + 1}:`, error);
+          setNetData((prev) => {
+            const next = [...prev];
+            next[i] = {
+              resources: [],
+              timings: {},
+              summary: null,
+              timeline: [],
+              source: 'server-side-error',
+              error: error.message
             };
             return next;
           });
@@ -260,6 +294,12 @@ export default function DisplayAds() {
         setPreviewLoaded((prev) => { const updated = [...prev]; updated[iframeIdx] = true; return updated; });
       }
       if (type === "ad-iframe-network-data") {
+        console.log(`📡 Received client-side network data for iframe ${iframeIdx}:`, {
+          resourcesCount: e.data.resources?.length || 0,
+          source: e.data.source,
+          error: e.data.error
+        });
+        
         setNetData((prev) => {
           const updated = [...prev];
           updated[iframeIdx] = {
@@ -270,6 +310,7 @@ export default function DisplayAds() {
             timeline: buildTimeline(e.data.resources || []),
             source: e.data.source || 'unknown'
           };
+          console.log(`📈 Updated netData for iframe ${iframeIdx}:`, updated[iframeIdx]);
           return updated;
         });
         setNetworkLoaded((prev) => { const updated = [...prev]; updated[iframeIdx] = true; return updated; });
@@ -482,8 +523,38 @@ export default function DisplayAds() {
                 <details style={{ marginTop: 10 }}>
                   <summary>📡 Network & Performance Details</summary>
                   <div style={{ marginTop: 10 }}>
+                    {/* Debug section */}
+                    <details style={{ marginBottom: 10, padding: 10, background: '#f5f5f5', borderRadius: 4 }}>
+                      <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>🐛 Debug Info</summary>
+                      <pre style={{ fontSize: '12px', overflow: 'auto', maxHeight: '200px' }}>
+                        {JSON.stringify({
+                          resourcesCount: net.resources?.length || 0,
+                          timelineCount: net.timeline?.length || 0,
+                          summary: net.summary,
+                          source: net.source,
+                          error: net.error
+                        }, null, 2)}
+                      </pre>
+                    </details>
+                    
                     <NetworkTimelineChart timeline={net.timeline || []} />
                     <PerformanceSummaryBlock summary={net.summary} />
+                    
+                    {/* Raw network data display */}
+                    {net.resources && net.resources.length > 0 && (
+                      <details style={{ marginTop: 10 }}>
+                        <summary>📋 Raw Network Data ({net.resources.length} calls)</summary>
+                        <div style={{ maxHeight: '300px', overflow: 'auto', background: '#f9f9f9', padding: 10, borderRadius: 4 }}>
+                          {net.resources.map((resource, idx) => (
+                            <div key={idx} style={{ marginBottom: 8, padding: 8, background: '#fff', borderRadius: 4, border: '1px solid #eee' }}>
+                              <strong>{idx + 1}.</strong> {resource.name}
+                              <br />
+                              <small>Type: {getResourceType(resource)} | Status: {resource.status} | Duration: {resource.responseEnd - resource.startTime}ms</small>
+                            </div>
+                          ))}
+                        </div>
+                      </details>
+                    )}
                   </div>
                 </details>
               </section>
