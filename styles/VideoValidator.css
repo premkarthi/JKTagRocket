@@ -303,3 +303,81 @@ vv-result-wrapper {
   box-shadow: -2px 0 4px rgba(0, 0, 0, 0.05);
 }
 
+/* Same tag button  */
+.vv-btn.sample {
+  background-color: #909;
+  color: #ccc;
+  border: 1px solid #ccc;
+}
+.vv-btn.sample:hover {
+  background-color: rgb(98, 34, 98);
+}
+.vv-tab-content {
+  margin-top: 16px;
+  padding: 8px;
+  border-top: 1px solid #ccc;
+}
+/* Header */
+.vv-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.vv-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #6c3fe2;
+  margin: 0;
+}
+
+.vv-subtitle {
+  font-size: 16px;
+  color: #2f2f30;
+  margin-top: 8px;
+}
+.flow-chart {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.step-box {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: #ccc;
+  color: #333;
+  font-weight: bold;
+  min-width: 60px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.step-box.active {
+  background-color: green;
+  color: white;
+}
+.flow-chart {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.step-box {
+  padding: 10px 14px;
+  background-color: #ccc;
+  color: #333;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  min-width: 60px;
+  text-align: center;
+}
+
+.step-box.active {
+  background-color: #4caf50; /* Green */
+  color: white;
+}
+
