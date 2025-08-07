@@ -1,4 +1,3 @@
-// components/useMessages.js
 import { useState, useEffect } from "react";
 import "../styles/Usemessages.css"; // Optional: ensure only one import globally
 
@@ -63,6 +62,3 @@ export function UserMessage({ message, setMessage }) {
     </div>
   );
 }
-
-// ✅ Proper named exports
-export { useAutoDismissMessage, getIcon, UserMessage };

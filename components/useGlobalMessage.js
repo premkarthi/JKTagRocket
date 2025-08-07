@@ -14,32 +14,32 @@ export function GlobalMessageProvider({ children }) {
   const [messages, setMessages] = useState([]);
 
   const addMessage = useCallback(({ title = "", text = "", type = "info" }) => {
-  const newMessage = {
-    id: uuidv4(),
-    title,
-    text,
-    type,
-    icon: getIcon(type),
-    timestamp: Date.now(),
-  };
+    const newMessage = {
+      id: uuidv4(),
+      title,
+      text,
+      type,
+      icon: getIcon(type),
+      timestamp: Date.now(),
+    };
 
-  setMessages((prev) => {
-    const existingOfSameType = prev.find((msg) => msg.type === type && msg.text === text);
-    if (existingOfSameType) return prev;
+    setMessages((prev) => {
+      const existingOfSameType = prev.find((msg) => msg.type === type && msg.text === text);
+      if (existingOfSameType) return prev;
 
-    const priority = { error: 4, warning: 3, info: 2, success: 1 };
-    const highestPriority = Math.max(...prev.map((msg) => priority[msg.type] || 0), priority[type]);
+      const priority = { error: 4, warning: 3, info: 2, success: 1 };
+      const highestPriority = Math.max(...prev.map((msg) => priority[msg.type] || 0), priority[type]);
 
-    if ((priority[type] || 0) < highestPriority) return prev;
+      if ((priority[type] || 0) < highestPriority) return prev;
 
-    const filtered = prev.filter((msg) => (priority[msg.type] || 0) >= priority[type]);
-    return [...filtered, newMessage];
-  });
+      const filtered = prev.filter((msg) => (priority[msg.type] || 0) >= priority[type]);
+      return [...filtered, newMessage];
+    });
 
-  setTimeout(() => {
-    setMessages((prev) => prev.filter((msg) => msg.id !== newMessage.id));
-  }, 11000);
-}, []);
+    setTimeout(() => {
+      setMessages((prev) => prev.filter((msg) => msg.id !== newMessage.id));
+    }, 11000);
+  }, []);
 
   // Assign to global function
   globalAddMessage = addMessage;
@@ -54,11 +54,10 @@ export function GlobalMessageProvider({ children }) {
 export function useGlobalMessage() {
   return useContext(GlobalMessageContext);
 }
-export { addMessage, getIcon, UserMessage };
-export function addMessage({ title = "", text = "", type = "info" }) {
+
+export function triggerGlobalMessage({ title = "", text = "", type = "info" }) {
   globalAddMessage({ title, text, type });
 }
-
 
 export function getIcon(type) {
   switch (type) {
@@ -73,3 +72,6 @@ export function getIcon(type) {
       return "ℹ️";
   }
 }
+
+// ✅ Only exporting what's needed
+export { triggerGlobalMessage as addMessage, UserMessage };
