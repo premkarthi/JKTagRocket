@@ -3,7 +3,7 @@
   border: 1px solid #ddd;
   border-radius: 6px;
   padding: 15px;
-  margin-top: 10px;
+  margin-top: 1rem;
   color: darkmagenta;
 }
 
@@ -23,4 +23,38 @@
 .event-log li {
   margin-bottom: 5px;
   font-size: 14px;
+}
+
+.event-log-table-container {
+  max-height: 440px; /* Allows ~11 rows before scrolling */
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+.event-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: #909;
+}
+
+.event-log-table th,
+.event-log-table td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.event-log-table thead {
+  background-color: #f5f5f5;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-weight: 600;
+}
+
+.event-log-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
 }

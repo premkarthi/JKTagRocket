@@ -1,0 +1,65 @@
+.flow-visualizer {
+  margin-top: 20px;
+  border-top: 1px solid #ccc;
+  padding-top: 15px;
+}
+
+.flow-row {
+  margin-bottom: 20px;
+}
+
+.flow-row h4 {
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #444;
+}
+
+.flow-events {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.flow-box {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+}
+
+.flow-box.green {
+  background-color: #28a745;
+}
+
+.flow-box.red {
+  background-color: #dc3545;
+}
+
+.flow-box.blue {
+  background-color: #007bff;
+}
+
+.flow-box.grey {
+  background-color: #6c757d;
+}
+.flow-chart {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px 0;
+}
+
+.step-box {
+  padding: 12px 20px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background-color: #eee;
+  font-weight: bold;
+  transition: all 0.3s ease-in-out;
+}
+
+.step-box.active {
+  background-color: #4caf50;
+  color: white;
+  border-color: #388e3c;
+}

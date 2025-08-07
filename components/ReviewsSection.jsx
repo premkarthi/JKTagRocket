@@ -60,7 +60,7 @@ export default function ReviewsSection() {
     const interval = setInterval(() => {
       i = (i + 1) % headings.length;
       setHeadline(headings[i]);
-    }, 6000);
+    }, 31000);
     return () => clearInterval(interval);
   }, []);
 
@@ -89,7 +89,7 @@ export default function ReviewsSection() {
             spaceBetween={30}
             slidesPerView={1}
             pagination={{ clickable: true }}
-            autoplay={{ delay: 4000 }}
+            autoplay={{ delay: 11000 }}
             loop
             onSwiper={(swiper) => (swiperRef.current = swiper)}
           >
