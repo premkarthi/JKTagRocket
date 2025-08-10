@@ -1,0 +1,40 @@
+# Alternative Dockerfile for Railway deployment with browser automation
+FROM mcr.microsoft.com/playwright:v1.40.0-focal
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+# Create a non-root user
+RUN groupadd -r nextjs && useradd -r -g nextjs nextjs
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Install Puppeteer browser
+RUN npx puppeteer browsers install chrome
+
+# Copy the rest of the application
+COPY --chown=nextjs:nextjs . .
+
+# Build the application
+RUN npm run build
+
+# Change ownership
+RUN chown -R nextjs:nextjs /app
+
+# Switch to non-root user
+USER nextjs
+
+# Expose the port
+EXPOSE 3000
+
+# Start the application
+CMD ["npm", "start"] 

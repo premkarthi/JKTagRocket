@@ -63,7 +63,7 @@ async function tryPlaywright(html, timeout) {
         headless: true,
         timeout: 30000,
         // Railway-specific optimizations
-        executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined,
+        executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
         ignoreDefaultArgs: ['--disable-extensions'],
         ignoreHTTPSErrors: true
     });
@@ -160,7 +160,7 @@ async function tryPuppeteer(html, timeout) {
                 '--disable-ipc-flooding-protection'
             ],
             headless: true,
-            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
             ignoreHTTPSErrors: true
         });
         

@@ -23,7 +23,7 @@ This guide ensures your JKTagRocket application deploys with full server-side br
 ### 1. **Prepare Your Project**
 
 Ensure you have the correct files:
-- ✅ `Dockerfile.railway` - Optimized for Railway with browser automation
+- ✅ `Dockerfile.railway-alt` - Uses Microsoft Playwright base image
 - ✅ `railway.json` - Points to the correct Dockerfile
 - ✅ `app/api/capture/route.js` - Enhanced server-side capture
 - ✅ `app/api/health/route.js` - Health check endpoint
@@ -74,25 +74,23 @@ Expected response:
 
 ## 🔧 **Configuration Files**
 
-### `Dockerfile.railway`
-- Alpine Linux with Chromium
-- Playwright and Puppeteer support
-- Security optimizations
-- Non-root user for security
+### `Dockerfile.railway-alt`
+- **Microsoft Playwright base image** (Ubuntu-based)
+- **Pre-installed browser dependencies**
+- **Playwright and Puppeteer support**
+- **Security optimizations**
 
 ### `railway.json`
 ```json
 {
   "build": {
     "builder": "DOCKERFILE",
-    "dockerfilePath": "Dockerfile.railway"
+    "dockerfilePath": "Dockerfile.railway-alt"
   }
 }
 ```
 
 ### Environment Variables (Auto-set)
-- `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser`
-- `PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser`
 - `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true`
 
@@ -108,6 +106,9 @@ Expected response:
 5. **Expected result**: 18+ network calls (server-side capture)
 
 ## 🐛 **Troubleshooting**
+
+### Issue: Build fails with Playwright installation error
+**Solution**: The new `Dockerfile.railway-alt` uses Microsoft's Playwright base image which already has all dependencies installed.
 
 ### Issue: Still getting client-side capture
 **Solution**: Check Railway logs for browser automation errors:

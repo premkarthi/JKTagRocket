@@ -36,9 +36,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Install Playwright and Puppeteer browsers
-RUN npx playwright install chromium --with-deps && \
-    npx puppeteer browsers install chrome
+# Skip Playwright browser installation (we'll use Alpine's Chromium)
+# Only install Puppeteer browser
+RUN npx puppeteer browsers install chrome
 
 # Copy the rest of the application
 COPY --chown=nextjs:nodejs . .
