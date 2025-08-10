@@ -370,6 +370,11 @@ export default function DisplayAds() {
         (function(){
           function send(){
             try {
+              // Check if Performance API is available
+              if (!performance || !performance.getEntriesByType) {
+                throw new Error('Performance API not available');
+              }
+              
               var r = performance.getEntriesByType('resource');
               var nav = performance.timing || {};
               var t = {
@@ -387,10 +392,46 @@ export default function DisplayAds() {
               
               console.log('Client-side analysis: Found', filteredResources.length, 'network calls');
               
+              // Serialize PerformanceResourceTiming objects to plain objects
+              var serializedResources = filteredResources.map(function(resource) {
+                try {
+                  return {
+                    name: resource.name || '',
+                    initiatorType: resource.initiatorType || 'other',
+                    transferSize: resource.transferSize || 0,
+                    encodedBodySize: resource.encodedBodySize || 0,
+                    decodedBodySize: resource.decodedBodySize || 0,
+                    status: 200, // Default status since we can't get it from PerformanceResourceTiming
+                    startTime: resource.startTime || 0,
+                    responseEnd: resource.responseEnd || 0,
+                    duration: resource.duration || 0,
+                    domainLookupStart: resource.domainLookupStart || 0,
+                    domainLookupEnd: resource.domainLookupEnd || 0,
+                    connectStart: resource.connectStart || 0,
+                    connectEnd: resource.connectEnd || 0,
+                    requestStart: resource.requestStart || 0,
+                    responseStart: resource.responseStart || 0
+                  };
+                } catch (serializeError) {
+                  console.warn('Failed to serialize resource:', resource.name, serializeError);
+                  return {
+                    name: resource.name || '',
+                    initiatorType: 'other',
+                    transferSize: 0,
+                    encodedBodySize: 0,
+                    decodedBodySize: 0,
+                    status: 200,
+                    startTime: 0,
+                    responseEnd: 0,
+                    duration: 0
+                  };
+                }
+              });
+              
               parent.postMessage({
                 type: 'ad-iframe-network-data',
                 iframeIdx: ${i},
-                resources: filteredResources,
+                resources: serializedResources,
                 timings: t,
                 source: 'client-side'
               }, '*');
