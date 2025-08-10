@@ -2,138 +2,143 @@
 export const config = { api: { bodyParser: { sizeLimit: "1mb" } } };
 
 async function tryPlaywright(html, timeout) {
-    const { chromium } = await import('@playwright/test');
-    
-    console.log('🚀 Starting Playwright browser...');
-    
-    const browser = await chromium.launch({
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-gpu',
-            '--no-first-run',
-            '--no-zygote',
-            '--single-process',
-            '--disable-web-security',
-            '--disable-features=VizDisplayCompositor',
-            '--disable-extensions',
-            '--disable-plugins',
-            '--disable-background-timer-throttling',
-            '--disable-backgrounding-occluded-windows',
-            '--disable-renderer-backgrounding',
-            '--disable-features=TranslateUI',
-            '--disable-ipc-flooding-protection',
-            '--disable-default-apps',
-            '--disable-sync',
-            '--disable-translate',
-            '--hide-scrollbars',
-            '--mute-audio',
-            '--no-default-browser-check',
-            '--disable-component-extensions-with-background-pages',
-            '--disable-background-networking',
-            '--disable-background-timer-throttling',
-            '--disable-client-side-phishing-detection',
-            '--disable-hang-monitor',
-            '--disable-prompt-on-repost',
-            '--disable-domain-reliability',
-            '--disable-features=AudioServiceOutOfProcess',
-            '--disable-features=VizDisplayCompositor',
-            '--disable-ipc-flooding-protection',
-            '--disable-renderer-backgrounding',
-            '--disable-backgrounding-occluded-windows',
-            '--disable-background-timer-throttling',
-            '--disable-features=TranslateUI',
-            '--disable-ipc-flooding-protection',
-            '--disable-background-networking',
-            '--disable-background-timer-throttling',
-            '--disable-client-side-phishing-detection',
-            '--disable-hang-monitor',
-            '--disable-prompt-on-repost',
-            '--disable-domain-reliability',
-            '--disable-features=AudioServiceOutOfProcess',
-            '--disable-features=VizDisplayCompositor',
-            '--disable-ipc-flooding-protection',
-            '--disable-renderer-backgrounding',
-            '--disable-backgrounding-occluded-windows',
-            '--disable-background-timer-throttling',
-            '--disable-features=TranslateUI',
-            '--disable-ipc-flooding-protection'
-        ],
-        headless: true,
-        timeout: 30000,
-        // Railway-specific optimizations
-        executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
-        ignoreDefaultArgs: ['--disable-extensions'],
-        ignoreHTTPSErrors: true
-    });
-    
-    console.log('✅ Browser launched successfully');
-    
-    const page = await browser.newPage();
-    const calls = [];
+    try {
+        const { chromium } = await import('@playwright/test');
+        
+        console.log('🚀 Starting Playwright browser...');
+        
+        const browser = await chromium.launch({
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process',
+                '--disable-web-security',
+                '--disable-features=VizDisplayCompositor',
+                '--disable-extensions',
+                '--disable-plugins',
+                '--disable-background-timer-throttling',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-renderer-backgrounding',
+                '--disable-features=TranslateUI',
+                '--disable-ipc-flooding-protection',
+                '--disable-default-apps',
+                '--disable-sync',
+                '--disable-translate',
+                '--hide-scrollbars',
+                '--mute-audio',
+                '--no-default-browser-check',
+                '--disable-component-extensions-with-background-pages',
+                '--disable-background-networking',
+                '--disable-background-timer-throttling',
+                '--disable-client-side-phishing-detection',
+                '--disable-hang-monitor',
+                '--disable-prompt-on-repost',
+                '--disable-domain-reliability',
+                '--disable-features=AudioServiceOutOfProcess',
+                '--disable-features=VizDisplayCompositor',
+                '--disable-ipc-flooding-protection',
+                '--disable-renderer-backgrounding',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-background-timer-throttling',
+                '--disable-features=TranslateUI',
+                '--disable-ipc-flooding-protection',
+                '--disable-background-networking',
+                '--disable-background-timer-throttling',
+                '--disable-client-side-phishing-detection',
+                '--disable-hang-monitor',
+                '--disable-prompt-on-repost',
+                '--disable-domain-reliability',
+                '--disable-features=AudioServiceOutOfProcess',
+                '--disable-features=VizDisplayCompositor',
+                '--disable-ipc-flooding-protection',
+                '--disable-renderer-backgrounding',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-background-timer-throttling',
+                '--disable-features=TranslateUI',
+                '--disable-ipc-flooding-protection'
+            ],
+            headless: true,
+            timeout: 30000,
+            // Railway-specific optimizations
+            executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
+            ignoreDefaultArgs: ['--disable-extensions'],
+            ignoreHTTPSErrors: true
+        });
+        
+        console.log('✅ Browser launched successfully');
+        
+        const page = await browser.newPage();
+        const calls = [];
 
-    // Set viewport and user agent for better compatibility
-    await page.setViewportSize({ width: 1280, height: 720 });
-    await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+        // Set viewport and user agent for better compatibility
+        await page.setViewportSize({ width: 1280, height: 720 });
+        await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
-    page.on("requestfinished", async (request) => {
-        try {
-            const response = await request.response();
-            if (!response) return;
-            
-            const status = response.status();
-            const timing = await request.timing();
+        page.on("requestfinished", async (request) => {
+            try {
+                const response = await request.response();
+                if (!response) return;
+                
+                const status = response.status();
+                const timing = await request.timing();
 
-            let bodySize = 0;
-            if (status < 300 || status >= 400) {
-                try {
-                    const body = await response.body();
-                    bodySize = body?.byteLength || 0;
-                } catch (bodyError) {
-                    console.warn("Could not get response body:", bodyError.message);
+                let bodySize = 0;
+                if (status < 300 || status >= 400) {
+                    try {
+                        const body = await response.body();
+                        bodySize = body?.byteLength || 0;
+                    } catch (bodyError) {
+                        console.warn("Could not get response body:", bodyError.message);
+                    }
                 }
+
+                calls.push({
+                    name: request.url(),
+                    initiatorType: request.resourceType(),
+                    transferSize: bodySize,
+                    encodedBodySize: bodySize,
+                    status,
+                    startTime: timing.startTime || Date.now(),
+                    responseEnd: timing.responseEnd || timing.startTime || Date.now(),
+                });
+                
+                console.log(`📡 Network call captured: ${request.url()}`);
+            } catch (err) {
+                console.warn("Error in requestfinished handler:", err.message);
             }
+        });
 
-            calls.push({
-                name: request.url(),
-                initiatorType: request.resourceType(),
-                transferSize: bodySize,
-                encodedBodySize: bodySize,
-                status,
-                startTime: timing.startTime || Date.now(),
-                responseEnd: timing.responseEnd || timing.startTime || Date.now(),
-            });
-            
-            console.log(`📡 Network call captured: ${request.url()}`);
-        } catch (err) {
-            console.warn("Error in requestfinished handler:", err.message);
-        }
-    });
+        console.log('🌐 Navigating to HTML content...');
+        await page.goto(`data:text/html,${encodeURIComponent(html)}`, { 
+            waitUntil: "networkidle",
+            timeout: timeout 
+        });
+        
+        console.log('⏳ Waiting for additional network activity...');
+        await page.waitForTimeout(timeout);
 
-    console.log('🌐 Navigating to HTML content...');
-    await page.goto(`data:text/html,${encodeURIComponent(html)}`, { 
-        waitUntil: "networkidle",
-        timeout: timeout 
-    });
-    
-    console.log('⏳ Waiting for additional network activity...');
-    await page.waitForTimeout(timeout);
+        const perf = await page.evaluate(() => {
+            const nav = performance.getEntriesByType("navigation")[0] || {};
+            const paint = performance.getEntriesByType("paint").find(p => p.name === "first-contentful-paint") || {};
+            return {
+                domContentLoaded: nav.domContentLoadedEventEnd ? nav.domContentLoadedEventEnd - nav.startTime : 0,
+                loadTime: nav.loadEventEnd ? nav.loadEventEnd - nav.startTime : 0,
+                firstPaint: paint.startTime || 0,
+            };
+        });
 
-    const perf = await page.evaluate(() => {
-        const nav = performance.getEntriesByType("navigation")[0] || {};
-        const paint = performance.getEntriesByType("paint").find(p => p.name === "first-contentful-paint") || {};
-        return {
-            domContentLoaded: nav.domContentLoadedEventEnd ? nav.domContentLoadedEventEnd - nav.startTime : 0,
-            loadTime: nav.loadEventEnd ? nav.loadEventEnd - nav.startTime : 0,
-            firstPaint: paint.startTime || 0,
-        };
-    });
+        await browser.close();
+        console.log(`✅ Analysis complete. Captured ${calls.length} network calls`);
 
-    await browser.close();
-    console.log(`✅ Analysis complete. Captured ${calls.length} network calls`);
-
-    return { calls, perf };
+        return { calls, perf };
+    } catch (error) {
+        console.error('❌ Playwright failed:', error.message);
+        throw error;
+    }
 }
 
 async function tryPuppeteer(html, timeout) {

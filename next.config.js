@@ -8,7 +8,8 @@ const nextConfig = {
             unoptimized: true
         }
     } : {
-        // Server-side rendering configuration
+        // Server-side rendering configuration with standalone output for Docker
+        output: 'standalone',
         images: {
             domains: ['localhost'],
             unoptimized: false

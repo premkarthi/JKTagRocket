@@ -1,0 +1,37 @@
+# Minimal Dockerfile for Railway free tier (client-side only)
+FROM node:18-alpine
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
+
+WORKDIR /app
+
+# Copy package files
+COPY package.prod.json package.json
+COPY package-lock.json* ./
+
+# Install only production dependencies
+RUN npm ci --only=production --no-optional && \
+    npm cache clean --force
+
+# Copy application
+COPY --chown=nextjs:nodejs . .
+
+# Build the application
+RUN npm run build
+
+# Change ownership
+RUN chown -R nextjs:nodejs /app
+
+# Switch to non-root user
+USER nextjs
+
+EXPOSE 3000
+
+CMD ["npm", "start"] 
