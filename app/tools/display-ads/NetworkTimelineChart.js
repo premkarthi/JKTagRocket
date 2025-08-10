@@ -23,23 +23,18 @@ function normalise(data) {
     const clean = data.filter(d => Number.isFinite(d.start) && d.start >= 0);
     if (!clean.length) return [];
 
-    const absRows = clean.filter(d => d.start > 1e12);
-    const minAbs = Math.min(...absRows.map(d => d.start), Infinity);
-    const baseline = Number.isFinite(minAbs) ? minAbs : 0;
-
     return clean.map((d, idx) => {
-        const relStart = d.start > 1e12 ? d.start - baseline : d.start;
         let duration = d.duration;
         if (!duration || duration <= 0) {
-            const relEnd = d.end > 1e12 ? d.end - baseline : d.end;
-            duration = relEnd > relStart ? relEnd - relStart : 40;
+            duration = (d.end || 0) - (d.start || 0);
+            if (duration <= 0) duration = 1;
         }
         return {
             id: idx,
             url: d.url,
             type: d.type in COLOR ? d.type : "Other",
-            start: relStart,
-            duration,
+            start: d.start,
+            duration: duration,
             raw: d,
         };
     }).sort((a, b) => a.start - b.start);

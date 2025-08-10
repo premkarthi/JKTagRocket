@@ -72,14 +72,65 @@ function buildTimeline(resources) {
     return [];
   }
   
-  const timeline = resources.map((r) => ({
-    url: r.name,
-    type: getResourceType(r),
-    start: r.startTime || 0,
-    end: r.responseEnd || 0,
-    duration: (r.responseEnd || 0) - (r.startTime || 0),
-  }));
+  console.log('🔧 Building timeline from', resources.length, 'resources');
+  console.log('📊 Sample resource:', resources[0]);
   
+  // Detect if we're dealing with absolute timestamps (server-side) or relative times (client-side)
+  const firstResourceStartTime = resources[0]?.startTime || 0;
+  const isAbsoluteTimestamps = firstResourceStartTime > 1e12; // Heuristic for absolute epoch timestamps
+  
+  console.log('🔍 Data format detection:', {
+    firstStartTime: firstResourceStartTime,
+    isAbsoluteTimestamps,
+    sampleResponseEnd: resources[0]?.responseEnd
+  });
+  
+  let baseline = 0;
+  if (isAbsoluteTimestamps) {
+    // For server-side data, find the earliest start time as baseline
+    baseline = Math.min(...resources.map(r => r.startTime || 0));
+    console.log('📏 Using baseline for absolute timestamps:', baseline);
+  }
+  
+  const timeline = resources.map((r) => {
+    let start = r.startTime || 0;
+    let end = r.responseEnd || 0;
+    
+    if (isAbsoluteTimestamps) {
+      // Server-side data: startTime is absolute, responseEnd might be duration
+      if (end < 1e6 && end > 0) {
+        // If responseEnd is small and positive, treat it as duration
+        const duration = end;
+        start = start - baseline;
+        end = start + duration;
+        console.log('🔄 Converted server-side data:', { originalStart: r.startTime, originalEnd: r.responseEnd, newStart: start, newEnd: end, duration });
+      } else {
+        // If responseEnd is also absolute, normalize both
+        start = start - baseline;
+        end = end - baseline;
+        console.log('🔄 Normalized absolute timestamps:', { originalStart: r.startTime, originalEnd: r.responseEnd, newStart: start, newEnd: end });
+      }
+    } else {
+      // Client-side data: both are already relative
+      console.log('✅ Client-side data (already relative):', { start, end });
+    }
+    
+    const duration = end - start;
+    const finalDuration = duration > 0 ? duration : 1; // Ensure positive duration
+    
+    return {
+      url: r.name,
+      type: getResourceType(r),
+      start: start,
+      end: end,
+      duration: finalDuration,
+    };
+  });
+  
+  // Sort by start time
+  timeline.sort((a, b) => a.start - b.start);
+  
+  console.log('📈 Final timeline:', timeline.slice(0, 3)); // Log first 3 entries
   return timeline;
 }
 // function getIcon(type) {
@@ -146,6 +197,36 @@ async function captureServerSide(html) {
   }
 }
 
+// Loading component for network analysis
+const NetworkLoadingSpinner = ({ message = "Analyzing network calls..." }) => (
+  <div style={{ 
+    padding: 20, 
+    textAlign: "center", 
+    background: "#f8f9fa", 
+    borderRadius: 8, 
+    border: "1px solid #e9ecef",
+    margin: "10px 0"
+  }}>
+    <div style={{ 
+      display: "inline-block",
+      width: 20, 
+      height: 20, 
+      border: "2px solid #f3f3f3",
+      borderTop: "2px solid #007bff",
+      borderRadius: "50%",
+      animation: "spin 1s linear infinite",
+      marginRight: 10
+    }}></div>
+    <span style={{ color: "#6c757d", fontSize: "14px" }}>{message}</span>
+    <style jsx>{`
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `}</style>
+  </div>
+);
+
 export default function DisplayAds() {
   const [adCode, setAdCode] = useState("");
   const [adBlocks, setAdBlocks] = useState([]);
@@ -163,6 +244,7 @@ export default function DisplayAds() {
   const [iframeSrcDocs, setIframeSrcDocs] = useState([]);
   const frames = useRef([]);
   const [input, setInput] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const preview = () => {
     const trimmed = adCode.trim();
@@ -190,6 +272,7 @@ export default function DisplayAds() {
     setAdBlocks(blocks);
     setShow(true);
     setTab("preview");
+    setIsAnalyzing(true);
     setNetData(blocks.map(() => ({ resources: [], summary: null, timings: {}, timeline: [] })));
     setPreviewLoaded(Array(blocks.length).fill(false));
     setNetworkLoaded(Array(blocks.length).fill(!deepCapture));
@@ -254,6 +337,17 @@ export default function DisplayAds() {
             updated[i] = true;
             return updated;
           });
+          
+          // Check if all network analysis is complete
+          setTimeout(() => {
+            setNetworkLoaded((prev) => {
+              const allComplete = prev.every(loaded => loaded);
+              if (allComplete) {
+                setIsAnalyzing(false);
+              }
+              return prev;
+            });
+          }, 100);
         }
       });
     }
@@ -280,6 +374,7 @@ export default function DisplayAds() {
     setAdCode("");
     setAdBlocks([]);
     setShow(false);
+    setIsAnalyzing(false);
     setError("");
     setFilters([]);
     setTab("preview");
@@ -330,7 +425,18 @@ export default function DisplayAds() {
           console.log(`📈 Updated netData for iframe ${iframeIdx}:`, updated[iframeIdx]);
           return updated;
         });
-        setNetworkLoaded((prev) => { const updated = [...prev]; updated[iframeIdx] = true; return updated; });
+        setNetworkLoaded((prev) => { 
+          const updated = [...prev]; 
+          updated[iframeIdx] = true; 
+          
+          // Check if all network analysis is complete
+          const allComplete = updated.every(loaded => loaded);
+          if (allComplete) {
+            setIsAnalyzing(false);
+          }
+          
+          return updated; 
+        });
         
         // Provide feedback about analysis results
         const resourceCount = e.data.resources?.length || 0;
@@ -551,8 +657,29 @@ export default function DisplayAds() {
           <button
             className={styles.displayAdsPreviewBtn}
             onClick={preview}
+            disabled={isAnalyzing}
+            style={{ 
+              opacity: isAnalyzing ? 0.7 : 1,
+              cursor: isAnalyzing ? 'not-allowed' : 'pointer'
+            }}
           >
-            🚀 Submit Tag
+            {isAnalyzing ? (
+              <>
+                <span style={{ 
+                  display: "inline-block",
+                  width: 16, 
+                  height: 16, 
+                  border: "2px solid #ffffff",
+                  borderTop: "2px solid transparent",
+                  borderRadius: "50%",
+                  animation: "spin 1s linear infinite",
+                  marginRight: 8
+                }}></span>
+                Analyzing...
+              </>
+            ) : (
+              "🚀 Submit Tag"
+            )}
           </button>
         </div>
       </div>
@@ -590,14 +717,27 @@ export default function DisplayAds() {
                           timelineCount: net.timeline?.length || 0,
                           summary: net.summary,
                           source: net.source,
-                          error: net.error
+                          error: net.error,
+                          networkLoaded: networkLoaded[i],
+                          previewLoaded: previewLoaded[i]
                         }, null, 2)}
                       </pre>
                     </details>
                     
-                    {net.timeline && net.timeline.length > 0 ? (
+                    {/* Loading state for network analysis */}
+                    {!networkLoaded[i] && (
+                      <NetworkLoadingSpinner 
+                        message={deepCapture 
+                          ? "🔄 Deep capture in progress... Analyzing network calls with server-side browser automation" 
+                          : "🔄 Client-side analysis in progress... Collecting network performance data"
+                        } 
+                      />
+                    )}
+                    
+                    {/* Network timeline chart */}
+                    {networkLoaded[i] && net.timeline && net.timeline.length > 0 ? (
                       <NetworkTimelineChart timeline={net.timeline} />
-                    ) : (
+                    ) : networkLoaded[i] && (
                       <div style={{ padding: 16, color: "#888", textAlign: "center", background: "#f9f9f9", borderRadius: 4 }}>
                         📊 No network timeline data available
                         {net.source === 'client-side-error' && net.error && (
@@ -607,10 +747,12 @@ export default function DisplayAds() {
                         )}
                       </div>
                     )}
-                    <PerformanceSummaryBlock summary={net.summary} />
+                    
+                    {/* Performance summary */}
+                    {networkLoaded[i] && <PerformanceSummaryBlock summary={net.summary} />}
                     
                     {/* Raw network data display */}
-                    {net.resources && net.resources.length > 0 && (
+                    {networkLoaded[i] && net.resources && net.resources.length > 0 && (
                       <details style={{ marginTop: 10 }}>
                         <summary>📋 Raw Network Data ({net.resources.length} calls)</summary>
                         <div style={{ maxHeight: '300px', overflow: 'auto', background: '#f9f9f9', padding: 10, borderRadius: 4 }}>
@@ -634,6 +776,17 @@ export default function DisplayAds() {
             const calls = netData[i]?.resources || [];
             const trackers = calls.filter((r) => isThirdParty(r.name));
             const size = adSizes[i] || {};
+            
+            // Show loading state if network analysis is not complete
+            if (!networkLoaded[i]) {
+              return (
+                <div key={`trackers-loading-${i}`} style={{ marginTop: 16 }}>
+                  <h3>🎯 Trackers for ad {size.width || "?"}×{size.height || "?"}</h3>
+                  <NetworkLoadingSpinner message="🔄 Analyzing trackers and third-party services..." />
+                </div>
+              );
+            }
+            
             if (!trackers.length) return <p key={i}>⚠️ No trackers for ad {i + 1}</p>;
             return (
               <div key={`trackers-${i}`} style={{ marginTop: 16 }}>
