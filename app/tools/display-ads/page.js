@@ -68,9 +68,7 @@ function validateAdBlock(b) {
 }
 
 function buildTimeline(resources) {
-  console.log('🔧 Building timeline from resources:', resources?.length || 0);
   if (!resources || resources.length === 0) {
-    console.log('⚠️ No resources provided to buildTimeline');
     return [];
   }
   
@@ -82,7 +80,6 @@ function buildTimeline(resources) {
     duration: (r.responseEnd || 0) - (r.startTime || 0),
   }));
   
-  console.log('📊 Built timeline with', timeline.length, 'entries');
   return timeline;
 }
 // function getIcon(type) {
@@ -95,26 +92,46 @@ function buildTimeline(resources) {
 //     }
 async function captureServerSide(html) {
   try {
+    // Try the main capture endpoint first
     const res = await fetch("/api/capture", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ html })
     });
     
-    if (!res.ok) {
-      console.warn("Server-side capture failed, falling back to client-side");
-      return {
-        calls: [],
-        perf: {
-          domContentLoaded: 0,
-          loadTime: 0,
-          firstPaint: 0
-        },
-        message: "Client-side analysis mode"
-      };
+    if (res.ok) {
+      const data = await res.json();
+      if (data.source && data.source !== "server-side-error") {
+        return data;
+      }
     }
     
-    return res.json();
+    console.warn("Main server-side capture failed, trying simple capture...");
+    
+    // Try the simple capture endpoint as fallback
+    const simpleRes = await fetch("/api/capture-simple", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ html })
+    });
+    
+    if (simpleRes.ok) {
+      const simpleData = await simpleRes.json();
+      if (simpleData.source && simpleData.source !== "server-side-simple-error") {
+        return simpleData;
+      }
+    }
+    
+    console.warn("All server-side capture failed, falling back to client-side");
+    return {
+      calls: [],
+      perf: {
+        domContentLoaded: 0,
+        loadTime: 0,
+        firstPaint: 0
+      },
+      message: "Client-side analysis mode"
+    };
   } catch (error) {
     console.warn("Capture error:", error);
     return {
@@ -537,7 +554,18 @@ export default function DisplayAds() {
                       </pre>
                     </details>
                     
-                    <NetworkTimelineChart timeline={net.timeline || []} />
+                    {net.timeline && net.timeline.length > 0 ? (
+                      <NetworkTimelineChart timeline={net.timeline} />
+                    ) : (
+                      <div style={{ padding: 16, color: "#888", textAlign: "center", background: "#f9f9f9", borderRadius: 4 }}>
+                        📊 No network timeline data available
+                        {net.source === 'client-side-error' && net.error && (
+                          <div style={{ marginTop: 8, fontSize: '12px', color: '#666' }}>
+                            Error: {net.error}
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <PerformanceSummaryBlock summary={net.summary} />
                     
                     {/* Raw network data display */}

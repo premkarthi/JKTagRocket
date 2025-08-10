@@ -41,6 +41,7 @@
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.53.1",
     "eslint": "^9",
-    "eslint-config-next": "15.3.4"
+    "eslint-config-next": "15.3.4",
+    "puppeteer": "^24.0.0"
   }
 }

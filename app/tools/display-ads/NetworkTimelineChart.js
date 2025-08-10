@@ -28,8 +28,6 @@ function normalise(data) {
     const baseline = Number.isFinite(minAbs) ? minAbs : 0;
 
     return clean.map((d, idx) => {
-        console.log(d, idx);
-
         const relStart = d.start > 1e12 ? d.start - baseline : d.start;
         let duration = d.duration;
         if (!duration || duration <= 0) {
@@ -48,8 +46,6 @@ function normalise(data) {
 }
 
 export default function NetworkTimelineChart({ timeline = [] }) {
-    console.log(timeline);
-
     const [selectedType, setSelectedType] = useState(ALL_TYPE);
     const [tooltipContent, setTooltipContent] = useState(null);
 

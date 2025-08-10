@@ -1,4 +1,4 @@
-# Simple Dockerfile without Playwright (for cPanel and similar hosting)
+# Use the official Node.js runtime as the base image
 FROM node:18-alpine
 
 # Set the working directory
@@ -13,11 +13,11 @@ RUN npm install --production=false
 # Copy the rest of the application
 COPY . .
 
-# Build the application (server-side rendering)
+# Build the application
 RUN npm run build
 
 # Expose the port
 EXPOSE 3000
 
-# Start the application (server-side rendering)
+# Start the application
 CMD ["npm", "start"] 

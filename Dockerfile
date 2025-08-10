@@ -31,6 +31,9 @@ RUN npm install --production=false
 # Install Playwright browsers explicitly
 RUN npx playwright install chromium
 
+# Install Puppeteer browsers
+RUN npx puppeteer browsers install chrome
+
 # Copy the rest of the application
 COPY . .
 

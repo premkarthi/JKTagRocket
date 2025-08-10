@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Ad Tag</title>
+</head>
+<body>
+    <h1>Test Ad Tag</h1>
+    <p>This is a simple test ad tag that should trigger network calls:</p>
+    
+    <!-- Simple ad tag that will make network requests -->
+    <script>
+        // Simulate an ad tag that makes network requests
+        setTimeout(() => {
+            // Create an image request
+            const img = new Image();
+            img.src = 'https://via.placeholder.com/300x250/FF0000/FFFFFF?text=Test+Ad';
+            document.body.appendChild(img);
+            
+            // Create a script request
+            const script = document.createElement('script');
+            script.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+            document.head.appendChild(script);
+        }, 1000);
+    </script>
+</body>
+</html> 
