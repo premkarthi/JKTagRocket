@@ -1,43 +1,36 @@
 #!/bin/bash
 
 # Railway Deployment Script for JKTagRocket
+# This script ensures proper deployment with browser automation support
 
-echo "🚀 Deploying to Railway..."
-echo "============================"
+echo "🚀 Starting Railway deployment for JKTagRocket..."
 
 # Check if Railway CLI is installed
 if ! command -v railway &> /dev/null; then
-    echo "❌ Railway CLI not found. Installing..."
-    npm install -g @railway/cli
+    echo "❌ Railway CLI not found. Please install it first:"
+    echo "npm install -g @railway/cli"
+    exit 1
 fi
 
-# Login to Railway
-echo "🔐 Logging into Railway..."
-railway login
-
-# Initialize Railway project if not already done
-if [ ! -f "railway.json" ]; then
-    echo "📝 Creating Railway configuration..."
-    echo '{
-      "$schema": "https://railway.app/railway.schema.json",
-      "build": {
-        "builder": "DOCKERFILE",
-        "dockerfilePath": "Dockerfile"
-      },
-      "deploy": {
-        "startCommand": "npm start",
-        "healthcheckPath": "/",
-        "healthcheckTimeout": 300,
-        "restartPolicyType": "ON_FAILURE",
-        "restartPolicyMaxRetries": 10
-      }
-    }' > railway.json
+# Check if we're logged in to Railway
+if ! railway whoami &> /dev/null; then
+    echo "🔐 Please login to Railway first:"
+    echo "railway login"
+    exit 1
 fi
+
+echo "📦 Building and deploying with browser automation support..."
 
 # Deploy to Railway
-echo "🚀 Deploying application..."
 railway up
 
 echo "✅ Deployment complete!"
-echo "🌐 Your app should be available at the Railway URL"
-echo "📊 Check Railway dashboard for logs and status" 
+echo ""
+echo "🔍 To monitor the deployment:"
+echo "railway logs"
+echo ""
+echo "🌐 To open the deployed app:"
+echo "railway open"
+echo ""
+echo "📊 To check deployment status:"
+echo "railway status" 

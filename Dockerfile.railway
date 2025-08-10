@@ -1,0 +1,62 @@
+# Optimized Dockerfile for Railway deployment with browser automation
+FROM node:18-alpine
+
+# Install system dependencies for Chromium
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont \
+    # Additional dependencies for Railway compatibility
+    libc6-compat \
+    libstdc++ \
+    # Security and performance optimizations
+    dumb-init
+
+# Set environment variables for Playwright and Puppeteer
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+ENV PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PLAYWRIGHT_BROWSERS_PATH=/usr/bin
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+# Create a non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Install Playwright and Puppeteer browsers
+RUN npx playwright install chromium --with-deps && \
+    npx puppeteer browsers install chrome
+
+# Copy the rest of the application
+COPY --chown=nextjs:nodejs . .
+
+# Build the application
+RUN npm run build
+
+# Change ownership of the app directory
+RUN chown -R nextjs:nodejs /app
+
+# Switch to non-root user
+USER nextjs
+
+# Expose the port
+EXPOSE 3000
+
+# Use dumb-init to handle signals properly
+ENTRYPOINT ["dumb-init", "--"]
+
+# Start the application
+CMD ["npm", "start"] 

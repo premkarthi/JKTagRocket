@@ -1,179 +1,166 @@
-# JKTagRocket Deployment Guide
+# 🚀 Railway Deployment Guide for JKTagRocket
 
-## 🚀 Quick Deployment Options
+This guide ensures your JKTagRocket application deploys with full server-side browser automation support on Railway.
 
-### Option 1: Railway (Recommended - Full Functionality)
-**Cost**: $5-20/month
-**Features**: Full Playwright support, automatic HTTPS, easy GitHub integration
+## 🎯 **Problem Solved**
+
+- **Local**: 18 network calls (server-side capture working)
+- **Railway**: 3 network calls (client-side fallback due to missing browser automation)
+
+## 📋 **Prerequisites**
+
+1. **Railway CLI** installed:
+   ```bash
+   npm install -g @railway/cli
+   ```
+
+2. **Railway Account** and project created
+
+3. **Git repository** connected to Railway
+
+## 🛠️ **Deployment Steps**
+
+### 1. **Prepare Your Project**
+
+Ensure you have the correct files:
+- ✅ `Dockerfile.railway` - Optimized for Railway with browser automation
+- ✅ `railway.json` - Points to the correct Dockerfile
+- ✅ `app/api/capture/route.js` - Enhanced server-side capture
+- ✅ `app/api/health/route.js` - Health check endpoint
+
+### 2. **Deploy to Railway**
 
 ```bash
-# Install Railway CLI
-npm install -g @railway/cli
+# Option 1: Use the deployment script
+chmod +x deploy-railway.sh
+./deploy-railway.sh
 
-# Login and deploy
+# Option 2: Manual deployment
 railway login
-railway init
 railway up
 ```
 
-### Option 2: Render (Excellent Alternative)
-**Cost**: $7-25/month
-**Features**: Built-in Playwright support, automatic deployments
+### 3. **Verify Deployment**
 
-1. Connect your GitHub repository
-2. Set build command: `npm run build`
-3. Set start command: `npm start`
-4. Environment: Node.js
-
-### Option 3: DigitalOcean App Platform
-**Cost**: $5-12/month
-**Features**: Docker support, reliable infrastructure
-
-1. Connect GitHub repository
-2. Use the provided Dockerfile
-3. Set resource limits as needed
-
-## 🐳 Docker Deployment
-
-### Full Version (with Playwright)
 ```bash
-# Build and run with full functionality
-npm run docker:build
-npm run docker:run
+# Check deployment status
+railway status
+
+# View logs
+railway logs
+
+# Open the app
+railway open
 ```
 
-### Simple Version (without Playwright)
-```bash
-# Build and run without Playwright (for cPanel)
-npm run docker:build-simple
-npm run docker:run-simple
+### 4. **Test Browser Automation**
+
+Visit your health check endpoint:
+```
+https://your-app.railway.app/api/health
 ```
 
-## 📦 cPanel Deployment (Limited Functionality)
+Expected response:
+```json
+{
+  "status": "healthy",
+  "browserAutomation": {
+    "playwright": "available",
+    "puppeteer": "available",
+    "chromiumPath": "/usr/bin/chromium-browser"
+  }
+}
+```
 
-### Prerequisites
-- Node.js 18+ support
-- SSH access (recommended)
+## 🔧 **Configuration Files**
 
-### Steps
-1. **Upload files** to your cPanel hosting
-2. **Install dependencies**:
-   ```bash
-   npm install --production
+### `Dockerfile.railway`
+- Alpine Linux with Chromium
+- Playwright and Puppeteer support
+- Security optimizations
+- Non-root user for security
+
+### `railway.json`
+```json
+{
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile.railway"
+  }
+}
+```
+
+### Environment Variables (Auto-set)
+- `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium-browser`
+- `PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser`
+- `PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1`
+- `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true`
+
+## 🧪 **Testing Your Deployment**
+
+1. **Visit your app**: `https://your-app.railway.app`
+2. **Go to Display Ads tool**: `/tools/display-ads`
+3. **Paste your ad tag**:
+   ```html
+   <script type="text/javascript" src="https://jvxas.potterybarnkids.com/unit/unit_renderer.php?es_pId=5b3d4426&isDynamic=1&ap_DataSignal1=$!{DC_DATA_KV:28690741:CatID:9}&ap_DataSignal2=$!{DC_DATA_CAT_ID:1748974483:9}&ap_DataSignal3=$!{LINE_ITEM_ID}&ap_DataSignal4=$!{Package_ID}&ap_DataSignal5=$!{DC_DATA_KV:28690741:Pagetype:5}&ap_DataSignal6=$!{DC_DATA_KV:28690741:ProdCode:9}&ap_DataSignal7=$!{DC_DATA_KV:28690741:SiteCat:9}&ap_DataSignal8=$!{DC_DATA_KV:28690741:SuperCat:9}&ap_DataSignal9=$!{DC_DATA_KV:28690741:TopCat:2}&ap_DataSignal10=$!{DC_DATA_KV:28690741:CatID:9}&ap_DataSignal11=$!{DC_DATA_CAT_ID:1749815371:9}&ap_DataSignal16=$!{AD_CALL_ID}&c_adcall_id=$!{AD_CALL_ID}&c_cogs=$!{COGS}&c_ifa=$!{IFA}&c_inventory_source_id=$!{INVENTORY_SOURCE_ID}&c_publisher_id=$!{PUBLISHER_ID}&c_site_url=$!{SITE_URL}&campaignId=165047&ts_pId=5b3d4426&siteId=721ea4b819c34c0&dspId=DBM&bDim=728x90&creativeUnitType=18&jvxVer=2&bUnitId=1800&us_privacy=${US_PRIVACY}&gdpr_consent=${GDPR_CONSENT_294}&gdpr=${GDPR}&r=$!{AD_CALL_ID}&cMacro=[INSERT_CLICK_MACRO]&ap_cookieData_type=pbk&wl=1"></script>
    ```
-3. **Build the application**:
-   ```bash
-   npm run build
-   ```
-4. **Start the application**:
-   ```bash
-   npm start
-   ```
+4. **Enable "Deep capture"** and click "Submit Tag"
+5. **Expected result**: 18+ network calls (server-side capture)
 
-### Limitations with cPanel
-- ❌ No server-side network analysis
-- ❌ No Playwright functionality
-- ✅ Basic ad preview works
-- ✅ Client-side analysis works
-- ✅ All other tools work normally
+## 🐛 **Troubleshooting**
 
-## 🔧 Environment Variables
-
-Create a `.env.local` file for production:
-
-```env
-# Google Analytics (replace with your ID)
-NEXT_PUBLIC_GA_ID=G-XXXXXXX
-
-# Optional: Custom domain
-NEXT_PUBLIC_SITE_URL=https://yourdomain.com
-
-# For static export (optional)
-STATIC_EXPORT=true
-```
-
-## 📊 Performance Optimization
-
-### For Railway/Render
-- Enable automatic scaling
-- Set memory limits appropriately
-- Use CDN for static assets
-
-### For cPanel
-- Enable gzip compression
-- Use browser caching
-- Optimize images
-
-## 🔒 Security Considerations
-
-1. **HTTPS**: Always use HTTPS in production
-2. **Environment Variables**: Never commit sensitive data
-3. **CORS**: Configure CORS for your domain
-4. **Rate Limiting**: Implement rate limiting for API endpoints
-
-## 🐛 Troubleshooting
-
-### Docker Build Fails
+### Issue: Still getting client-side capture
+**Solution**: Check Railway logs for browser automation errors:
 ```bash
-# Try the simple Dockerfile
-docker build -f Dockerfile.simple -t jktagrocket .
+railway logs
 ```
 
-### Playwright Issues
+### Issue: Browser automation not available
+**Solution**: Verify health check endpoint shows:
+```json
+{
+  "browserAutomation": {
+    "playwright": "available",
+    "puppeteer": "available"
+  }
+}
+```
+
+### Issue: Deployment fails
+**Solution**: Check if Railway has enough resources:
+- Upgrade to a plan with more memory/CPU
+- Check build logs for dependency issues
+
+### Issue: Timeout errors
+**Solution**: The timeout has been increased to 8 seconds for Railway. If still failing:
+- Check network connectivity
+- Verify the ad tag is valid
+
+## 📊 **Expected Results**
+
+After successful deployment:
+- ✅ **Source**: "server-side" or "server-side-puppeteer"
+- ✅ **Network calls**: 18+ (same as local)
+- ✅ **Timeline data**: Proper waterfall chart
+- ✅ **Performance**: Fast analysis with loading indicators
+
+## 🔄 **Redeployment**
+
+To update your deployment:
 ```bash
-# Install Playwright browsers manually
-npx playwright install chromium
+git add .
+git commit -m "Update deployment configuration"
+railway up
 ```
 
-### Memory Issues
-```bash
-# Increase Node.js memory limit
-NODE_OPTIONS="--max-old-space-size=2048" npm start
-```
+## 📞 **Support**
 
-### Static Export Issues
-```bash
-# Use static export for platforms that don't support server-side rendering
-npm run build:static
-npm run start:static
-```
+If you're still experiencing issues:
+1. Check Railway logs: `railway logs`
+2. Test health endpoint: `/api/health`
+3. Verify browser automation status in health response
+4. Check if the ad tag works locally first
 
-## 🎯 Deployment Modes
+---
 
-### Server-Side Rendering (Default)
-```bash
-npm run build
-npm start
-```
-**Use for**: Railway, Render, DigitalOcean, VPS
-
-### Static Export (Alternative)
-```bash
-npm run build:static
-npm run start:static
-```
-**Use for**: cPanel, Netlify, GitHub Pages
-
-## 💰 Cost Comparison
-
-| Platform | Monthly Cost | Playwright | Ease of Use | Recommended |
-|----------|-------------|------------|-------------|-------------|
-| **Railway** | $5-20 | ✅ Full | ⭐⭐⭐⭐⭐ | ✅ Yes |
-| **Render** | $7-25 | ✅ Full | ⭐⭐⭐⭐ | ✅ Yes |
-| **DigitalOcean** | $5-12 | ✅ Full | ⭐⭐⭐ | ✅ Yes |
-| **Vercel** | $20+ | ❌ Limited | ⭐⭐⭐ | ❌ Expensive |
-| **cPanel** | $5-15 | ❌ None | ⭐⭐ | ⚠️ Limited |
-
-## 🎯 Recommendation
-
-**For full functionality**: Use **Railway** or **Render**
-**For budget hosting**: Use **cPanel** with client-side only features
-**For enterprise**: Use **DigitalOcean App Platform**
-
-## 📞 Support
-
-If you encounter issues:
-1. Check the troubleshooting section above
-2. Review platform-specific documentation
-3. Consider using the simple Dockerfile for easier deployment
-4. Use the deployment script: `./deploy.sh` or `./deploy.sh static` 
+**Success Criteria**: Your Railway deployment should now capture 18+ network calls just like your local environment! 🎉 

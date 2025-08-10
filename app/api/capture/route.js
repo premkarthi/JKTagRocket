@@ -1,4 +1,4 @@
-// app/api/capture/route.js - Enhanced version with better error handling and Railway compatibility
+// app/api/capture/route.js - Enhanced version with Railway compatibility
 export const config = { api: { bodyParser: { sizeLimit: "1mb" } } };
 
 async function tryPlaywright(html, timeout) {
@@ -19,15 +19,53 @@ async function tryPlaywright(html, timeout) {
             '--disable-features=VizDisplayCompositor',
             '--disable-extensions',
             '--disable-plugins',
-            '--disable-images',
             '--disable-background-timer-throttling',
             '--disable-backgrounding-occluded-windows',
             '--disable-renderer-backgrounding',
             '--disable-features=TranslateUI',
+            '--disable-ipc-flooding-protection',
+            '--disable-default-apps',
+            '--disable-sync',
+            '--disable-translate',
+            '--hide-scrollbars',
+            '--mute-audio',
+            '--no-default-browser-check',
+            '--disable-component-extensions-with-background-pages',
+            '--disable-background-networking',
+            '--disable-background-timer-throttling',
+            '--disable-client-side-phishing-detection',
+            '--disable-hang-monitor',
+            '--disable-prompt-on-repost',
+            '--disable-domain-reliability',
+            '--disable-features=AudioServiceOutOfProcess',
+            '--disable-features=VizDisplayCompositor',
+            '--disable-ipc-flooding-protection',
+            '--disable-renderer-backgrounding',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-background-timer-throttling',
+            '--disable-features=TranslateUI',
+            '--disable-ipc-flooding-protection',
+            '--disable-background-networking',
+            '--disable-background-timer-throttling',
+            '--disable-client-side-phishing-detection',
+            '--disable-hang-monitor',
+            '--disable-prompt-on-repost',
+            '--disable-domain-reliability',
+            '--disable-features=AudioServiceOutOfProcess',
+            '--disable-features=VizDisplayCompositor',
+            '--disable-ipc-flooding-protection',
+            '--disable-renderer-backgrounding',
+            '--disable-backgrounding-occluded-windows',
+            '--disable-background-timer-throttling',
+            '--disable-features=TranslateUI',
             '--disable-ipc-flooding-protection'
         ],
         headless: true,
-        timeout: 30000
+        timeout: 30000,
+        // Railway-specific optimizations
+        executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined,
+        ignoreDefaultArgs: ['--disable-extensions'],
+        ignoreHTTPSErrors: true
     });
     
     console.log('✅ Browser launched successfully');
@@ -35,16 +73,26 @@ async function tryPlaywright(html, timeout) {
     const page = await browser.newPage();
     const calls = [];
 
+    // Set viewport and user agent for better compatibility
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
+
     page.on("requestfinished", async (request) => {
         try {
             const response = await request.response();
+            if (!response) return;
+            
             const status = response.status();
             const timing = await request.timing();
 
             let bodySize = 0;
             if (status < 300 || status >= 400) {
-                const body = await response.body();
-                bodySize = body?.byteLength || 0;
+                try {
+                    const body = await response.body();
+                    bodySize = body?.byteLength || 0;
+                } catch (bodyError) {
+                    console.warn("Could not get response body:", bodyError.message);
+                }
             }
 
             calls.push({
@@ -53,8 +101,8 @@ async function tryPlaywright(html, timeout) {
                 transferSize: bodySize,
                 encodedBodySize: bodySize,
                 status,
-                startTime: timing.startTime || 0,
-                responseEnd: timing.responseEnd || timing.startTime || 0,
+                startTime: timing.startTime || Date.now(),
+                responseEnd: timing.responseEnd || timing.startTime || Date.now(),
             });
             
             console.log(`📡 Network call captured: ${request.url()}`);
@@ -65,7 +113,7 @@ async function tryPlaywright(html, timeout) {
 
     console.log('🌐 Navigating to HTML content...');
     await page.goto(`data:text/html,${encodeURIComponent(html)}`, { 
-        waitUntil: "load",
+        waitUntil: "networkidle",
         timeout: timeout 
     });
     
@@ -101,13 +149,27 @@ async function tryPuppeteer(html, timeout) {
                 '--disable-dev-shm-usage',
                 '--disable-gpu',
                 '--no-first-run',
-                '--disable-web-security'
+                '--disable-web-security',
+                '--disable-features=VizDisplayCompositor',
+                '--disable-extensions',
+                '--disable-plugins',
+                '--disable-background-timer-throttling',
+                '--disable-backgrounding-occluded-windows',
+                '--disable-renderer-backgrounding',
+                '--disable-features=TranslateUI',
+                '--disable-ipc-flooding-protection'
             ],
-            headless: true
+            headless: true,
+            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+            ignoreHTTPSErrors: true
         });
         
         const page = await browser.newPage();
         const calls = [];
+
+        // Set viewport and user agent
+        await page.setViewport({ width: 1280, height: 720 });
+        await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
 
         page.on("response", async (response) => {
             try {
@@ -116,8 +178,12 @@ async function tryPuppeteer(html, timeout) {
                 
                 let bodySize = 0;
                 if (status < 300 || status >= 400) {
-                    const buffer = await response.buffer().catch(() => null);
-                    bodySize = buffer?.byteLength || 0;
+                    try {
+                        const buffer = await response.buffer();
+                        bodySize = buffer?.byteLength || 0;
+                    } catch (bufferError) {
+                        console.warn("Could not get response buffer:", bufferError.message);
+                    }
                 }
 
                 calls.push({
@@ -137,7 +203,7 @@ async function tryPuppeteer(html, timeout) {
         });
 
         await page.goto(`data:text/html,${encodeURIComponent(html)}`, { 
-            waitUntil: "load",
+            waitUntil: "networkidle",
             timeout: timeout 
         });
         
@@ -165,7 +231,7 @@ async function tryPuppeteer(html, timeout) {
 
 export async function POST(req) {
     const body = await req.json();
-    const { html, timeout = 5000 } = body || {};
+    const { html, timeout = 8000 } = body || {}; // Increased timeout for Railway
     
     if (!html) {
         return new Response(JSON.stringify({ error: "html required" }), {
@@ -173,6 +239,13 @@ export async function POST(req) {
             headers: { "Content-Type": "application/json" },
         });
     }
+
+    console.log('🔍 Starting server-side network analysis...');
+    console.log('📊 Environment:', {
+        nodeEnv: process.env.NODE_ENV,
+        playwrightPath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+        puppeteerPath: process.env.PUPPETEER_EXECUTABLE_PATH
+    });
 
     try {
         // Try Playwright first
