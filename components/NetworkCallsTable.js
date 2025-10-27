@@ -1,4 +1,4 @@
-import { formatMs, formatSize, getResourceType } from "./utils";
+import { formatMs, formatSize, getResourceType } from "../app/tools/display-ads/utils";
 import './DisplayAds.module.css'
 
 export default function NetworkCallsTable({ calls = [], onViewDetails, colorMap }) {

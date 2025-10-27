@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { detectTagType } from "@hooks/validators/detectTagType";
 import { useVASTParser } from "@hooks/validators/useVASTParser";
-import { UserMessage, addMessage } from "@components/useGlobalMessage";
+import { useGlobalMessage, UserMessage } from "@components/useMessages";
 
 import "@styles/VideoValidator.css";
 import TrackersTable from "@components/TrackersTable";
@@ -27,6 +27,9 @@ export default function VideoValidator() {
   const [firedEvents, setFiredEvents] = useState([]);
   const [eventLogs, setEventLogs] = useState([]);
 
+  // ✅ Get the global addMessage function
+ const addMessage = useGlobalMessage();
+
   const { parseVAST } = useVASTParser();
 
   const handleSubmit = async (inputTag) => {
@@ -38,7 +41,7 @@ export default function VideoValidator() {
     setEventLogs([]);
 
     if (!tag.trim()) {
-      addMessage({ title: "Submit", text: "Please paste a VAST or VPAID tag", type: "error" });
+      addMessage({ title: "Submit : ", text: "   Please paste a VAST or VPAID tag  ...", type: "error" });
       return;
     }
 
@@ -56,7 +59,7 @@ export default function VideoValidator() {
 
     setMediaFile(result.mediaFile);
     setTrackers(result.trackers || []);
-    addMessage({ title: "Tag Loaded", text: "VAST tag parsed successfully", type: "success" });
+    addMessage({ title: "Tag Loaded : ", text: "VAST tag parsed successfully", type: "success" });
   };
 
   const handleReset = () => {
@@ -74,12 +77,10 @@ export default function VideoValidator() {
 
     addMessage({
       title: "Reset",
-      text: "Reset successful. All inputs and playback cleared.",
+      text: " successful. All inputs and playback cleared.",
       type: "info",
     });
   };
-
- 
 
   const quartiles = [
     { key: "start", label: "Start", fullLabel: "Video started (0% video view)", percent: 0 },
@@ -102,11 +103,7 @@ export default function VideoValidator() {
       const fireTime = percent * duration;
       if (currentTime >= fireTime && !events.includes(key)) {
         setEvents((prev) => [...prev, key]);
-        setEventLogs((prev) => [
-  ...prev,
-  { name: "pause", timestamp: new Date() }
-]);
-
+        setEventLogs((prev) => [...prev, { name: fullLabel, timestamp: new Date() }]);
       }
     });
   };
@@ -147,16 +144,11 @@ export default function VideoValidator() {
       setEventLogs((prev) => [...prev, "fullscreen"]);
     };
 
-    const handleTimeUpdate = () => {
-      handleVideoProgress();
-    };
-
     video.addEventListener("play", handlePlay);
     video.addEventListener("pause", handlePause);
     video.addEventListener("volumechange", handleVolumeChange);
     video.addEventListener("click", handleClick);
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    // video.addEventListener("timeupdate", handleTimeUpdate);
 
     return () => {
       video.removeEventListener("play", handlePlay);
@@ -164,7 +156,6 @@ export default function VideoValidator() {
       video.removeEventListener("volumechange", handleVolumeChange);
       video.removeEventListener("click", handleClick);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
-      // video.removeEventListener("timeupdate", handleTimeUpdate);
     };
   }, [events, videoRef]);
 
@@ -187,11 +178,14 @@ export default function VideoValidator() {
 
       <div className="vv-button-group">
         <button className="vv-btn" onClick={handleReset}>🔄 Reset</button>
-        {/* <button className="vv-btn sample" onClick={handleSampleTag}>🧪 SampleTag</button> */}
         <button className="vv-btn primary" onClick={() => handleSubmit()}>🚀 Submit</button>
       </div>
 
-      <UserMessage />
+      {/* ✅ Show user messages */}
+      {/* ✅ Inline messages under the buttons (scoped override) */}
+      <div className="vv-inline-messages">
+       <UserMessage />
+     </div>
 
       {mediaFile && (
         <div className="vv-result-wrapper">
@@ -211,14 +205,14 @@ export default function VideoValidator() {
                 onTimeUpdate={handleVideoProgress}
                 onLoadedData={() =>
                   addMessage({
-                    title: "Video Loaded",
+                    title: "",
                     text: "Media file loaded successfully",
                     type: "success",
                   })
                 }
               />
             </div>
-            <div className="vv-chart-wrapper">{/* Optional chart placeholder */}</div>
+            <div className="vv-chart-wrapper"></div>
           </div>
 
           <div className="vv-tabs vv-tabs-bordered">

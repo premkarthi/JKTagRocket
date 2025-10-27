@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import ReactECharts from "echarts-for-react";
-import styles from "./DisplayAds.module.css";
+import styles from "@styles/DisplayAds.module.css";
 
 const COLOR = {
     Images: "#60a5fa",

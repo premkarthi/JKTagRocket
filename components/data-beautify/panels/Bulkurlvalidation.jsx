@@ -11,7 +11,8 @@ import Customtooltip from "components/Customtooltip";
 import TooltipcopyButton from "components/TooltipcopyButton"; 
 import TooltipOpenNewTabButton from "components/TooltipOpenNewTabButton";
 import { FiExternalLink, FiDownload, FiCopy, FiUpload, FiSmartphone, FiMaximize2 } from 'react-icons/fi';
-import { useAutoDismissMessage, UserMessage } from "../../useMessages";
+import { useAutoDismissMessage, InlineUserMessage } from "@components/useMessages";
+
 import MediaModal from './MediaModal';
 
 export default function BulkUrlPanel() {
@@ -288,7 +289,8 @@ export default function BulkUrlPanel() {
       </div>
          
       {/* ✅ Show messages */}
-      <UserMessage message={message} setMessage={setMessage} />
+      <InlineUserMessage message={message} setMessage={setMessage} />
+
 
 
       {(results.length > 0 || progress !== null) && (

@@ -380,4 +380,13 @@ vv-result-wrapper {
   background-color: #4caf50; /* Green */
   color: white;
 }
+/* Inline message overrides for VideoValidator */
+.vv-inline-messages .user-message-wrapper {
+  position: static;
+}
+
+/* in VideoValidator.css */
+.vv-inline-messages .user-message-wrapper { position: static; }
+.vv-inline-messages .user-message { position: static; bottom: auto; right: auto; margin-top: 8px; }
+
 

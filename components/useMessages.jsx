@@ -1,33 +1,72 @@
-import { useState, useEffect } from "react";
-import "../styles/Usemessages.css"; // Optional: ensure only one import globally
+// @components/useMessages.jsx
+"use client";
 
-// Hook: for auto-dismissing user messages
-export function useAutoDismissMessage(initialMessage = null, timeout = 7000) {
-  const [message, setMessageState] = useState(initialMessage);
-  const [isVisible, setIsVisible] = useState(false);
+import React, { useState, useRef, useEffect, createContext, useContext } from "react";
+import "@styles/Usemessages.css";
 
-  const setSmartMessage = (msg) => {
-    setMessageState(msg ? { ...msg } : null);
-  };
+/* ---------------- Global Contexts ---------------- */
+const GlobalMessageContext = createContext(null);
+const GlobalMessagesStateContext = createContext(null);
 
-  useEffect(() => {
-    if (message) {
-      setIsVisible(true);
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-        setTimeout(() => setMessageState(null), 300); // fade delay
-      }, timeout);
-      return () => clearTimeout(timer);
-    }
-  }, [message, timeout]);
+/* ---------------- Global Provider ---------------- */
+export function GlobalMessageProvider({ children }) {
+  const { messages, addMessage, removeMessage } = useAutoDismissMessageQueue(7000);
 
-  return [
-    message && isVisible ? message : message ? { ...message, fading: true } : null,
-    setSmartMessage
-  ];
+  return (
+    <GlobalMessageContext.Provider value={addMessage}>
+      <GlobalMessagesStateContext.Provider value={{ messages, removeMessage }}>
+        {children}
+      </GlobalMessagesStateContext.Provider>
+    </GlobalMessageContext.Provider>
+  );
 }
 
-// Icon helper based on message type
+/* ---------------- Global Hooks ---------------- */
+export function useGlobalMessage() {
+  return useContext(GlobalMessageContext);
+}
+
+/* ---------------- Queue logic ---------------- */
+export function useAutoDismissMessageQueue(defaultTimeout = 7000) {
+  const [messages, setMessages] = useState([]);
+  const timersRef = useRef({});
+
+  const clearAll = () => {
+    Object.values(timersRef.current).forEach(clearTimeout);
+    timersRef.current = {};
+    setMessages([]);
+  };
+
+  const addMessage = (msg, options = {}) => {
+    const { replace = true, timeoutOverride } = options;
+
+    if (replace) clearAll();
+
+    const id = Date.now() + Math.random();
+    const message = { id, ...msg };
+    setMessages((prev) => [...prev, message]);
+
+    const t = setTimeout(
+      () => removeMessage(id),
+      typeof timeoutOverride === "number" ? timeoutOverride : defaultTimeout
+    );
+    timersRef.current[id] = t;
+  };
+
+  const removeMessage = (id) => {
+    if (timersRef.current[id]) {
+      clearTimeout(timersRef.current[id]);
+      delete timersRef.current[id];
+    }
+    setMessages((prev) => prev.filter((m) => m.id !== id));
+  };
+
+  useEffect(() => () => Object.values(timersRef.current).forEach(clearTimeout), []);
+
+  return { messages, addMessage, removeMessage, clearAll };
+}
+
+/* ---------------- Icon Helper ---------------- */
 export function getIcon(type) {
   switch (type) {
     case "success":
@@ -36,29 +75,89 @@ export function getIcon(type) {
       return "❌";
     case "warning":
       return "⚠️";
-    case "info":
     default:
       return "ℹ️";
   }
 }
 
-// Component: UserMessage renderer
-export function UserMessage({ message, setMessage }) {
-  if (!message) return null;
+/* ---------------- Inline Message Component ---------------- */
+export function InlineUserMessage({ message, setMessage, autoDismiss = 5000 }) {
+  useEffect(() => {
+    if (message && autoDismiss) {
+      const t = setTimeout(() => setMessage(null), autoDismiss);
+      return () => clearTimeout(t);
+    }
+  }, [message, autoDismiss, setMessage]);
 
-  const fadingOut = message.fading === true;
+  if (!message || !message.text) return null;
 
   return (
-    <div className={`user-message ${message.type} ${fadingOut ? "fade-out" : ""}`}>
-      <div className="user-message-icon">{getIcon(message.type)}</div>
-      <div className="user-message-content">{message.text}</div>
-      <div
-        className="user-message-dismiss"
-        onClick={() => setMessage(null)}
-        title="Dismiss"
-      >
-        x Dismiss
+    <div className="user-message-inline-container">
+      <div className={`user-message ${message.type}`}>
+        <span className="icon">{getIcon(message.type)}</span>
+        <div className="message-content">
+          {message.title && <strong className="title">{message.title}</strong>}
+          <span className="text">{message.text}</span>
+        </div>
+        {setMessage && (
+          <button className="dismiss-btn" onClick={() => setMessage(null)}>
+            X
+          </button>
+        )}
       </div>
     </div>
   );
 }
+
+/* ---------------- Global Inline Component ---------------- */
+export function UserMessage() {
+  const { messages, removeMessage } = useContext(GlobalMessagesStateContext) || {
+    messages: [],
+    removeMessage: () => {},
+  };
+  if (!messages.length) return null;
+
+  return (
+    <div className="user-message-wrapper">
+      {messages.map((msg) => (
+        <div key={msg.id} className={`user-message ${msg.type}`}>
+          <span className="icon">{getIcon(msg.type)}</span>
+          <div className="message-content">
+            {msg.title && <strong className="title">{msg.title}</strong>}
+            <span className="text">{msg.text}</span>
+          </div>
+          <button className="dismiss-btn" onClick={() => removeMessage(msg.id)}>
+            X
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ---------------- Local Message Hook ---------------- */
+export function useLocalMessage(defaultTimeout = 5000) {
+  const [message, setMessage] = useState(null);
+
+  useEffect(() => {
+    if (message) {
+      const t = setTimeout(() => setMessage(null), defaultTimeout);
+      return () => clearTimeout(t);
+    }
+  }, [message, defaultTimeout]);
+
+  return [message, setMessage];
+}
+/* ---------------- Auto Dismiss Hook ---------------- */
+export function useAutoDismissMessage(initialMessage = null, timeout = 5000) {
+  const [message, setMessage] = useState(initialMessage);
+
+  useEffect(() => {
+    if (!message) return;
+    const t = setTimeout(() => setMessage(null), timeout);
+    return () => clearTimeout(t);
+  }, [message, timeout]);
+
+  return [message, setMessage];
+}
+

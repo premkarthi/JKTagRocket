@@ -3,10 +3,9 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { TRACKER_DOMAINS } from "@utils/trackerDomains";
-import TooltipOpenNewTabButton from "@components/TooltipOpenNewTabButton";
-import TooltipCopyButton from "@components/TooltipcopyButton";
 import Customtooltip from "@components/Customtooltip";
 import TrackerModal from "@components/TrackerModal";
+import TrackerActions from "@components/TrackerActions"; // ✅ New shared actions
 import styles from "@styles/Trackerstable.module.css";
 
 function getAdServerName(url = "") {
@@ -66,12 +65,8 @@ export default function TrackersTable({ trackers }) {
                 </td>
                 <td>{getAdServerName(tracker.url)}</td>
                 <td className={styles.actionButtons}>
-                  <Customtooltip text="Copy to Clipboard" variant="copy">
-                    <TooltipCopyButton text={tracker.url} />
-                  </Customtooltip>
-                  <Customtooltip text="Open in New Tab" variant="animated">
-                    <TooltipOpenNewTabButton url={tracker.url} />
-                  </Customtooltip>
+                  {/* ✅ Using shared actions here */}
+                  <TrackerActions url={tracker.url} />
                 </td>
               </tr>
             ))}

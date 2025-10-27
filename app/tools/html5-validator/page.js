@@ -1,76 +1,88 @@
-// HTML5ValidatorPage.js — Final Patch with Accurate Ad Size Detection (scrollWidth/scrollHeight Fix)
 "use client";
 
 import { FiUpload } from "react-icons/fi";
 import React, { useRef, useState, useEffect } from "react";
-import styles from "../display-ads/DisplayAds.module.css";
+import styles from "@styles/DisplayAds.module.css";
 import Faq from "../../../components/Faq";
 import JSZip from "jszip";
-import { useAutoDismissMessage, UserMessage, getIcon } from "components/useMessages";
 import "../../../styles/Usemessages.css";
 import "../../../styles/globals.css";
 import "../../../styles/Html5validator.css";
 import { sendGAEvent } from "@utils/ga4";
 
+/* ----------------------------------------
+   Local helpers (self-contained + reliable)
+----------------------------------------- */
+function useAutoDismissMessage(duration = 5000) {
+  const [message, setMessage] = useState(null);
+  useEffect(() => {
+    if (!message) return;
+    const t = setTimeout(() => setMessage(null), duration);
+    return () => clearTimeout(t);
+  }, [message, duration]);
+  return [message, setMessage];
+}
 
+function getIcon(type) {
+  switch (type) {
+    case "success": return "✅";
+    case "error":   return "❌";
+    case "warning": return "⚠️";
+    case "info":    return "ℹ️";
+    default:        return "";
+  }
+}
 
 export default function HTML5ValidatorPage() {
   const inputRef = useRef(null);
   const [isActive, setIsActive] = useState(false);
   const [iframeUrl, setIframeUrl] = useState(null);
   const [adSize, setAdSize] = useState({ width: 0, height: 0 });
-  const [message, setMessage] = useAutoDismissMessage();
+  const [message, setMessage] = useAutoDismissMessage(7000);
   const [uploadedFileName, setUploadedFileName] = useState("");
 
-  const title = 'How do I preview an HTML5 ad?';
+  const title = "How do I preview an HTML5 ad?";
   const list = [
-    'Preview an HTML5 ad by uploading a zip file.',
-    'Supported formats: GWD, AnimateCC, and HTML5 creatives.',
-    'View live ad preview, frame images, and ad video.',
-    'Analyze network timeline, load time, size, and compliance with Deep Capture enabled.'
+    "Preview an HTML5 ad by uploading a zip file.",
+    "Supported formats: GWD, AnimateCC, and HTML5 creatives.",
+    "View live ad preview, frame images, and ad video.",
+    "Analyze network timeline, load time, size, and compliance with Deep Capture enabled.",
   ];
 
+  /* Revoke object URL on unmount or when new one replaces it */
   useEffect(() => {
     return () => {
-      if (iframeUrl) {
-        URL.revokeObjectURL(iframeUrl);
-      }
+      if (iframeUrl) URL.revokeObjectURL(iframeUrl);
     };
   }, [iframeUrl]);
 
   const handleDrop = (e) => {
     e.preventDefault();
     setIsActive(false);
-    const files = e.dataTransfer.files;
+    const files = e.dataTransfer?.files;
     if (files && files.length > 0) {
       handleFileChange({ target: { files } }, "drag");
     }
   };
-
 
   const handleDragOver = (e) => {
     e.preventDefault();
     setIsActive(true);
   };
 
-  const handleDragLeave = () => {
-    setIsActive(false);
-  };
+  const handleDragLeave = () => setIsActive(false);
 
-  const handleClick = () => {
-    inputRef.current?.click();
-  };
+  const handleClick = () => inputRef.current?.click();
 
   const handleFileChange = async (e, source = "browse") => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-    const file = files[0];
 
+    const file = files[0];
     const labelPrefix = source === "drag" ? "Drag Upload" : "Browse Upload";
 
-    if (!file.name.endsWith(".zip")) {
+    if (!file.name.toLowerCase().endsWith(".zip")) {
       setMessage({ type: "error", text: "Please upload a valid ZIP file." });
-      console.log(`📡 GA4 Event: ${labelPrefix} - Invalid file type`);
       sendGAEvent({
         action: "file_upload_error",
         category: "HTML5 Validator",
@@ -80,7 +92,7 @@ export default function HTML5ValidatorPage() {
     }
 
     try {
-      console.log(`📡 GA4 Event: ${labelPrefix} - Valid ZIP file`);
+      setUploadedFileName(file.name);
       sendGAEvent({
         action: "file_upload",
         category: "HTML5 Validator",
@@ -88,92 +100,92 @@ export default function HTML5ValidatorPage() {
         value: Math.round(file.size / 1024),
       });
 
-      setUploadedFileName(file.name);
-
       const zip = await JSZip.loadAsync(file);
-      let indexFile = null;
 
-      zip.forEach((relativePath, zipEntry) => {
-        if (!indexFile && zipEntry.name.toLowerCase().includes("index.html")) {
-          indexFile = zipEntry;
+      // Find index.html (or first .html fallback)
+      let indexFile = null;
+      zip.forEach((_, entry) => {
+        if (!indexFile && entry.name.toLowerCase().includes("index.html")) {
+          indexFile = entry;
         }
       });
-
       if (!indexFile) {
-        const htmlFiles = Object.values(zip.files).filter(f => f.name.endsWith(".html"));
-        if (htmlFiles.length > 0) {
-          indexFile = htmlFiles[0];
-        } else {
-          setMessage({ type: "error", text: " No HTML file found in ZIP (e.g., index.html)" });
-          console.log("📡 GA4 Event: ZIP missing HTML file");
-          sendGAEvent({
-            action: "file_upload_error",
-            category: "HTML5 Validator",
-            label: "ZIP without HTML",
-          });
-          return;
-        }
+        const htmlFiles = Object.values(zip.files).filter((f) => f.name.toLowerCase().endsWith(".html"));
+        if (htmlFiles.length) indexFile = htmlFiles[0];
+      }
+      if (!indexFile) {
+        setMessage({ type: "error", text: "No HTML file found in ZIP (e.g., index.html)." });
+        sendGAEvent({
+          action: "file_upload_error",
+          category: "HTML5 Validator",
+          label: "ZIP without HTML",
+        });
+        return;
       }
 
+      // Build blob URLs for all assets
       const fileMap = new Map();
       for (const path in zip.files) {
         const entry = zip.files[path];
-        if (!entry.dir) {
-          const blob = await entry.async("blob");
-          const blobURL = URL.createObjectURL(blob);
-          fileMap.set(path, blobURL);
-        }
+        if (entry.dir) continue;
+        const blob = await entry.async("blob");
+        const blobURL = URL.createObjectURL(blob);
+        fileMap.set(path, blobURL);
       }
 
+      // Parse HTML and rewrite URLs
       const htmlContent = await indexFile.async("text");
       const parser = new DOMParser();
       const doc = parser.parseFromString(htmlContent, "text/html");
 
-      ["img", "script", "link"].forEach(tag => {
+      ["img", "script", "link"].forEach((tag) => {
         const attr = tag === "link" ? "href" : "src";
-        doc.querySelectorAll(`${tag}[${attr}]`).forEach(el => {
+        doc.querySelectorAll(`${tag}[${attr}]`).forEach((el) => {
           const src = el.getAttribute(attr);
           if (!src) return;
-          const normalizedPath = Object.keys(zip.files).find(p => p.endsWith(src) || p.includes(src));
-          if (normalizedPath && fileMap.has(normalizedPath)) {
-            el.setAttribute(attr, fileMap.get(normalizedPath));
+          // naive match by tail or contains
+          const matchKey = Object.keys(zip.files).find((p) => p.endsWith(src) || p.includes(src));
+          if (matchKey && fileMap.has(matchKey)) {
+            el.setAttribute(attr, fileMap.get(matchKey));
           }
         });
       });
 
+      // Inject size postMessage script
       const sizeScript = doc.createElement("script");
       sizeScript.textContent = `
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          const w = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth);
-          const h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
-          parent.postMessage({ type: 'ad-size', width: w, height: h }, '*');
-        }, 300);
-      });
-    `;
+        window.addEventListener('load', function () {
+          setTimeout(function () {
+            var w = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth);
+            var h = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+            parent.postMessage({ type: 'ad-size', width: w, height: h }, '*');
+          }, 300);
+        });
+      `;
       doc.body.appendChild(sizeScript);
 
+      // Create & set preview URL (revoke previous first)
+      if (iframeUrl) URL.revokeObjectURL(iframeUrl);
       const blob = new Blob([doc.documentElement.outerHTML], { type: "text/html" });
       const previewUrl = URL.createObjectURL(blob);
       setIframeUrl(previewUrl);
 
-      setMessage({ type: "success", text: ` ZIP uploaded: ${file.name}` });
-    } catch (error) {
-      console.error("File upload error:", error);
-      setMessage({ type: "error", text: `Error: ${error.message}` });
-      console.log("📡 GA4 Event: Exception during ZIP processing");
+      setMessage({ type: "success", text: `ZIP uploaded: ${file.name}` });
+    } catch (err) {
+      console.error("File upload error:", err);
+      setMessage({ type: "error", text: `Error: ${err.message}` });
       sendGAEvent({
         action: "file_upload_error",
         category: "HTML5 Validator",
-        label: error.message,
+        label: err.message,
       });
     }
   };
 
-
+  // Receive ad-size from iframe
   useEffect(() => {
     const handler = (e) => {
-      if (e.data?.type === "ad-size") {
+      if (e?.data?.type === "ad-size") {
         setAdSize({ width: e.data.width, height: e.data.height });
       }
     };
@@ -181,12 +193,27 @@ export default function HTML5ValidatorPage() {
     return () => window.removeEventListener("message", handler);
   }, []);
 
+  const handleReset = () => {
+    if (iframeUrl) URL.revokeObjectURL(iframeUrl);
+    setIframeUrl(null);
+    setUploadedFileName("");
+    setAdSize({ width: 0, height: 0 });
+    if (inputRef.current) inputRef.current.value = null;
+    setMessage({ type: "info", text: "All inputs and previews have been cleared." });
+
+    sendGAEvent({
+      action: "reset_clicked",
+      category: "HTML5 Validator",
+      label: "Reset Button",
+    });
+  };
+
   return (
     <div className={styles.displayAdsContainer}>
       <div style={{ marginBottom: 24 }}>
         <h1 className={styles.displayAdsHeader}>HTML5 Validator</h1>
         <div className={styles.displayAdsSubtitle}>
-          <b>Instant HTML5 Validation — Built for Developers..</b>
+          <b>Instant HTML5 Validation — Built for Developers.</b>
         </div>
       </div>
 
@@ -200,61 +227,51 @@ export default function HTML5ValidatorPage() {
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          tabIndex={0}
           onClick={handleClick}
+          tabIndex={0}
         >
           <div className={styles.dropzoneInner}>
             <FiUpload className={styles.dropzoneIcon} />
-            <div className={styles.dropzoneMainText}>Drag & Drop ZIP file</div>
+            <div className={styles.dropzoneMainText}>Drag &amp; Drop ZIP file</div>
             <div className={styles.dropzoneBrowseText}>Or</div>
-            <button className={styles.dropzoneButton} type="button">Browse & Upload</button>
-            <input type="file" accept=".zip" style={{ display: "none" }} ref={inputRef} onChange={handleFileChange} />
+            <button className={styles.dropzoneButton} type="button">Browse &amp; Upload</button>
+            <input
+              ref={inputRef}
+              type="file"
+              accept=".zip"
+              style={{ display: "none" }}
+              onChange={(e) => handleFileChange(e, "browse")}
+            />
             {uploadedFileName && (
-              <div style={{ marginTop: 11, fontSize: 15, color: '#909' }}>File Name : 📁 <strong>{uploadedFileName}</strong></div>
+              <div style={{ marginTop: 11, fontSize: 15, color: "#909" }}>
+                File Name : 📁 <strong>{uploadedFileName}</strong>
+              </div>
             )}
           </div>
         </div>
 
-        {message && (
+        {/* Inline message (only when we have real text) */}
+        {message?.text && (
           <div className={`user-message ${message.type}`} style={{ marginTop: 16 }}>
-            <div className="user-message-icon">{getIcon(message.type)}</div>
-            <div className="user-message-content">
-              <span>{message.text}</span>
-              <a href="#" className="user-message-action" onClick={(e) => { e.preventDefault(); setMessage(null); }}>
-                Dismiss
-              </a>
-            </div>
+            <span className="icon" style={{ marginRight: 8 }}>{getIcon(message.type)}</span>
+            <span>{message.text}</span>
+            <button
+              className="dismiss-btn"
+              style={{ marginLeft: "auto" }}
+              onClick={() => setMessage(null)}
+            >
+              X
+            </button>
           </div>
         )}
-
-        <div className={styles.html5AdsButtonGroup} style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
-          <button
-            className="html5AdsResetBtn"
-            onClick={() => {
-              setIframeUrl(null);
-              setAdSize({ width: 0, height: 0 });
-              setUploadedFileName("");
-              if (inputRef.current) inputRef.current.value = null;
-              setMessage({ type: "info", text: " All inputs and previews have been cleared." });
-
-              // 🟢 GA4 Reset Event
-              console.log("📡 GA4 Event: Reset Clicked");
-              sendGAEvent({
-                action: "reset_clicked",
-                category: "HTML5 Validator",
-                label: "Reset Button",
-              });
-            }}
-          >
-            🔄 RESET
-          </button>
-
-        </div>
 
         {iframeUrl && (
           <div style={{ marginTop: 24, padding: 16, border: "2px solid #ccc", borderRadius: 8 }}>
             <h3 style={{ textAlign: "center", marginBottom: 12 }}>
-              Live Preview <span style={{ fontSize: 15, fontWeight: "normal" }}>(Ad Size: {adSize.width}×{adSize.height})</span>
+              Live Preview{" "}
+              <span style={{ fontSize: 15, fontWeight: "normal" }}>
+                (Ad Size: {adSize.width}×{adSize.height})
+              </span>
             </h3>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <iframe
@@ -264,12 +281,18 @@ export default function HTML5ValidatorPage() {
                   width: adSize.width || 970,
                   height: adSize.height || 888,
                   border: "1px solid #ccc",
-                  boxShadow: "0 0 6px rgba(0,0,0,0.1)"
+                  boxShadow: "0 0 6px rgba(0,0,0,0.1)",
                 }}
               />
             </div>
           </div>
         )}
+
+        <div className={styles.html5AdsButtonGroup} style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
+          <button className="html5AdsResetBtn" onClick={handleReset}>
+            🔄 RESET
+          </button>
+        </div>
       </div>
 
       <Faq title={title} list={list} />
