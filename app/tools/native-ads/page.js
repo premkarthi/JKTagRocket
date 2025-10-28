@@ -399,7 +399,7 @@ export default function NativeAds() {
                     ref={inputRef} // ✅ set ref here
                     id="nativeTag"
                     rows={7}
-                    placeholder="  🔗  Paste your Native tag here ... !!!"
+                    placeholder="  🔗  Paste your Native tag  URL / <script> tag URL here ... !!!"
                     value={nativeTag}
                     onChange={e => setNativeTag(e.target.value)}
                     className={styles.displayAdsTextarea}

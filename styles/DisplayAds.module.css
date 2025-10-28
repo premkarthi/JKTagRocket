@@ -1,3 +1,5 @@
+
+/* this is using only for nativead.js because its styles are used in this file */
 .displayAdsContainer {
   margin: 0 auto;
 }
@@ -48,7 +50,7 @@
   padding: 12px;
   margin-bottom: 24px;
   background: #f9f9ff;
-  color: #6b2074;
+  color: rgb(67, 24, 208);
 }
 
 .displayAdsButtonGroup {
@@ -525,6 +527,7 @@ label span:hover .info-tooltip {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  color: rgb(67, 24, 208);
 }
 
 
@@ -569,5 +572,5 @@ label span:hover .info-tooltip {
   border: 2px solid #ccc;
   border-radius: 6px;
   font-size: 15px;
+  color: rgb(67, 24, 208);
 }
-

@@ -2,7 +2,7 @@
 
 import { FiUpload } from "react-icons/fi";
 import React, { useRef, useState, useEffect } from "react";
-import styles from "@styles/DisplayAds.module.css";
+// import "@styles/DisplayAds.css"; // ✅ global import (no 'styles')
 import Faq from "../../../components/Faq";
 import JSZip from "jszip";
 import "../../../styles/Usemessages.css";
@@ -49,7 +49,6 @@ export default function HTML5ValidatorPage() {
     "Analyze network timeline, load time, size, and compliance with Deep Capture enabled.",
   ];
 
-  /* Revoke object URL on unmount or when new one replaces it */
   useEffect(() => {
     return () => {
       if (iframeUrl) URL.revokeObjectURL(iframeUrl);
@@ -143,7 +142,6 @@ export default function HTML5ValidatorPage() {
         doc.querySelectorAll(`${tag}[${attr}]`).forEach((el) => {
           const src = el.getAttribute(attr);
           if (!src) return;
-          // naive match by tail or contains
           const matchKey = Object.keys(zip.files).find((p) => p.endsWith(src) || p.includes(src));
           if (matchKey && fileMap.has(matchKey)) {
             el.setAttribute(attr, fileMap.get(matchKey));
@@ -164,7 +162,6 @@ export default function HTML5ValidatorPage() {
       `;
       doc.body.appendChild(sizeScript);
 
-      // Create & set preview URL (revoke previous first)
       if (iframeUrl) URL.revokeObjectURL(iframeUrl);
       const blob = new Blob([doc.documentElement.outerHTML], { type: "text/html" });
       const previewUrl = URL.createObjectURL(blob);
@@ -182,7 +179,6 @@ export default function HTML5ValidatorPage() {
     }
   };
 
-  // Receive ad-size from iframe
   useEffect(() => {
     const handler = (e) => {
       if (e?.data?.type === "ad-size") {
@@ -209,48 +205,65 @@ export default function HTML5ValidatorPage() {
   };
 
   return (
-    <div className={styles.displayAdsContainer}>
+    <div className="displayAdsContainer">
       <div style={{ marginBottom: 24 }}>
-        <h1 className={styles.displayAdsHeader}>HTML5 Validator</h1>
-        <div className={styles.displayAdsSubtitle}>
+        <h1 className="displayAdsHeader">HTML5 Validator</h1>
+        <div className="displayAdsSubtitle">
           <b>Instant HTML5 Validation — Built for Developers.</b>
         </div>
       </div>
 
-      <div className={styles.displayAdsInputCard}>
-        <label htmlFor="displayAdInput" className={styles.displayAdsInputLabel}>
+      <div className="displayAdsInputCard">
+        <label htmlFor="displayAdInput" className="displayAdsInputLabel">
           Upload a ZIP file containing your HTML5 ad:
         </label>
 
         <div
-          className={`${styles.dropzone} ${isActive ? styles.dropzoneActive : ""}`}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onClick={handleClick}
-          tabIndex={0}
-        >
-          <div className={styles.dropzoneInner}>
-            <FiUpload className={styles.dropzoneIcon} />
-            <div className={styles.dropzoneMainText}>Drag &amp; Drop ZIP file</div>
-            <div className={styles.dropzoneBrowseText}>Or</div>
-            <button className={styles.dropzoneButton} type="button">Browse &amp; Upload</button>
-            <input
-              ref={inputRef}
-              type="file"
-              accept=".zip"
-              style={{ display: "none" }}
-              onChange={(e) => handleFileChange(e, "browse")}
-            />
-            {uploadedFileName && (
-              <div style={{ marginTop: 11, fontSize: 15, color: "#909" }}>
-                File Name : 📁 <strong>{uploadedFileName}</strong>
-              </div>
-            )}
-          </div>
-        </div>
+  className={`dropzone ${isActive ? "dropzoneActive" : ""}`}
+  onDrop={handleDrop}
+  onDragOver={handleDragOver}
+  onDragLeave={handleDragLeave}
+  onClick={handleClick}
+  tabIndex={0}
+>
+  <div className="dropzoneInner">
+    <FiUpload className="dropzoneIcon" />
+    <div className="dropzoneMainText">Drag &amp; Drop ZIP file</div>
+    <div className="dropzoneBrowseText">Or</div>
+    <button className="dropzoneButton" type="button">Browse &amp; Upload</button>
+    <input
+      ref={inputRef}
+      type="file"
+      accept=".zip"
+      style={{ display: "none" }}
+      onChange={(e) => handleFileChange(e, "browse")}
+    />
 
-        {/* Inline message (only when we have real text) */}
+    {uploadedFileName && (
+      <div style={{ marginTop: 11, fontSize: 15, color: "#909" }}>
+        File Name : 📁 <strong>{uploadedFileName}</strong>
+      </div>
+    )}
+
+    {/* ✅ RESET BUTTON only visible when file is uploaded */}
+    {uploadedFileName && (
+      <div className="html5AdsButtonGroup">
+        <button
+          className="html5AdsResetBtn"
+          onClick={(e) => {
+            e.stopPropagation(); // prevent dropzone click
+            handleReset();
+          }}
+          type="button"
+        >
+          🔄 RESET
+        </button>
+      </div>
+    )}
+  </div>
+</div>
+
+
         {message?.text && (
           <div className={`user-message ${message.type}`} style={{ marginTop: 16 }}>
             <span className="icon" style={{ marginRight: 8 }}>{getIcon(message.type)}</span>
@@ -287,12 +300,6 @@ export default function HTML5ValidatorPage() {
             </div>
           </div>
         )}
-
-        <div className={styles.html5AdsButtonGroup} style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
-          <button className="html5AdsResetBtn" onClick={handleReset}>
-            🔄 RESET
-          </button>
-        </div>
       </div>
 
       <Faq title={title} list={list} />
