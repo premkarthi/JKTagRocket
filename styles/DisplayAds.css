@@ -1,0 +1,362 @@
+/* =====================
+   Display Ads Page — Final Fixed Version (Preview Stacked Below)
+   ===================== */
+
+/* =====================
+   Page Layout
+   ===================== */
+.displayAdsContainer {
+  margin: 20px auto;
+  max-width: 1400px;
+  width: 94%;
+  display: block; /* ✅ stacked layout */
+  padding: 20px 0;
+  box-sizing: border-box;
+}
+
+.displayAdsInputCard {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  padding: 1rem;
+  margin-bottom: 28px;
+  box-shadow: 0 2px 16px #6c3fe20d;
+}
+
+/* =====================
+   Header Section
+   ===================== */
+.displayAdsHeader {
+  color: #6c3fe2;
+  font-weight: 700;
+  font-size: 1.6rem;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.displayAdsSubtitle {
+  color: #2f2f30;
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+/* =====================
+   Textarea + Copy Button
+   ===================== */
+.displayAdsTextareaWrapper {
+  position: relative;
+  margin-top: 8px;
+}
+
+.displayAdsTextarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 12px 16px;
+  border: 1.5px solid #d0d0d0;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: "Inter", sans-serif;
+  resize: vertical;
+  box-sizing: border-box;
+  color: #6a1b9a;
+  background-color: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.displayAdsTextarea::placeholder {
+  color: rgb(67, 24, 208);
+  font-style: italic;
+  opacity: 1;
+}
+
+.displayAdsTextarea:focus {
+  outline: none;
+  border-color: #6a1b9a;
+  box-shadow: 0 0 4px rgba(106, 27, 154, 0.4);
+}
+
+.copyButtonWrapper {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+}
+
+.displayAdsCopyButton {
+  background: #8a2be2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  z-index: 2;
+}
+
+.displayAdsCopyButton:hover {
+  background: #6f23c7;
+  transform: scale(1.05);
+}
+
+/* Tooltip */
+.copyButtonWrapper .custom-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #6c3fe2;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+.copyButtonWrapper:hover .custom-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* =====================
+   Buttons
+   ===================== */
+.displayAdsButtonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.displayAdsResetBtn {
+  padding: 10px 20px;
+  font-size: 17px;
+  border-radius: 7px;
+  border: none;
+  color: #fff;
+  background-color: #333;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.displayAdsResetBtn:hover {
+  background-color: #111;
+}
+
+.displayAdsPreviewBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.6rem 1.2rem;
+  background-color: #6c3fe2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.displayAdsPreviewBtn:hover {
+  background: #4a26b6;
+}
+
+/* =====================
+   Preview Section
+   ===================== */
+.displayAdsPreviewArea {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 24px;
+  background: #fafafa;
+  width: 100%;
+  display: block; /* ✅ ensures stacked layout */
+}
+
+.adPreviewWrapper,
+.trackerSection {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: #fff;
+}
+
+/* =====================
+   Tabs
+   ===================== */
+.tabButtons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.tabButtons button {
+  flex: 1;
+  padding: 10px 16px;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  background-color: #f3f4f6;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  min-width: 140px;
+  text-align: center;
+  font-size: 15px;
+}
+
+.tabButtons button:hover {
+  background-color: #e5e7eb;
+}
+
+.tabButtons button.activeTab {
+  background-color: #6366f1;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* =====================
+   Trackers Table
+   ===================== */
+.trackerTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.trackerTable th,
+.trackerTable td {
+  border: 1px solid #d1d5db;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.trackerTable th {
+  background-color: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+.trackerTable tr:nth-child(even) {
+  background-color: #f3f4f6;
+}
+
+.trackerTable a {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.trackerTable a:hover {
+  color: #1d4ed8;
+}
+
+/* =====================
+   Misc
+   ===================== */
+.preparingText {
+  margin-top: 12px;
+  font-style: italic;
+  color: #6b7280;
+}
+
+.displayAdsLoader {
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details summary {
+  list-style: none;
+  cursor: pointer;
+  position: relative;
+  padding-left: 1.4em;
+}
+
+details summary::before {
+  content: "▶";
+  position: absolute;
+  left: 0;
+  color: #909;
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+details[open] summary::before {
+  transform: rotate(90deg);
+  color: #6c3fe2;
+}
+/* =====================
+   Fix: Ad Size Color Visibility + Layout
+   ===================== */
+
+/* Force colors to be visible even in bright/white containers */
+.adSizeText {
+  font-weight: 600;
+  color: #333 !important; /* ensure readable dark gray */
+}
+
+.netSizeText {
+  color: #7c3aed !important; /* bright purple accent */
+  font-weight: 700;
+}
+
+.adSizeSpan {
+  color: #909 !important; /* vivid purple for numbers or size values */
+  font-weight: 600;
+}
+
+/* Fix preview stacking — ensure it stays BELOW the textarea */
+.displayAdsPreviewArea {
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 24px;
+  background: #fafafa;
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Optional — if preview or iframe inside needs full width */
+.displayAdsPreviewArea iframe {
+  width: 100%;
+  height: 300px;
+  border: none;
+  background: #fff;
+  border-radius: 6px;
+}
+
+/* Fix stacking order and spacing globally */
+.displayAdsInputCard,
+.adPreviewWrapper {
+  display: block;
+  width: 100%;
+}
+
+.displayAdsContainer {
+  flex-direction: column; /* ensures stacked layout */
+  align-items: stretch;
+}
