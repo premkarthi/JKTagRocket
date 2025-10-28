@@ -6,7 +6,8 @@ import Image from "next/image";
 import UserIdTracker from "../components/UserIdTracker";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { GlobalMessageProvider } from "../components/useGlobalMessage";
+import { GlobalMessageProvider } from "@components/useMessages";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -44,9 +45,9 @@ export default function RootLayout({ children }) {
               aggregateRating: {
                 "@type": "AggregateRating",
                 ratingValue: "5",
-                reviewCount: "23"
+                reviewCount: "23",
               },
-              review: []
+              review: [],
             }),
           }}
         />
@@ -56,9 +57,14 @@ export default function RootLayout({ children }) {
           <UserIdTracker />
           <Header />
 
+          
+
           <div className="main">
             <div className="sideAd">
-              <Link href="https://jktagrocket.com/tools/display-ads/" target="_blank">
+              <Link
+                href="https://jktagrocket.com/tools/display-ads/"
+                target="_blank"
+              >
                 <Image
                   src="/images/160x600-leftside.jpeg"
                   alt="Left Ad"
@@ -71,7 +77,10 @@ export default function RootLayout({ children }) {
             <div className="container">{children}</div>
 
             <div className="sideAd">
-              <Link href="https://jktagrocket.com/tools/native-ads/" target="_blank">
+              <Link
+                href="https://jktagrocket.com/tools/native-ads/"
+                target="_blank"
+              >
                 <Image
                   src="/images/160x600-right.jpg"
                   alt="Right Ad"

@@ -1,4 +1,4 @@
-import { RESOURCE_TYPE_FILTERS } from "./utils";
+import { RESOURCE_TYPE_FILTERS } from "../app/tools/display-ads/utils";
 
 export default function ResourceTypeFilters({ filterState, setFilterState }) {
     const handleToggle = (label) => {

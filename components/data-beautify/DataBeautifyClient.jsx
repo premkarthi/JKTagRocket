@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useRouter, useParams } from "next/navigation";
-import styles from "../../app/tools/display-ads/DisplayAds.module.css";
+import styles from "@styles/DisplayAds.module.css";
 import DataBeautifyTabs, { TABS } from "./DataBeautifyTabs";
 import DataBeautifyPanel from "./DataBeautifyPanel";
 

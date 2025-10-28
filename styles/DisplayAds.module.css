@@ -2,20 +2,22 @@
   margin: 0 auto;
 }
 
+/* Center align the headers */
 .displayAdsHeader {
   color: #6c3fe2;
   font-weight: 700;
   font-size: 1.6rem;
-  text-align: center;
+  text-align: center;  /* Center aligned */
   margin-bottom: 4px;
 }
 
 .displayAdsSubtitle {
   color: #2f2f30;
-  text-align: center;
+  text-align: center;  /* Center aligned */
   font-size: 1rem;
   margin-bottom: 24px;
 }
+
 
 .displayAdsInputCard {
   border: 2px solid rgba(226, 232, 240, 1);
@@ -66,17 +68,7 @@
 }
 
 .displayAdsPreviewBtn {
-  /* padding: 0.3rem 1rem;
-  border-radius: 6px;
-  border: none;
-  background: #6c3fe2;
-  color: #fff;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 2px 8px #6c3fe210;
-  outline: none;
-  transition: background 0.2s; */
+  
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -355,6 +347,7 @@ label span:hover .info-tooltip {
           font-weight: normal;
           font-size: 0.9em;
           text-decoration: none;
+          align-items: center !important;
         }
 
         /* 🔶 Warning */
@@ -472,7 +465,7 @@ label span:hover .info-tooltip {
 .trackerTable th, .trackerTable td {
   border: 1px solid #d1d5db;
   padding: 10px 12px;
-  text-align: left;
+  text-align: center;
 }
 
 .trackerTable th {
@@ -524,11 +517,7 @@ label span:hover .info-tooltip {
   color: #1d4ed8;
   text-decoration: underline;
 }
-.displayAdsHeader {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 12px;
-}
+
 
 .displayAdsTextarea {
   width: 100%;
@@ -539,15 +528,42 @@ label span:hover .info-tooltip {
 }
 
 
-.displayAdsPreviewBtn {
-  background: #2563eb;
-  color: white;
-}
-
+/* Updated styles for the toggle switch */
 .toggle-switch {
   display: flex;
   align-items: center;
   gap: 8px;
+  cursor: pointer;
+}
+
+.toggle-switch input {
+  width: 34px;
+  height: 20px;
+  appearance: none;
+  background-color: #ccc;
+  border-radius: 20px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-switch input:checked {
+  background-color: #6c3fe2;
+}
+
+.toggle-switch input:before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 50%;
+  transition: left 0.3s ease;
+}
+
+.toggle-switch input:checked:before {
+  left: 16px;
 }
 .displayAdsTextarea {
   border: 2px solid #ccc;

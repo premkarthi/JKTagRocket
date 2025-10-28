@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import styles from "../display-ads/DisplayAds.module.css";
+import styles from "@styles/DisplayAds.module.css";
 import "../../../styles/Nativeads.css";
 import Image from "next/image";
 import "../../../styles/Usemessages.css";

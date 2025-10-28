@@ -13,6 +13,7 @@
   padding: 12px;
   border: 1px solid #ddd;
   text-align: center;
+  vertical-align: middle;
 }
 
 .truncateCell {
@@ -45,7 +46,7 @@
 
 .actionButtons {
   display: flex;
-  align-items: center;
+  align-items: center !important;
   justify-content: center;
   gap: 10px;
 }
@@ -55,4 +56,8 @@
   text-align: center;
   color: #888;
   font-size: 16px;
+}
+.trackersTable td:nth-child(4) {
+  text-align: center;
+  vertical-align: middle;
 }

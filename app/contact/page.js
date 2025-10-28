@@ -2,6 +2,9 @@
 
 import React, { useState } from "react";
 import "../../styles/globals.css";
+import "../../styles/ContactForm.css";
+import Customtooltip from "components/Customtooltip";
+import TooltipcopyButton from "components/TooltipcopyButton";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -39,6 +42,21 @@ export default function ContactPage() {
     setErrors((prev) => ({ ...prev, [name]: null }));
   };
 
+  const handleReset = () => {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      countryCode: "+91",
+      message: "",
+      reason: "",
+      consent: false,
+    });
+    setErrors({});
+    setStatus("🧹 All fields have been cleared.");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
@@ -56,31 +74,25 @@ export default function ContactPage() {
 
       if (!res.ok) throw new Error("Submission failed.");
       setStatus("✅ Message sent successfully!");
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        countryCode: "+91",
-        message: "",
-        reason: "",
-        consent: false,
-      });
+      handleReset();
     } catch (err) {
       setStatus("❌ An error occurred. Please try again later.");
     }
   };
 
   return (
-    <div className="contact-form-container" style={{ border: "2px solid #ccc", padding: 24, borderRadius: 12 }}>
+    <div className="contact-form-container">
       <h1>Get in touch with us</h1>
       <p>We’d love to hear from you. Please fill out this form.</p>
 
-      {status && <div className="user-message info" style={{ marginBottom: 16 }}>{status}</div>}
+      {status && <div className="user-message info">{status}</div>}
 
       <form onSubmit={handleSubmit} className="contact-grid">
+        {/* First Name */}
         <div>
-          <label>First name <span style={{ color: "red" }}>*</span></label>
+          <label>
+            First name <span className="required">*</span>
+          </label>
           <input
             type="text"
             name="firstName"
@@ -92,8 +104,11 @@ export default function ContactPage() {
           {errors.firstName && <div className="form-error">{errors.firstName}</div>}
         </div>
 
+        {/* Last Name */}
         <div>
-          <label>Last name <span style={{ color: "red" }}>*</span></label>
+          <label>
+            Last name <span className="required">*</span>
+          </label>
           <input
             type="text"
             name="lastName"
@@ -105,8 +120,11 @@ export default function ContactPage() {
           {errors.lastName && <div className="form-error">{errors.lastName}</div>}
         </div>
 
+        {/* Email */}
         <div className="contact-grid-full">
-          <label>Email <span style={{ color: "red" }}>*</span></label>
+          <label>
+            Email <span className="required">*</span>
+          </label>
           <input
             type="email"
             name="email"
@@ -118,14 +136,16 @@ export default function ContactPage() {
           {errors.email && <div className="form-error">{errors.email}</div>}
         </div>
 
+        {/* Phone */}
         <div className="contact-grid-full">
-          <label>Contact Number <span style={{ color: "red" }}>*</span></label>
-          <div style={{ display: "flex", gap: "8px" }}>
+          <label>
+            Contact Number <span className="required">*</span>
+          </label>
+          <div className="phone-input-wrapper">
             <select
               name="countryCode"
               value={formData.countryCode}
               onChange={handleChange}
-              style={{ width: "90px", padding: "8px" }}
             >
               <option value="+91">🇮🇳 +91</option>
               <option value="+1">🇺🇸 +1</option>
@@ -148,7 +168,6 @@ export default function ContactPage() {
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, countryCode: e.target.value }))
                 }
-                style={{ width: 90, padding: "8px" }}
               />
             )}
             <input
@@ -158,14 +177,16 @@ export default function ContactPage() {
               className="contact-form-input"
               value={formData.phone}
               onChange={handleChange}
-              style={{ flex: 1 }}
             />
           </div>
           {errors.phone && <div className="form-error">{errors.phone}</div>}
         </div>
 
+        {/* Message */}
         <div className="contact-grid-full">
-          <label>Message <span style={{ color: "red" }}>*</span></label>
+          <label>
+            Message <span className="required">*</span>
+          </label>
           <textarea
             name="message"
             placeholder="Your message..."
@@ -176,8 +197,11 @@ export default function ContactPage() {
           {errors.message && <div className="form-error">{errors.message}</div>}
         </div>
 
+        {/* Reason */}
         <div className="contact-grid-full">
-          <label>Why are you reaching out? <span style={{ color: "red" }}>*</span></label>
+          <label>
+            Why are you reaching out? <span className="required">*</span>
+          </label>
           <select
             name="reason"
             className="contact-form-input"
@@ -194,35 +218,17 @@ export default function ContactPage() {
           {errors.reason && <div className="form-error">{errors.reason}</div>}
         </div>
 
-        <div style={{ marginTop: 18 }}>
-            <label
-                style={{
-                display: "flex",
-                alignItems: "center",
-                fontSize: "0.82rem",
-                gap: "6px",
-                lineHeight: "1.4",
-                whiteSpace: "nowrap",
-                flexWrap: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                }}
-            >
-
+        {/* Consent */}
+        <div className="consent-container">
+          <label className="consent-label">
             <input
               type="checkbox"
               name="consent"
               checked={formData.consent}
               onChange={handleChange}
-              style={{ marginTop: 2 }}
             />
             I agree to the{" "}
-            <a
-              href="/privacy-policy"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: "underline", color: "#0070f3" }}
-            >
+            <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">
               Privacy Policy
             </a>{" "}
             and use of my personal data.
@@ -230,9 +236,18 @@ export default function ContactPage() {
           {errors.consent && <div className="form-error">{errors.consent}</div>}
         </div>
 
-        <button type="submit" className="contact-form-button" style={{ marginTop: 20 }}>
-          Send message
-        </button>
+        {/* Buttons (new line, centered) */}
+        <div className="contact-buttons">
+          <button type="submit" className="submit-btn">
+            Send message
+          </button>
+
+          <Customtooltip text="Clear all fields" variant="copy" delay={800}>
+            <span onClick={handleReset} className="refresh-icon">
+              🔄
+            </span>
+          </Customtooltip>
+        </div>
       </form>
     </div>
   );

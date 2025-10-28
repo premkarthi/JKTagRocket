@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import "../../../styles/Datamanipulation.css";
 import "../../../styles/Usemessages.css";
-import { useAutoDismissMessage, UserMessage } from "../../useMessages";
+import { useAutoDismissMessage, InlineUserMessage } from "@components/useMessages";
+
 import "../../../styles/Customtooltip.css";
 import "../../../styles/TooltipcopyButton.css";
 import "../../../styles/TooltipOpenNewTabButton.css";
 import Customtooltip from "components/Customtooltip";
 import TooltipcopyButton from "components/TooltipcopyButton"; 
+
+
 export default function ManipulatePanel() {
   const [result, setResult] = useState([]);
   const [leftText, setLeftText] = useState("");
@@ -97,11 +100,8 @@ export default function ManipulatePanel() {
   };
   return (
     <>
-      {message && (
-        <div className="message-wrapper">
-          <UserMessage message={message} setMessage={clearMessage} />
-        </div>
-      )}
+      <InlineUserMessage message={message} setMessage={clearMessage} />
+
       <div className="manipulate-panel-wrapper">
           <div className="panel-section">
             <label>Left Side Text</label>

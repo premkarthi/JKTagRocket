@@ -1,4 +1,4 @@
-import styles from "../app/tools/display-ads/DisplayAds.module.css";
+import styles from "@styles/DisplayAds.module.css";
 export default function Faq({ title, list }) {
     return (
         <div className={styles.displayAdsFAQSection}>
